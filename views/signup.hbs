@@ -1,0 +1,72 @@
+<!--User Signup-->
+
+<div class="">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Welcome Back</h1>
+                <a href="/auth/google" type="button" class="btn btn-light mt-4 mb-4"><img src="/images/google.png"
+                        alt="google" class="pe-3">Login With google</a>
+
+                <div class="border-top border-1 border-dark py-3 align">
+                    <span>OR</span>
+
+
+                    <form method="post" action="/signup">
+                        <div id="registerForm">
+                            <span id="error_msg" class="text-danger">{{content}}</span>
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="text" class="form-control shadow-none border" name="name"
+                                    id="floatingText_signup" placeholder="">
+                                <label for="floatingText_signup">Full Name</label>
+                                <span id="nameValidationMsg" class="float-end pt-1 pb-1 phone_validate"></span>
+                            </div>
+
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="email" class="form-control shadow-none border" name="email"
+                                    id="floatingInput_signup" placeholder="">
+                                <label for="floatingInput_signup">Email ID</label>
+                                <span id="emailValidationMsg" class="float-end pt-1 pb-1 phone_validate"></span>
+                            </div>
+
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="text" class="form-control shadow-none border" name="phone"
+                                    id="floatingPhone_signup" placeholder="">
+                                <label for="floatingPhone_signup">Phone number</label>
+                                <span id="phoneValidationMsg" class="float-end pt-1 pb-1 phone_validate"></span>
+                            </div>
+
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="password" class="form-control shadow-none border" name="password"
+                                    id="floatingPassword_signup" placeholder="Password">
+                                <label for="floatingPassword_signup">Password</label>
+                                <span class="pass-eye" onclick="password_show_hide();">
+                                    <i class="fa fa-eye field-icon" id="show_eye"></i>
+                                    <i class="fa fa-eye-slash d-none field-icon" id="hide_eye"></i>
+                                    <span id="passwordValidationMsg" class="float-end pt-1 pb-1 phone_validate"></span>
+                                    <span id="conPasswordValidationMsg"
+                                        class="float-start mt-1 mb-1 phone_validate"></span>
+                            </div>
+
+                            <div class="form-floating mb-3 mt-3">
+                                <input type="password" class="form-control shadow-none border"
+                                    id="floatingPasswordConfirm_signup" placeholder="Password">
+                                <label for="floatingPasswordConfirm_signup">Confirm Password</label>
+                                <span class="pass-eye" onclick="password_show_hide_confirm();">
+                                    <i class="fa fa-eye field-icon" id="show_eye_confirm"></i>
+                                    <i class="fa fa-eye-slash d-none field-icon" id="hide_eye_confirm"></i>
+
+                            </div>
+
+
+                            <a href="/login" type="button" id="" class="btn btn-outline-dark py-3 btn1-size">CANCEL</a>
+                            <button type="submit" id="logIn" class="btn btn-dark py-3 btn2-size" disabled>SIGNUP</button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,45 @@
+<!--User OTP verification-->
+
+<div class="{{alert}}">{{text}}</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <img src="/images/verify.png" alt="verify">
+            <h1 class="mt-3">OTP Verification</h1>
+
+            <form method="post" action="/verifyOtp" id="otpForm" class="align" onsubmit='return validateOtpForm()'>
+                <div class=" d-flex justify-content-center align-items-center">
+                    <div class="position-relative">
+                        <div class="card text-center">
+                            <h6>{{content}}</h6>
+                            <div class="pt-4"> <span>Enter the OTP below to verify it.</span></div>
+                            <div id="otp" class="inputs d-flex flex-row justify-content-center mt-4">
+                                <input class="m-2 text-center form-control rounded" name="first" type="text" id="first"
+                                    maxlength="1" />
+                                <input class="m-2 text-center form-control rounded" name="second" type="text"
+                                    id="second" maxlength="1" />
+                                <input class="m-2 text-center form-control rounded" name="third" type="text" id="third"
+                                    maxlength="1" />
+                                <input class="m-2 text-center form-control rounded" name="fourth" type="text"
+                                    id="fourth" maxlength="1" />
+                                <input class="m-2 text-center form-control rounded" name="fifth" type="text" id="fifth"
+                                    maxlength="1" />
+                                <input class="m-2 text-center form-control rounded" name="sixth" type="text" id="sixth"
+                                    maxlength="1" />
+                            </div>
+                            <div class="pt-1 card-2"><span class="timer" id="resendTimer"></span> <a href="#"
+                                    id="resendOtpBtn" class="text-decoration-none text-bold me-0"
+                                    style="display: none;">Resend OTP</a>
+                                <input type="hidden" id="emailHidden" value="{{content}}" />
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" id="validateOtpBtn"
+                                    class="btn btn-dark rounded validate py-3 mt-3">Verify OTP</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

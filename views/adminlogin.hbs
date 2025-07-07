@@ -1,0 +1,40 @@
+<!--Admin Login-->
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <img src="/images/logo.png" class="mb-2 mt-3" alt="" height="40">
+            <h1>Admin Login</h1>
+
+            <div class="py-3 align">
+                <span class="text-danger">{{message}}</span>
+                <form action="/admin" method="post">
+                    <div class="form-floating mb-3 mt-3">
+                        <input type="text" class="form-control shadow-none border" name="user" id="floatingInput"
+                            placeholder="user">
+                        <label for="floatingInput">User Name</label>
+                    </div>
+
+
+                    <div class="form-floating mb-2">
+                        <input type="password" class="form-control shadow-none border" name="password"
+                            id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Password</label>
+                        <span class="pass-eye" onclick="password_show_hide();">
+                            <i class="fa fa-eye field-icon" id="show_eye"></i>
+                            <i class="fa fa-eye-slash d-none field-icon" id="hide_eye"></i>
+
+                            {{!-- <a href="#" class="float-end text-decoration-none text-black pt-3">Forgot Password
+                                ?</a> --}}
+                    </div>
+
+
+                    <button type="submit" class="btn btn-dark py-3 btn2-size">LOGIN</button>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,967 @@
+body {
+     font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    overflow-x: hidden;
+}
+
+/* header footer */
+
+.hf-p {
+    font-size: 14px;
+    color: #CFCFCF;
+}
+
+.hf-h5 {
+    font-size: 16px;
+    color: #FFFFFF;
+    font-weight: 500;
+}
+
+.icon-style {
+    font-family: FontAwesome;
+}
+
+.bg-search {
+    background: #F5F5F5;
+    color: 989898;
+}
+
+.bg-body-white {
+  background-color: #fff;
+}
+
+
+/* tab link */
+
+.tab-link {
+      padding: 8px 2px;
+      margin-right: 10px;
+      border-bottom: 2px solid transparent;
+      color: #000;
+      cursor: pointer;
+    }
+    .tab-link.active {
+      border-color: black;
+      font-weight: bold;
+    }
+
+
+/* header footer end */
+
+h1 {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.slider-subtitle {
+
+    font-size: 24px;
+    font-weight: 300;
+}
+
+.slider-title {
+    font-size: 75px;
+    font-weight: 800;
+    margin-top: -10px;
+}
+
+.align {
+    margin-left: 25%;
+    margin-right: 25%;
+   
+}
+
+.btn1-size {
+    padding-left: 100px;
+    padding-right: 100px;
+    margin-top: 50px;
+    margin-left: -45px;
+}
+.btn2-size {
+    padding-left: 110px;
+    padding-right: 110px;
+    margin-top: 50px;
+    margin-right: -180px;
+    margin-left: 10px;
+}
+
+.field-icon {
+  float: right;
+  margin-left: -25px;
+  margin-top: -40px;
+  margin-right: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.phone_validate {
+    color: red;
+    font-weight: 300;
+    font-size: 12px;
+}
+
+
+/* image-border setting */
+
+.img-border {
+    border: 0px black;
+    height: 160px;
+    margin-top: 20px;
+}
+
+
+.sizing {
+
+    margin-top: 110px;
+
+}
+
+h5 {
+    font-size: 16px;
+    font-weight: 300;
+}
+
+p {
+    font-size: 14px;
+    font-weight: 200;
+}
+
+.badminton-ad {
+    background-color: #EDEDED;
+
+}
+
+.shoe-img {
+    height: 300px;
+}
+
+.bat-img {
+    height: 547px;
+}
+
+.badminton {
+    position: absolute;
+    margin-top: 130px;
+    margin-left: 30px;
+    font-size: 64px;
+    font-weight: 100;
+}
+
+.racket {
+    position: absolute;
+    margin-top: 170px;
+    margin-left: 30px;
+    font-size: 64px;
+    font-weight: 500;
+}
+
+.badminton-content {
+    margin-top: 270px;
+    margin-left: 30px;
+
+}
+
+.badminton-button {
+    margin-left: 30px;
+}
+
+.shoe1 {
+    position: absolute;
+    margin-top: 60px;
+    font-size: 49px;
+    font-weight: 400;
+}
+
+.shoe2 {
+    position: absolute;
+    margin-top: 90px;
+    font-size: 49px;
+    font-weight: 400;
+}
+
+.shoe-content {
+    margin-top: 170px;
+    font-weight: 300;
+    color: #909090;
+}
+
+.jercy-img {
+    height: 270px;
+}
+
+.jercy1 {
+    position: absolute;
+    margin-top: 50px;
+    font-size: 29px;
+    font-weight: 200;
+}
+
+.jercy2 {
+    position: absolute;
+    margin-top: 60px;
+    font-size: 29px;
+    font-weight: 600;
+}
+
+.jercy-content {
+    margin-top: 110px;
+    font-size: 14px;
+    font-weight: 300;
+    color: #909090;
+}
+
+.jercy-style1 {
+    background-color: #EDEDED;
+}
+
+.jercy-style2 {
+    background-color: #353535;
+    margin-right: -24px;
+}
+
+.coke-img {
+    margin-top: 25px;
+    margin-left: -12px;
+}
+
+.coke1 {
+    position: absolute;
+    margin-top: 50px;
+    font-size: 29px;
+    font-weight: 200;
+}
+
+.coke2 {
+    position: absolute;
+    margin-top: 60px;
+    font-size: 29px;
+    font-weight: 600;
+}
+
+.coke-image {
+    height: 270px;
+}
+
+.coke-content {
+    margin-top: 25px;
+    margin-left: 10px;
+}
+
+.coke-sub{
+    margin-top: 110px;
+    font-size: 14px;
+    font-weight: 300;
+    color: #909090;
+}
+
+.h3 {
+    font-size: 24px;
+}
+
+.category-border {
+    border: 0px black;
+    background-color: #EDEDED;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 25px;
+    transition: transform .5s;
+}
+
+.category-border:hover {
+    transform: scale(1.15);
+}
+
+.category-content {
+    font-size: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    
+}
+
+.category {
+    font-weight: 600;
+    padding-top: 80px;
+    margin-bottom: 40px;
+}
+
+.category-section {
+    background-color: #FAFAFA;
+}
+
+.category-img {
+    height: 50px;
+}
+
+
+/* product slider */
+
+
+.slide {
+    font-weight: 600;
+    color: rgb(70, 70, 70);
+    
+}
+
+.slide:hover {
+    font-weight: 600;
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+}
+
+.product-card-bg {
+    border: 0px black;
+    background-color: #F6F6F6;
+    border-radius: 14px;
+    padding: 30px;
+    margin-top: 30px;
+    height: 450px;
+}
+
+.product-card-rating {
+    border: 0px black;
+    background-color: #006616;
+    color: #ffffff;
+    border-radius: 5px;
+    height: 5px;
+    width: 10px;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.product-card-img {
+    height: 160px;
+}
+
+/* ==================wishlist icon =========================== */
+
+
+.heart-button {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: -5px;
+}
+
+.heart-icon {
+  stroke: gray;
+  fill: none;
+  stroke-width: 1;
+  transition: all 0.3s ease;
+  height: 32px;
+  width: 32px;
+}
+
+.heart-button.active .heart-icon {
+  fill: red;
+  stroke: red;
+  animation: pop 0.5s ease;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.wishlist-msg {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff4d4d;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.heart-button.active .wishlist-msg {
+  opacity: 1;
+  animation: fadeOut 2s forwards 0.8s;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+
+/* ==================wishlist icon end =========================== */
+
+
+
+
+/* Brand Section */
+
+.brand-border1 {
+    border: 0px black;
+    background-color: #ffffff;
+    padding-left: 55px;
+    margin-top: 30px;
+    height: 450px;
+}
+
+.brand-border2 {
+    border: 0px black;  
+    background-color: #F9F9F9;
+    padding-left: 45px;
+    margin-top: 30px;
+    height: 450px;
+}
+
+.brand-border3 {
+    border: 0px black;  
+    background-color: #EAEAEA;
+    padding-left: 45px;
+    margin-top: 30px;
+    height: 450px;
+}
+
+.brand-border4 {
+    border: 0px black;  
+    background-color: #2C2C2C;
+    padding-left: 40px;
+    margin-top: 30px;
+    height: 450px;
+}
+
+.brand-img {
+    height: 200px;
+}
+
+h3 {
+    font-size: 30px;
+    font-weight: 200;
+}
+
+
+
+/* ================= add to cart button ================== */
+
+
+    .btn-addCart{
+      position: relative;
+      display: inline-block;
+      padding: 10px 52px;
+      background: #000000;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 500;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: background 0.3s ease;
+    }
+
+    
+    .btn-addCart::before {
+      content: "✔ Added";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      color: #006616;
+      font-size: 18px;
+      transition: transform 0.4s ease;
+      pointer-events: none;
+    }
+
+    .btn-addCart span {
+      display: inline-block;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .btn-addCart.clicked {
+      background: transparent;
+    }
+
+    .btn-addCart.clicked span {
+      transform: translateY(-30px);
+      opacity: 0;
+    }
+
+    .btn-addCart.clicked::before {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+
+    /* ======================== end add to cart ===================== */
+
+
+
+
+
+
+
+        /* Extra Small Devices (phones, <576px) */
+    @media (max-width: 575.98px) {
+
+        /* products */
+
+        .btn-addCart{
+        font-size: 10px;
+        padding: 10px 45px;
+        border-radius: 5px;
+        
+        }
+
+        .cart-button button {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+            font-size: 12px;
+        }
+
+        .btn-addCart::before {
+        font-size: 12px;
+        }
+
+        .product-card-img {
+        height: 120px;
+        }
+
+        .product-card-rating {
+        font-size: 10px;
+        }
+
+        .product-card-bg {
+        padding: 20px;
+        margin-top: 30px;
+        height: 450px;
+        }
+
+        .heart-icon {
+        height: 18px;
+        width: 18px;
+        }
+       
+        .heart-button {
+        margin-top: 0px;
+        }
+
+        .product-card-bg h5 {
+        font-size: 12px;
+        }
+
+        .product-card-bg h2 {
+        font-size: 18px;
+        margin-top: -10px;
+        }
+
+        .product-card-bg {
+        height: 350px;
+        }
+
+        .slide {
+        font-weight: 500;
+        font-size: 14px;
+        }
+
+        .category-content {
+        font-size: 12px; 
+        margin-top: 8px;
+        }
+
+        .category {
+        font-size: 18px;
+        padding-top: 40px;
+        }
+
+        .category-border {
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        margin-bottom: 20px;
+        }
+
+        .category-img {
+        height: 40px;
+        }
+
+        .brand-img {
+        height: 100px;
+        }
+
+        .brand-border1 h3, .brand-border2 h3, .brand-border3 h3, .brand-border4 h3 {
+            font-size: 24px;
+        }
+
+        .brand-border1 {
+            height: 320px;
+            margin: 0px;
+
+        }
+        
+        .brand-border2 {
+            height: 230px;
+            margin-top: 0px;
+
+        }
+
+        .brand-border3, .brand-border4 {
+            height: 230px;
+            margin-top: -88px;
+        }
+
+        .brand-border1 p, .brand-border2 p, .brand-border3 p, .brand-border4 p {
+            font-size: 14px;
+            display: none;
+        }
+
+        .discount-content {
+            font-size: 18px;
+        }
+
+        .shoe-img {
+        height: 120px;
+        float: right;
+        }
+
+        .shoe1 {
+        margin-top: 20px;
+        font-size: 22px;
+        }
+
+        .shoe2 {
+        margin-top: 25px;
+        font-size: 22px;
+        }
+
+        .shoe-content {
+        margin-top: 60px;
+        font-size: 12px;
+        display: none;
+        }
+
+        .jercy-img {
+        height: 120px;
+        }
+
+        .jercy1 {
+        margin-top: 10px;
+        font-size: 22px;
+        }
+
+        .jercy2 {
+        margin-top: 10px;
+        font-size: 22px;
+        }
+
+        .jercy-content {
+        margin-top: 45px;
+        font-size: 12px;
+        display: none;
+        }
+
+        .coke-img {
+        margin-top: 15px;
+        }
+
+        .coke-image {
+        height: 110px;
+        }
+
+        .coke-content {
+        margin-top: 30px;
+        margin-left: -20px;
+        }
+
+        .coke1 {
+        margin-top: 0px;
+        font-size: 22px;
+        }
+
+        .coke2 {
+        margin-top: 0px;
+        font-size: 22px;
+        }
+
+        .coke-sub {
+        margin-top: 40px;
+        font-size: 12px;
+        display: none;
+        }
+
+        .bat-img {
+        height: 320px;
+        }
+
+        .badminton {
+        margin-top: 80px;
+        font-size: 38px;
+        }
+
+        .racket {
+        margin-top: 100px;
+        font-size: 38px;
+        }
+
+        .badminton-content {
+        margin-top: 160px;
+
+        }
+
+        .badminton-ad button {
+         font-size: 12px;  
+         padding: 10px !important;
+        }
+
+        .jercy-style2 {
+        margin-right: 0px;
+        }
+
+
+    }
+
+
+    .bg-setting {
+      backdrop-filter: blur(10px) !important;
+    }
+
+    /* Small Devices (landscape phones, ≥576px) */
+    @media (min-width: 576px) and (max-width: 767.98px) {
+    /* products */
+
+        .btn-addCart{
+        font-size: 10px;
+        padding: 10px 45px;
+        margin-top: 5px !important;
+        }
+
+        .btn-addCart::before {
+        font-size: 12px;
+        }
+
+        .product-card-img {
+        height: 150px;
+        }
+
+        .product-card-rating {
+        font-size: 12px;
+        }
+
+        .product-card-bg {
+        padding: 20px;
+        margin-top: 30px;
+        height: 450px;
+        }
+
+        .heart-icon {
+        height: 24px;
+        width: 24px;
+        }
+       
+        .heart-button {
+        margin-top: 0px;
+        }
+
+        .product-card-bg h5 {
+        font-size: 12px;
+        }
+
+        .product-card-bg h2 {
+        font-size: 18px;
+        margin-top: -10px;
+        }
+
+        .product-card-bg {
+        height: 350px;
+        }
+
+        .slide {
+        font-weight: 500;
+        font-size: 14px;
+        }
+
+        .category-content {
+        font-size: 12px; 
+        margin-top: 8px;
+        }
+
+        .category {
+        font-size: 18px;
+        padding-top: 40px;
+        }
+
+        .category-border {
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        margin-bottom: 20px;
+        }
+
+        .category-img {
+        height: 40px;
+        }
+
+        .brand-img {
+        height: 100px;
+        }
+
+        .brand-border1 h3, .brand-border2 h3, .brand-border3 h3, .brand-border4 h3 {
+            font-size: 24px;
+        }
+
+        .brand-border1, .brand-border2 {
+            height: 320px;
+            margin-top: 0px;
+        }
+
+        .brand-border3, .brand-border4 {
+            height: 320px;
+            margin-top: 0px;
+        }
+
+        .brand-border1 p {
+            font-size: 14px;
+        }
+
+        .brand-border1 button {
+            padding :5px;
+            font-size: 12px;
+            color: blanchedalmond;
+        }
+
+        .discount-content {
+            font-size: 18px;
+        }
+
+        .shoe-img {
+        height: 200px;
+        }
+
+        .shoe1 {
+        margin-top: 20px;
+        font-size: 35px;
+        }
+
+        .shoe2 {
+        margin-top: 35px;
+        font-size: 35px;
+        }
+
+        .shoe-content {
+        margin-top: 90px;
+        font-size: 12px;
+        }
+
+        .jercy-img {
+        height: 200px;
+        }
+
+        .jercy1 {
+        margin-top: 10px;
+        font-size: 29px;
+        }
+
+        .jercy2 {
+        margin-top: 20px;
+        font-size: 29px;
+        }
+
+        .jercy-content {
+        margin-top: 70px;
+        font-size: 12px;
+        }
+
+        .coke-img {
+        margin-top: 25px;
+        }
+
+        .coke-image {
+        height: 150px;
+        }
+
+        .coke-content {
+        margin-top: 30px;
+        margin-left: -20px;
+        }
+
+        .coke1 {
+        margin-top: 10px;
+        font-size: 24px;
+        }
+
+        .coke2 {
+        margin-top: 15px;
+        font-size: 24px;
+        }
+
+        .coke-sub {
+        margin-top: 55px;
+        font-size: 12px;
+        }
+
+        .bat-img {
+        height: 390px;
+        }
+
+        .badminton {
+        margin-top: 80px;
+        font-size: 48px;
+        }
+
+        .racket {
+        margin-top: 110px;
+        font-size: 48px;
+        }
+
+        .badminton-content {
+        margin-top: 200px;
+        }
+
+        .jercy-style2 {
+        margin-right: 0px;
+        }
+
+
+    
+    }
+
+    /* Medium Devices (tablets, ≥768px) */
+    @media (min-width: 768px) and (max-width: 991.98px) {
+    /* Styles for tablets */
+    }
+
+    /* Large Devices (desktops, ≥992px) */
+    @media (min-width: 992px) and (max-width: 1199.98px) {
+    /* Styles for standard desktops */
+    }
+
+    /* Extra Large Devices (large desktops, ≥1200px) */
+    @media (min-width: 1200px) and (max-width: 1399.98px) {
+    /* Styles for large screens */
+    }
+
+    /* XXL Devices (very large desktops, ≥1400px) */
+    @media (min-width: 1400px) {
+    /* Styles for very large displays */
+    }
+
+
+
+
+
+

@@ -1,0 +1,303 @@
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="px-4 mb-3">
+    <img src="/images/Logo-dark.png" alt="logo" height="50">
+  </div>
+
+  <h6 class="px-3">Dashboard</h6>
+  <a class="nav-link" href="/dashboard"><i class="bi bi-house-door"></i> Dashboard</a>
+  <a class="nav-link" href="#"><i class="bi bi-file-earmark"></i> Order List</a>
+
+  <a class="nav-link active  filter-text-size" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button"
+    aria-expanded="false" aria-controls="multiCollapseExample1" href="/products"><i class="bi bi-inboxes"></i> All
+    Products</a>
+
+  <div class="collapse multi-collapse ps-3" id="multiCollapseExample1">
+    <div class="form-check custom-checkbox">
+      <a class="nav-link" href="#"> Rackets</a>
+      <a class="nav-link" href="#"> Jercy and Shorts</a>
+      <a class="nav-link" href="#"> Birdie</a>
+      <a class="nav-link" href="#"> Shoes</a>
+    </div>
+  </div>
+
+  <a class="nav-link" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
+  <a class="nav-link" href="/customers"><i class="bi bi-people"></i> Customers</a>
+  <a class="nav-link" href="#"><i class="bi bi-ticket-detailed"></i> Coupon</a>
+  <a class="nav-link" href="#"><i class="bi bi-funnel"></i> Filter</a>
+  <a class="nav-link" href="#"><i class="bi bi-grid"></i> Category</a>
+  <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+</div>
+
+<!-- Topbar -->
+<div class="topbar border-bottom fixed-top" id="topbar">
+  <button class="btn text-white" onclick="toggleSidebar()"><i class="bi bi-list fs-4 text-dark"></i></button>
+  <div class="d-flex align-items-center gap-3">
+    <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;">
+    <i class="bi bi-bell-fill fs-5 text-dark"></i>
+
+    <!-- Large button groups (default and split) -->
+    <div class="btn-group">
+      <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        ADMIN
+      </button>
+      <ul class="dropdown-menu p-3">
+        <li><b>Admin</b></li>
+        <li class="pt-2"><a href="#" class="text-decoration-none text-dark">Change Password</a></li>
+        <li class="pt-2"><a href="#" class="text-decoration-none text-dark">Logout <i
+              class="bi bi-box-arrow-right float-end"></i></a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- Main Content -->
+
+
+
+<div class="main-content" id="main">
+
+  <div class="container mt-5">
+    <h4><b>Edit Products</b></h4>
+
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+      <!-- breadcrumb -->
+
+      <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-secondary">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="/products" class="text-decoration-none text-secondary">All Products</a>
+          </li>
+          <li class="breadcrumb-item active text-dark" aria-current="page">Edit Products</li>
+        </ol>
+      </nav>
+
+      {{!-- id="productForm" novalidate --}}
+
+      {{#each productDetails}}
+
+      <form id="productForm" enctype="multipart/form-data" novalidate> {{!-- submit form data through js file --}}
+        <input type="hidden" name="id" value="{{this._id}}">
+        <div class="row form-section">
+          <div class="col-md-8">
+            <div class="mb-3">
+              <label class="form-label">Product Name</label>
+              <input type="text" class="form-control shadow-none" value="{{this.productName}}" name="productName"
+               pattern="^[A-Za-z\s]{5,}$" required placeholder="Enter product name">
+              <div class="invalid-feedback">Product name must be at least 5 characters long and contain only letters and spaces.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control shadow-none" rows="3" required name="description"
+                placeholder="Enter detailed product description">{{this.description}}</textarea>
+              <div class="invalid-feedback">Description is required.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label ">Category</label>
+              <select class="form-select shadow-none" name="category" required>
+                <option selected>{{this.category}}</option>
+                {{/each}}
+                {{#each category}}
+                <option>{{this.name}}</option>
+                {{/each}}
+
+              </select>
+              <div class="invalid-feedback">Please select a category.</div>
+            </div>
+            {{#each productDetails}}
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Regular Price</label>
+                <input type="number" class="form-control shadow-none" value="{{this.regularPrice}}" name="regularPrice"
+                  required min="0" placeholder="Enter product MRP">
+                <div class="invalid-feedback">Regular price required.</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Sale Price</label>
+                <input type="number" class="form-control shadow-none" value="{{this.salePrice}}" name="salePrice"
+                  required min="0" placeholder="Enter sale price">
+                <div class="invalid-feedback">Sale price required.</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Size Unit</label>
+                <input type="text" class="form-control shadow-none" value="{{this.unitSize}}" name="unitSize" required
+                  placeholder="Enter size unit (e.g., cm)">
+                <div class="invalid-feedback">Size unit is required.</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Age Range</label>
+                <select class="form-select shadow-none" name="ageRange" required>
+                  <option selected>{{this.ageRange}}</option>
+                  <option>Kids</option>
+                  <option>Adults</option>
+                </select>
+                <div class="invalid-feedback">Select age range.</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Material</label>
+                <input type="text" class="form-control shadow-none" value="{{this.material}}" name="material" required
+                  placeholder="Enter material type">
+                <div class="invalid-feedback">Material is required.</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Item Weight (gm)</label>
+                <input type="number" class="form-control shadow-none" value="{{this.itemWeight}}" name="itemWeight"
+                  required min="1" placeholder="Enter weight in gm">
+                <div class="invalid-feedback">Valid weight is required.</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Warranty Year</label>
+                <input type="number" class="form-control shadow-none" value="{{this.warranty}}" name="warranty" required
+                  min="0" placeholder="Enter number of years">
+                <div class="invalid-feedback">Warranty year is required.</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Brand Name</label>
+                <input type="text" class="form-control shadow-none" value="{{this.brandName}}" name="brandName" required
+                  placeholder="Enter product brand name">
+                <div class="invalid-feedback">Brand name is required.</div>
+              </div>
+            </div>
+
+            {{!-- <div class="mb-3">
+              <label class="form-label">Colors</label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="color" value="Green" id="colorGreen" {{#if (eq
+                  this.color "Green" )}}checked{{/if}}>
+                <label class="form-check-label" for="colorGreen">Green</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="color" value="Blue" id="colorBlue" {{#if (eq
+                  this.color "Blue" )}}checked{{/if}}>
+                <label class="form-check-label" for="colorBlue">Blue</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="color" value="Grey" id="colorGrey" {{#if (eq
+                  this.color "Grey" )}}checked{{/if}}>
+                <label class="form-check-label" for="colorGrey">Grey</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="color" value="White" id="colorWhite" {{#if (eq
+                  this.color "White" )}}checked{{/if}}>
+                <label class="form-check-label" for="colorWhite">White</label>
+              </div>
+            </div> --}}
+
+
+  <div>
+    {{#each this.variants}}
+        
+      <div class="row mt-3 ms-0">
+              <div class="col-md-5 mb-3">
+                <label class="form-label">Size</label>
+                <input type="text" class="form-control shadow-none" name="variantSize_{{addOne @index}}" required
+                  placeholder="Enter product size" value="{{this.size}}">
+                <div class="invalid-feedback">Size is required.</div>
+              </div>
+              <div class="col-md-5 mb-3">
+                <label class="form-label">Stock Quantity</label>
+                <input type="number" class="form-control shadow-none" name="variantStock_{{addOne @index}}" required min="1"
+                  placeholder="Stock quantity" value="{{this.stockQuantity}}">
+                <div class="invalid-feedback">Enter valid stock quantity.</div>
+              </div>  
+            <div class="col-md-2 mb-3">
+            <label for="exampleColorInput" class="form-label">Color</label>
+            <input type="color" class="form-control form-control-color shadow-none" id="exampleColorInput" name="variantColor_{{addOne @index}}" value="{{this.color}}" title="Choose your color">
+            </div>
+        </div>
+        <input type="hidden" id="counts" value="{{variants.length}}">
+    {{/each}}
+</div>
+
+
+
+<div class="col-md-12 mb-1">
+                <div id="variantContainer"></div>
+                <label class="form-label">Add Varient</label>
+              </div>
+
+            <button type="button" class="btn btn-add btn-outline-dark" onclick="addVariant()">+ Add Variant</button>
+
+          </div>
+
+
+          <div class="col-md-4">
+            <div class="product-preview text-center mb-3">
+              <img id="mainPreview" src="https://via.placeholder.com/200x200?text=Preview" alt=""
+                class="img-fluid border rounded">
+            </div>
+
+            <div class="product-gallery mb-4" id="uploadArea">
+              <p><strong>Product Gallery</strong></p>
+              <p>Click to upload images<br><small>.jpg, .jpeg, .png are allowed. Minimum 4 images required.</small></p>
+              <input type="file" class="form-control d-none" id="imageUpload" multiple accept="image/*">
+              <div class="invalid-feedback d-block" id="imageError" style="display: none; color: red;">Please upload at
+                least 4 images.</div>
+            </div>
+
+            <div id="thumbnailsContainer" class="product-thumbs"></div>
+
+            {{#each imageUrl}}
+            <div class="container mt-4">
+              <div class="thumb-item" id="thumb1">
+                <div class="thumb-details">
+                  <img src="/images/products/{{this}}" alt="">
+                  <span class="file-name">{{this}}</span>
+                </div>
+                <a href="/products/edit/thumbDel/{{this}}/{{../_id}}" class="remove-btn text-decoration-none">×</a>
+              </div>
+            </div>
+            {{/each}}
+
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end ">
+          <button class="btn btn-outline-secondary me-2" type="button">Cancel</button>
+          <button class="btn btn-dark" type="submit">Update</button>
+        </div>
+      </form>
+
+      {{/each}}
+
+
+      <!-- Modal for cropping -->
+      <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Crop Image</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <img id="cropImage" src="" class="img-fluid" alt="To Crop">
+              <div class="mt-3">
+                <label for="zoomRange" class="form-label">Zoom</label>
+                <input type="range" class="form-range" min="0.1" max="3" step="0.1" value="1" id="zoomRange">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" id="saveCropBtn" class="btn btn-outline-dark">Crop & Save</button>
+            </div>
+          </div>
+        </div>
+      </div>

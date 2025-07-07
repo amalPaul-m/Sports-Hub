@@ -1,0 +1,31 @@
+<!--User Signup-->
+
+<div class="">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Forgot Password ?</h1>
+
+                <form action="/forgot" method="post" id="forgot" class="align">
+                    <span class="text-danger">{{content}}</span>
+                    <div class="form-floating mb-3 mt-5">
+                        <input type="email" class="form-control shadow-none border" name="email"
+                            id="floatingEmail_forgot" placeholder="" required>
+                        <label for="floatingEmail_forgot">Confirm Registred email</label>
+                        <span id="emailValidationMsg_forgot" class="float-end pt-1 phone_validate"></span>
+                    </div>
+
+                    <div class="position-absolute">
+                        <button type="submit" id="forgot" class="btn btn-dark py-3 btn2-size">Send OTP</button>
+
+                </form>
+                <a href="/login" class="text-decoration-none text-secondary link-login">Go back to login
+                    page</a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</div>
+</div>

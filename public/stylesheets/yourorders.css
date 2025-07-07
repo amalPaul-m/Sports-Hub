@@ -1,0 +1,171 @@
+.order-progress {
+  position: relative;
+  padding: 10px 0;
+}
+
+.progress-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-top: 1rem;
+}
+
+.progress-line::before {
+  content: "";
+  position: absolute;
+  top: 8 px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ddd;
+  z-index: 3;
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  background-color: #bbb;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.step.completed {
+  background-color: #000;
+}
+
+
+.order-progress {
+  padding: 20px 0;
+}
+
+.progress-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-top: 30px;
+  counter-reset: step;
+}
+
+.progress-line::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ddd;
+  z-index: 1;
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  background: #bbb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  transition: background 0.5s ease;
+}
+
+.step::before {
+  content: counter(step);
+  counter-increment: step;
+}
+
+.step::after {
+  content: attr(data-title);
+  position: absolute;
+  top: 45px;
+  width: 100px;
+  text-align: center;
+  font-size: 12px;
+  color: #333;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Completed Steps */
+.step.active,
+.step.completed {
+  background-color: black;
+}
+
+
+/* Line Fill Animation */
+.progress-line.animated::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 0;
+  height: 2px;
+  background-color: black;
+  z-index: 2;
+  width: 0%;
+  animation: fill-line 4s ease forwards;
+}
+
+@keyframes fill-line {
+  0% {
+    width: 0%;
+  }
+  25% {
+    width: 33%;
+  }
+  50% {
+    width: 66%;
+  }
+  75% {
+    width: 99%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+
+
+
+.step {
+  position: relative;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  background-color: #bbb;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 36px;
+  font-size: 14px;
+  color: white;
+  transition: background-color 0.5s ease;
+}
+
+/* Show step number or ✔ */
+.step::before {
+  counter-increment: step;
+  content: counter(step);
+}
+
+/* Text below circle */
+.step::after {
+  content: attr(data-title);
+  position: absolute;
+  top: 45px; /* distance below the circle */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: #333;
+  white-space: nowrap;
+  font-weight: 500;
+  text-align: center;
+}

@@ -1,0 +1,47 @@
+<!--User change password-->
+
+<div class="">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Change Password</h1>
+
+
+
+                <form action="/reset" method="post" id="changePasswordForm" class="align">
+
+                    <div class="form-floating mb-3 mt-5">
+                        <input type="password" class="form-control shadow-none border" name="password"
+                            id="floatingPassword_change" placeholder="Password">
+                        <label for="floatingPassword_change">Password</label>
+                        <span class="pass-eye" onclick="password_show_hide();">
+                            <i class="fa fa-eye field-icon" id="show_eye"></i>
+                            <i class="fa fa-eye-slash d-none field-icon" id="hide_eye"></i>
+                            <span id="passwordValidationMsg" class="float-end pt-1 pb-1 phone_validate"></span>
+                            <span id="conPasswordValidationMsg" class="float-start mt-1 mb-1 phone_validate"></span>
+                    </div>
+
+                    <div class="form-floating mb-3 mt-3">
+                        <input type="password" class="form-control shadow-none border"
+                            id="floatingPasswordConfirm_change" placeholder="Password">
+                        <label for="floatingPasswordConfirm_change">Confirm Password</label>
+                        <span class="pass-eye" onclick="password_show_hide_confirm();">
+                            <i class="fa fa-eye field-icon" id="show_eye_confirm"></i>
+                            <i class="fa fa-eye-slash d-none field-icon" id="hide_eye_confirm"></i>
+
+
+
+                    </div>
+
+
+                    <button type="submit" id="logIn" class="btn btn-dark py-3 btn2-size" disabled>Change
+                        Password</button>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>

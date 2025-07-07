@@ -1,0 +1,44 @@
+const usersSchema = require('../models/usersSchema')
+const bcrypt = require('bcrypt');
+
+
+const getRest = (req, res, next) => {
+  if (!req.session.resetEmail) return res.redirect('/forgot');
+
+  res.render('reset', {
+    cssFile: '/stylesheets/reset.css',
+    jsFile: '/javascripts/reset.js'
+  });
+};
+
+
+const postRest = async (req, res, next) => {
+
+  try {
+    const newPassword = req.body.password;
+  console.log(newPassword);
+  const email = req.session.resetEmail;
+
+  if (!newPassword || !email) {
+    console.log('Missing password or session email');
+    return res.redirect('/forgot');
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await usersSchema.findOneAndUpdate( {email:email}, 
+    { $set: { password: hashedPassword}}, { new: true } )
+
+  // Optional: destroy session after password reset
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
+}
+  catch(err){
+    err.message = 'Error change user password';
+    next(err);
+  }
+};
+
+
+module.exports = {getRest, postRest}

@@ -1,0 +1,66 @@
+body {
+     font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+h1 {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.align {
+    margin-left: 25%;
+    margin-right: 25%;
+   
+}
+
+/* .btn1-size {
+    padding-left: 100px;
+    padding-right: 100px;
+    margin-top: 50px;
+    margin-left: -180px;
+} */
+.btn2-size {
+    padding-left: 90px;
+    padding-right: 90px;
+    margin-top: 30px;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.field-icon {
+  float: right;
+  margin-left: -25px;
+  margin-top: -40px;
+  margin-right: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.phone_validate {
+    color: red;
+    font-weight: 300;
+    font-size: 12px;
+}
+
+
+/* p {
+    font-size: 14px;
+    color: #CFCFCF;
+}
+
+h5 {
+    font-size: 16px;
+    color: #FFFFFF;
+    font-weight: 500;
+}
+
+.icon-style {
+    font-family: FontAwesome;
+}
+
+.bg-search {
+    background: #F5F5F5;
+    color: 989898;
+} */

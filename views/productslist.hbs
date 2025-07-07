@@ -1,0 +1,485 @@
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="px-4 mb-3">
+        <img src="/images/Logo-dark.png" alt="logo" height="50">
+    </div>
+
+    <h6 class="px-3">Dashboard</h6>
+    <a class="nav-link" href="/dashboard"><i class="bi bi-house-door"></i> Dashboard</a>
+    <a class="nav-link" href="#"><i class="bi bi-file-earmark"></i> Order List</a>
+
+    <a class="nav-link active  filter-text-size" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button"
+        aria-expanded="false" aria-controls="multiCollapseExample1" href="/products"><i class="bi bi-inboxes"></i> All
+        Products</a>
+
+    <div class="collapse multi-collapse ps-3" id="multiCollapseExample1">
+        <div class="form-check custom-checkbox">
+            <a class="nav-link" href="#"> Rackets</a>
+            <a class="nav-link" href="#"> Jercy and Shorts</a>
+            <a class="nav-link" href="#"> Birdie</a>
+            <a class="nav-link" href="#"> Shoes</a>
+        </div>
+    </div>
+
+    <a class="nav-link" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
+    <a class="nav-link" href="/customers"><i class="bi bi-people"></i> Customers</a>
+    <a class="nav-link" href="#"><i class="bi bi-ticket-detailed"></i> Coupon</a>
+    <a class="nav-link" href="#"><i class="bi bi-funnel"></i> Filter</a>
+    <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
+    <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+    <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+</div>
+
+<!-- Topbar -->
+<div class="topbar border-bottom fixed-top" id="topbar">
+    <button class="btn text-white" onclick="toggleSidebar()"><i class="bi bi-list fs-4 text-dark"></i></button>
+    <div class="d-flex align-items-center gap-3">
+        
+
+        <form role="search" action="/products/search" method="get" class="d-flex gap-2">
+          <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;"
+            name="searchItem" value="{{query}}" required>
+          <button class="btn btn-outline-secondary btn-sm " type="submit">Search</button>
+        </form>
+
+        <i class="bi bi-bell-fill fs-5 text-dark"></i>
+
+        <!-- Large button groups (default and split) -->
+        <div class="btn-group">
+            <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                ADMIN
+            </button>
+            <ul class="dropdown-menu p-3">
+                <li><b>Admin</b></li>
+                <li class="pt-2"><a href="#" class="text-decoration-none text-dark">Change Password</a></li>
+                <form class="d-flex" role="search" action="/logout/admin">
+          <li class="pt-2"><button type="submit" class="text-decoration-none text-dark btn btn-white ">Logout <i
+                class="bi bi-box-arrow-right float-end ps-4"></i></button></li>
+                </form>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<!-- Main Content -->
+
+
+
+<div class="main-content" id="main">
+
+    <div class="container mt-5">
+        <h4><b>All Products</b></h4>
+
+
+        <!-- Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+            <!-- breadcrumb -->
+
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-secondary">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active text-dark" aria-current="page">All Products</li>
+                </ol>
+            </nav>
+
+
+            <div class="d-flex gap-2">
+              <a class="btn btn-outline-dark m-1" href="/products" type="button"><i class="bi bi-arrow-clockwise"></i></a>
+                {{!-- <button class="btn btn-outline-secondary m-1"><i class="bi bi-sliders"></i> FILTER</button> --}}
+                <button class="btn btn-outline-secondary m-1"> Export <i class="bi bi-download"></i></button>
+                <a class="btn btn-dark m-1" href="/products/add"><i class="bi bi-plus"></i> ADD NEW PRODUCT</a>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav mb-4">
+            <li class="nav-item">
+                <a class="tab-link active text-decoration-none" data-bs-toggle="tab" href="#listed">Listed Products</a>
+            </li>
+            <li class="nav-item">
+                <a class="tab-link text-decoration-none" data-bs-toggle="tab" href="#unlisted">Unlisted Products</a>
+            </li>
+        </ul>
+
+
+
+       <!-- ==============================================Listed Products=============================================================== -->
+
+<!-- Tab Content -->
+<div class="container-table">
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="listed">
+      <div class="row g-3">
+
+        
+        <div class="col col-md-12 col-lg-12">
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Sl.No</th>
+                  <th scope="col" class="ps-4">Product ID</th>
+                  <th scope="col" class="ps-4">Name</th>
+                  <th class="col" class="ps-4">Sale Price</th>
+                  <th scope="col" class="ps-4">Brand</th>
+                  <th class="col" class="ps-4">Category</th>
+                  <th scope="col" class="ps-4">Material</th>
+                  <th class="col" class="ps-4">Warranty</th>
+                  <th scope="col" class="ps-4">Unit Size</th>
+                  <th scope="col" class="ps-4">Size</th>
+                  <th scope="col" class="ps-4">Color</th>
+                  <th scope="col" class="ps-4">Available</th>
+                  <th scope="col" class="ps-4">Images</th>
+                  <th scope="col" class="ps-4">Acton</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                {{#each productsList}}
+                <tr>
+                  <th scope="row">{{addOne @index}}</th>
+                  <td class="ps-4">#{{last8 this._id}}</td>
+                  <td class="ps-4">{{this.productName}}</td>
+                  <th class="ps-4">₹{{this.salePrice}}</th>
+                  <td class="ps-4">{{this.brandName}}</td>
+                  <td class="ps-4">{{this.category}}</td>
+                  <td class="ps-4">{{this.material}}</td>
+                  <td class="ps-4">{{this.warranty}}</td>
+                  
+                  <td class="ps-4">{{this.unitSize}}</td>
+                  <td class="ps-4 pt-2"><div>
+                    {{#each this.variants}}
+                    <p>{{this.size}}</p>
+                    {{/each}}
+                  </div></td>
+                  <td class="ps-4"><div>
+                    {{#each this.variants}}
+                    <p><i class="bi bi-circle-fill" style="color: {{this.color}}"></i></p>
+                    {{/each}}
+                  </div></td>
+                  <td class="ps-4"><div>
+                    {{#each this.variants}}
+                    <p>{{this.stockQuantity}}</p>
+                    {{/each}}
+                  </div></td>
+                  
+                  <td class="ps-4">
+
+                    <div class="gallery">
+                      {{#each imageUrl}}
+                      <img src="/images/products/{{this}}" alt="1" onclick="openLightbox('images/products/{{this}}')">
+                      {{/each}}
+                    </div>
+
+                    <!-- Lightbox -->
+                    <div class="lightbox" id="lightbox" style="display: none;">
+                      <img id="popup-img" src="" alt="Large Image">
+                    </div>
+
+
+                  </td>
+                  <td class="ps-4">
+
+                    <a href="" data-bs-toggle="modal" data-bs-target="#blockModal{{this._id}}"><i
+                        class="bi bi-slash-circle text-danger me-3 fs-4"></i></a>
+
+                    <a href="" data-bs-toggle="modal" data-bs-target="#update2BlockModal{{this._id}}">
+                      <i class="bi bi-pencil text-dark me-3 icon-btn"></i></a>
+                  </td>
+                </tr>
+
+
+                <!-- Unlist modal -->
+                <div class="modal fade bg-setting" id="blockModal{{this._id}}" tabindex="-1"
+                  aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog float-end me-5">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Moves to Unlisted <i
+                            class="bi bi-slash-circle text-danger"></i></h1>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                          aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        Are you sure you want to unlist <strong>{{this.productName}}</strong> ?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+
+                        <form action="/products/unlist/{{this._id}}?_method=PATCH" method="POST">
+                          <input type="hidden" name="_method" value="PATCH" />
+                          <button type="submit" class="btn btn-outline-danger">Unlist</a>
+                        </form>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Update modal -->
+
+                <div class="modal fade bg-setting" id="update2BlockModal{{this._id}}" tabindex="-1"
+                  aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog float-end me-5">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Product</h1>
+                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                          aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        Are you sure you want to edit <strong>{{this.productName}}</strong> ?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+
+                        <form action="/products/edit/{{this._id}}">
+                          <button type="submit" class="btn btn-outline-primary">Edit</a>
+                        </form>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {{/each}}
+
+
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+
+
+      <!-- Pagination -->
+    <div class="mt-3 mb-4 pagination-pro">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          {{#if (gt currentPageUnlist 1)}}
+          <li class="page-item">
+            <a class="page-link pagination-border shadow-none" href="/products?page={{subtract currentPageUnlist 1}}"
+              aria-label="Previous">
+              <span aria-hidden="true" class="text-black">&lang;</span>
+            </a>
+          </li>
+          {{/if}}
+          {{#each (pagination totalPagesUnlist)}}
+          <li class="page-item ms-2 {{#if (eq this ../currentPageUnlist)}}active{{/if}}">
+            <a class="page-link pagination-number" href="/products?page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+
+          {{#if (lt currentPageUnlist totalPagesUnlist)}}
+          <li class="page-item ms-2">
+            <a class="page-link pagination-border shadow-none" href="/products?page={{add currentPageUnlist 1}}"
+              aria-label="Next">
+              <span aria-hidden="true" class="text-black">&rang;</span>
+            </a>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
+    </div>
+
+
+
+
+    </div>
+
+    <!-- ==============================================Unlisted Products=============================================================== -->
+
+    <!-- Unlisted Products Tab -->
+    <div class="tab-pane fade" id="unlisted">
+
+      <!-- <p class="text-muted">No unlisted products available.</p> -->
+      <div class="row">
+        
+        <!-- Product Card 1-->
+        <div class="col col-md-12 col-lg-12">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                  <th scope="col">Sl.No</th>
+                  <th scope="col" class="ps-4">Product ID</th>
+                  <th scope="col" class="ps-4">Name</th>
+                  <th class="col" class="ps-4">Sale Price</th>
+                  <th scope="col" class="ps-4">Brand</th>
+                  <th class="col" class="ps-4">Category</th>
+                  <th scope="col" class="ps-4">Material</th>
+                  <th class="col" class="ps-4">Warranty</th>
+                  <th scope="col" class="ps-4">Unit Size</th>
+                  <th scope="col" class="ps-4">Size</th>
+                  <th scope="col" class="ps-4">Color</th>
+                  <th scope="col" class="ps-4">Stock</th>
+                  <th scope="col" class="ps-4">Images</th>
+                  <th scope="col" class="ps-4">Acton</th>
+
+              </tr>
+            </thead>
+            <tbody>
+                {{#each productsUnList}}
+                <tr>
+                  <th scope="row">{{addOne @index}}</th>
+                  <td class="ps-4">#{{last8 this._id}}</td>
+                  <td class="ps-4">{{this.productName}}</td>
+                  <th class="ps-4">₹{{this.salePrice}}</th>
+                  <td class="ps-4">{{this.brandName}}</td>
+                  <td class="ps-4">{{this.category}}</td>
+                  <td class="ps-4">{{this.material}}</td>
+                  <td class="ps-4">{{this.warranty}}</td>
+                  
+                  <td class="ps-4">{{this.unitSize}}</td>
+                  <td class="ps-4 pt-2"><div>
+                    {{#each this.variants}}
+                    <p>{{this.size}}</p>
+                    {{/each}}
+                  </div></td>
+                  <td class="ps-4"><div>
+                    {{#each this.variants}}
+                    <p><i class="bi bi-circle-fill" style="color: {{this.color}}"></i></p>
+                    {{/each}}
+                  </div></td>
+                  <td class="ps-4"><div>
+                    {{#each this.variants}}
+                    <p>{{this.stockQuantity}}</p>
+                    {{/each}}
+                  </div></td>
+                <td class="ps-4">
+                  <div class="gallery">
+                    {{#each imageUrl}}
+                    <img src="/images/products/{{this}}" alt="1" onclick="openLightbox('images/products/{{this}}')">
+                    {{/each}}
+                  </div>
+
+                  <!-- Lightbox -->
+                  <div class="lightbox" id="lightbox" style="display: none;">
+                    <img id="popup-img" src="" alt="Large Image">
+                  </div>
+
+
+                </td>
+                <td class="ps-4">
+
+                  <a href="" data-bs-toggle="modal" data-bs-target="#unBlockModal{{this._id}}"><i
+                      class="bi bi-check-circle me-3 text-success fs-4"></i></a>
+
+                  <a href="" data-bs-toggle="modal" data-bs-target="#update1BlockModal{{this._id}}">
+                    <i class="bi bi-pencil text-dark me-2 icon-btn"></i></a>
+                </td>
+              </tr>
+
+
+
+              <!-- unblock modal -->
+              <div class="modal fade bg-setting" id="unBlockModal{{this._id}}" tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog float-end me-5">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">Moves to Listed <i
+                          class="bi bi-check-circle me-3 text-success"></i></h1>
+                      <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      Are you sure you want to list <strong>{{this.productName}}</strong> ?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+
+                      <form action="/products/list/{{this._id}}?_method=PATCH" method="POST">
+                        <input type="hidden" name="_method" value="PATCH" />
+                        <button type="submit" class="btn btn-outline-success">List</button>
+                      </form>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Update modal -->
+
+              <div class="modal fade bg-setting" id="update1BlockModal{{this._id}}" tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog float-end me-5">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Product</h1>
+                      <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      Are you sure you want to edit <strong>{{this.productName}}</strong> ?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+
+                      <form action="/products/edit/{{this._id}}">
+                        <button type="submit" class="btn btn-outline-primary">Edit</button>
+                      </form>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {{/each}}
+
+
+            </tbody>
+          </table>
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+      <!-- Pagination -->
+    <div class="mt-3 mb-4 pagination-pro">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          {{#if (gt currentPage 1)}}
+          <li class="page-item">
+            <a class="page-link pagination-border shadow-none" href="/products?page={{subtract currentPage 1}}"
+              aria-label="Previous">
+              <span aria-hidden="true" class="text-black">&lang;</span>
+            </a>
+          </li>
+          {{/if}}
+          {{#each (pagination totalPages)}}
+          <li class="page-item ms-2 {{#if (eq this ../currentPage)}}active{{/if}}">
+            <a class="page-link pagination-number" href="/products?page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+
+          {{#if (lt currentPage totalPages)}}
+          <li class="page-item ms-2">
+            <a class="page-link pagination-border shadow-none" href="/products?page={{add currentPage 1}}"
+              aria-label="Next">
+              <span aria-hidden="true" class="text-black">&rang;</span>
+            </a>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
+    </div>
+
+
+
+    </div>
+
+
+  </div>
+
+</div>

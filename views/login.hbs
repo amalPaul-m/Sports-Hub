@@ -1,0 +1,46 @@
+<!--User Login-->
+
+<div class="">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Welcome Back</h1>
+                <a href="/auth/google" type="button" class="btn btn-light mt-4 mb-4"><img src="/images/google.png"
+                        alt="google" class="pe-3">Login With google</a>
+
+                <div class="border-top border-1 border-secondary py-3 align">
+                    <span>OR</span><br>
+
+                    <span class="float-start text-danger">{{message}}</span>
+                    <form method="post" action="/login">
+                        <div class="form-floating mb-3 mt-3">
+                            <input type="email" class="form-control shadow-none border" name="email" id="floatingInput"
+                                placeholder="name@example.com">
+                            <label for="floatingInput">Email address</label>
+                        </div>
+
+
+                        <div class="form-floating mb-2">
+                            <input type="password" class="form-control shadow-none border" name="password"
+                                id="floatingPassword" placeholder="Password">
+                            <label for="floatingPassword">Password</label>
+                            <span class="pass-eye" onclick="password_show_hide();">
+                                <i class="fa fa-eye field-icon" id="show_eye"></i>
+                                <i class="fa fa-eye-slash d-none field-icon" id="hide_eye"></i>
+
+                                <a href="/forgot" class="float-end text-decoration-none text-black pt-3">Forgot Password
+                                    ?</a>
+                        </div>
+
+
+                        <a href="/signup" type="button" class="btn btn-outline-dark py-3 btn1-size">SIGN UP</a>
+                        <button type="submit" class="btn btn-dark py-3 btn2-size">LOGIN</button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,463 @@
+<!--Header After login-->
+
+
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top z-3">
+  <div class="container">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+      aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+      <a class="navbar-brand pe-5" href="/home"><img src="images/logo.png" alt="logo"></a>
+
+      <form role="search" action="/userproducts/search" method="get" class="d-flex gap-2 me-5">
+          <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;"
+            name="searchItem" value="{{query}}" required>
+          <button class="btn btn-outline-secondary btn-sm " type="submit">Search</button>
+        </form>
+
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active pe-5" aria-current="page" href="/home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-2" href="/home">New Arraival</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav mb-2 mb-lg-0 ">
+        <li class="nav-item pe-4">
+          <a class="nav-link" href="#"><img src="images/wishlist.png" alt="wishlist"></a>
+        </li>
+        <li class="nav-item pe-4">
+          <a class="nav-link" href="/cart"><img src="images/cart.png" alt="cart"></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/youraccount"><img src="images/user.png" alt="profile"></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+
+
+<!--left side-->
+<div class="container">
+
+  <!-- breadcrumb -->
+
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="mt-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home" class="text-decoration-none text-secondary">Home</a></li>
+      <li class="breadcrumb-item"><a href="/userproducts" class="text-decoration-none text-secondary">All Products</a>
+      </li>
+      <li class="breadcrumb-item active text-dark" aria-current="page">{{productDetails.productName}}</li>
+    </ol>
+  </nav>
+
+
+  <div class="row">
+    <div class="col col-md-6 col-lg-6 pt-5">
+
+      <!-- Product Images -->
+      <div class="row">
+        <div class="col col-md-2 col-lg-2">
+
+          <div class="thumbnails">
+            {{#each productDetails.imageUrl}}
+            <div class="thumbnail active">
+              <img src="/images/products/{{this}}" onclick="changeImage(event, this.src)">
+            </div>
+            {{/each}}
+          </div>
+        </div>
+
+        <div class="col col-md-10 col-lg-10">
+          <div class="main-image-box">
+            <img id="mainImage" src="/images/products/{{productDetails.imageUrl.[0]}}" alt="Product">
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    <!-- product details -->
+
+    <div class="col col-md-6 col-lg-6 mt-3">
+      <div class="container">
+        <div class="row">
+          <div class="col col-md-10 col-lg-10">
+            <h1>{{productDetails.productName}}</h1>
+          </div>
+          <div class="col col-md-2 col-lg-2 mt-5">
+            <button id="wishlistBtn" class="heart-button float-end">
+              <svg class="heart-icon" viewBox="0 0 24 24">
+                <path
+                  d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <span class="product-price">₹{{productDetails.salePrice}}</span><span
+            class="text-decoration-line-through product-mrp">₹{{productDetails.regularPrice}}</span><br>
+          <div class="mt-4">
+
+            <form action="" >
+            <span class="align-top select-color-text me-1">Select Color :</span>
+            {{#each uniqueVariants}}
+            <a href="#"><span type="button" class="dot-size ms-2" style="background-color: {{this.color}};"></span></a>
+            {{/each}}
+          </div>
+        </div>
+
+       
+          {{#each productDetails.variants}}
+            <div class="form-check form-check-inline mt-4">
+              <input class="btn-check" type="radio" name="selectedVariant" id="variant{{@index}}" value="{{this.size}}" 
+                {{#if @first}}checked{{/if}}>
+              <label class="btn btn-outline-dark" for="variant{{@index}}">
+                {{this.size}} {{../productDetails.unitSize}}
+              </label>
+            </div>
+          {{/each}}
+       </form>
+
+        <p class="pt-4">{{cutWords productDetails.description 16}}</p>
+
+        <form class="form-inline">
+          <div class="input-group mt-4 w-75 mb-3">
+            <input type="text" class="form-control shadow-none py-1" placeholder="Apply your coupon code"
+              aria-label="Recipient's username" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <button type="button" class="btn btn-outline-dark ms-2">Check</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="pt-2 text-secondary">Delivery by <span class="text-dark">4 July 2025</span> | <span
+            class="text-success"><b>Free</b></span></div>
+
+        <form action="" class="cart-button">
+          <button type="button" class="btn btn-outline-dark px-5 py-3 mb-3 btn-addCart">Add to Cart</button>
+          <button type="button" class="btn btn-outline-dark py-3 px-5 mb-5 mt-4 btn-buyNow">Buy Now</button>
+        </form>
+
+        <div class="stock">
+          <span><img src="images/stock.svg" alt="" class="border-stock"></span>
+          <span class="align-top text-secondary">In Stock</span>
+          <span class="align-bottom stock-bottom">{{totalStock}}</span>
+        </div>
+
+        <div class="garantee">
+          <span><img src="images/verify.svg" alt="" class="border-stock"></span>
+          <span class="align-top text-secondary">Guaranteed</span>
+          <span class="align-bottom garantee-bottom">{{productDetails.warranty}} year</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- product information -->
+
+<div class="product-info">
+  <div class="container">
+    <div class="row">
+      <div class="col col-md-12 col-lg-12 product-container">
+
+        <h2>Product information</h2>
+        <p class="mt-4">{{productDetails.description}}</p>
+        <h3 class="mt-5"><b>Technical Details</b></h3>
+
+        <table class="table mt-4">
+          <tbody>
+            <tr>
+              <td>Brand</td>
+              <td class="table-align">{{productDetails.brandName}}</td>
+            </tr>
+            <tr>
+              <td>Size Unit</td>
+              <td class="table-align">{{productDetails.size}} {{productDetails.unitSize}}</td>
+            </tr>
+            <tr>
+              <td>Category</td>
+              <td class="table-align">{{productDetails.category}}</td>
+            </tr>
+            <tr>
+              <td>Material</td>
+              <td class="table-align">{{productDetails.material}}</td>
+            </tr>
+            <tr>
+              <td>Age Range (Description)</td>
+              <td class="table-align">{{productDetails.ageRange}}</td>
+            </tr>
+
+          </tbody>
+        </table>
+
+
+        <h3 class="mt-5"><b>Additional Information</b></h3>
+
+        <table class="table mt-4">
+          <tbody>
+            <tr>
+              <td>Manufacturer</td>
+              <td class="table-align">Sports Hub Ernakulam</td>
+            </tr>
+            <tr>
+              <td>Item Weight</td>
+              <td class="table-align">{{productDetails.itemWeight}} Gm</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- review Section -->
+
+<div class="container mb-3">
+  <h2 class="mt-5 mb-4">Reviews</h2>
+  <div class="row">
+    <!-- Rating Overview -->
+    <div class="col-md-3 col-lg-3 text-center rating-border">
+      <h1 class="pt-3 rating-num">4.0</h1>
+      <p class="text-secondary">of <span>125</span> reviews</p>
+      <div class="pb-4">
+        <img src="images/star.png" alt="star" height="30" class="mx-1">
+        <img src="images/star.png" alt="star" height="30" class="mx-1">
+        <img src="images/star.png" alt="star" height="30" class="mx-1">
+        <img src="images/star.png" alt="star" height="30" class="mx-1">
+        <img src="images/star.png" alt="star" height="30" class="mx-1">
+      </div>
+    </div>
+
+    <!-- Progress Bars -->
+    <div class="col-md-8 col-lg-8 ms-4 mt-4">
+      <div class="progress-size">
+        <div class="d-flex align-items-center mb-2">
+          <span class="">Excellent</span>
+          <div class="progress progress1 flex-fill">
+            <div class="progress-bar" style="width: 80%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <span class="ms-3 me-5 text-secondary">500</span>
+        </div>
+
+        <div class="d-flex align-items-center mb-2">
+          <span class="">Good</span>
+          <div class="progress progress2 flex-fill">
+            <div class="progress-bar" style="width: 60%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <span class="ms-3 me-5 text-secondary">100</span>
+        </div>
+
+        <div class="d-flex align-items-center mb-2">
+          <span class="">Average</span>
+          <div class="progress progress3 flex-fill">
+            <div class="progress-bar" style="width: 40%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <span class="ms-3 me-5 text-secondary">50</span>
+        </div>
+
+        <div class="d-flex align-items-center mb-2">
+          <span class="">Poor</span>
+          <div class="progress progress4 flex-fill">
+            <div class="progress-bar" style="width: 20%" aria-valuenow="4" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <span class="ms-3 me-5 text-secondary">30</span>
+        </div>
+
+        <div class="d-flex align-items-center mb-2">
+          <span class="">Terrible</span>
+          <div class="progress progress5 flex-fill">
+            <div class="progress-bar" style="width: 10%" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <span class="ms-3 me-5 text-secondary">5</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- reviews -->
+
+<div class="container">
+  <div class="row">
+    <div class="col col-md-12 col-lg-12">
+
+      <div class="review-border mt-3">
+        <h3><b>Amal Paul</b><span class="text-secondary float-end review-time">12 January 2025</span></h3>
+        <div>
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+        </div>
+        <p class="mt-3">I was a bit nervous to be buying a secondhand phone from Amazon, but I couldn’t be happier with
+          my
+          purchase!! I have a pre-paid data plan so I was worried that this phone wouldn’t connect with my data plan,
+          since the
+          new phones don’t have the physical Sim tray anymore, but couldn’t have been easier! I bought an Unlocked black
+          iPhone
+          14 Pro Max in excellent condition and everything is PERFECT. It was super easy to set up and the phone works
+          and looks
+          great. It truly was in excellent condition. Highly recommend!!!🖤</p>
+
+        <div class="gallery">
+          <img src="images/reviewimg1.png" alt="1" onclick="openLightbox('images/reviewimg1.png')">
+          <img src="images/reviewimg2.png" alt="2" onclick="openLightbox('images/reviewimg2.png')">
+        </div>
+
+        <!-- Lightbox -->
+        <div class="lightbox" id="lightbox">
+          <img id="popup-img" src="" alt="Large Image">
+        </div>
+
+      </div>
+
+      <div class="review-border mt-3">
+        <h3><b>Anto Sunny</b><span class="text-secondary float-end review-time">10 February 2025</span></h3>
+        <div>
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+        </div>
+        <p class="mt-3">I was a bit nervous to be buying a secondhand phone from Amazon, but I couldn’t be happier with
+          my purchase!! I have a pre-paid data plan so I was worried that this phone wouldn’t connect with my data plan,
+          since the new phones don’t have the physical Sim tray anymore, but couldn’t have been easier! </p>
+
+        <!-- Thumbnails -->
+        <div class="gallery">
+          <img src="images/reviewimg1.png" alt="1" onclick="openLightbox('images/reviewimg1.png')">
+          <img src="images/reviewimg2.png" alt="2" onclick="openLightbox('images/reviewimg2.png')">
+        </div>
+
+        <!-- Lightbox -->
+        <div class="lightbox" id="lightbox">
+          <img id="popup-img" src="" alt="Large Image">
+        </div>
+
+      </div>
+
+      <div class="review-border mt-3">
+        <h3><b>Navaneeth George</b><span class="text-secondary float-end review-time">08 March 2025</span></h3>
+        <div>
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+          <img src="images/star.png" alt="star" height="15">
+        </div>
+        <p class="mt-3">I was a bit nervous to be buying a secondhand phone from Amazon, but I couldn’t be happier with
+          my purchase!! I have a pre-paid data plan so I was worried that this phone wouldn’t connect with my data plan,
+          since the new phones</p>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Related Products -->
+
+<div class="container">
+  <h2 class="discount-content mt-5">Related Products</h2>
+
+  <div class="row">
+    {{#each relatedProducts}}
+    <div class="col col-6 col-sm-6 col-md-3 col-lg-3">
+      <div class="product-card-bg product-content">
+        <div>
+          <span class="product-card-rating"><span>4.0 </span> <span><svg xmlns="http://www.w3.org/2000/svg" height="10"
+                width="11.25" viewBox="0 0 576 512">
+                <path fill="#ffffff"
+                  d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z" />
+              </svg></span>
+
+            <button id="wishlistBtn" class="heart-button heart-align float-end">
+              <svg class="heart-icon" viewBox="0 0 24 24">
+                <path
+                  d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+              </svg>
+            </button>
+        </div>
+        <div class="img-border">
+          <img src="/images/products/{{this.imageUrl.[0]}}" alt="" class="product-card-img mx-auto d-block">
+        </div>
+        <h5 class="text-center pt-2 text-black"><b>{{this.productName}}</b></h5>
+        <h2 class="text-center pt-2">₹ <span>{{this.salePrice}}.00</span></h2>
+        <div class="text-center cart-button"><button type="button"
+            class="btn btn-outline-dark mt-3 px-5 mb-3 btn-addCart">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+
+
+    <div class="text-center mt-5"><a href="/userproducts" type="button" class="btn btn-outline-dark py-2 px-5 mb-5">View
+        More</a></div>
+  </div>
+
+</div>
+
+
+
+<!--Footer-->
+
+<div class="bg-black text-white">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-md-6 pe-4">
+        <img src="images/Logo-dark.png" alt="logo">
+        <p class="hf-p">We are a wolesale sports materials selling firm located in <br>ernakulam. Our shops
+          offers more than</p>
+
+        <a class="text-decoration-none pe-4" href="#"><img src="images/Twitter.png" alt="Twitter"></a>
+        <a class="text-decoration-none pe-4" href="#"><img src="images/Facebook.png" alt="Facebook"></a>
+        <a class="text-decoration-none pe-4" href="#"><img src="images/Instagram.png" alt="Instagram"></a>
+      </div>
+      <div class="col-md-3">
+        <h5 class="hf-h5">Info</h5>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Contact Us</p>
+        </a>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">About Us</p>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <h5 class="hf-h5">Assistance to the buyer</h5>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Find an order</p>
+        </a>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Terms and conditions</p>
+        </a>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Exchange and return of goods</p>
+        </a>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Cookie policy</p>
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 pt-5">
+        <h5 class="text-center">© 2025 | SPORTS HUB | All Rights Reserved.</h5>
+      </div>
+    </div>
+
+  </div>
+</div>

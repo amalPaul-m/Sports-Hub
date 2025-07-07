@@ -1,0 +1,309 @@
+<!--Header After login-->
+
+
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top z-3">
+  <div class="container">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+      aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+      <a class="navbar-brand pe-5" href="/home"><img src="/images/logo.png" alt="logo"></a>
+
+      <form role="search" action="/userproducts/search" method="get" class="d-flex gap-2 me-5">
+          <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;"
+            name="searchItem" value="{{query}}" required>
+          <button class="btn btn-outline-secondary btn-sm " type="submit">Search</button>
+        </form>
+
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active pe-5" aria-current="page" href="/home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-2" href="/home">New Arraival</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav mb-2 mb-lg-0 ">
+        <li class="nav-item pe-4">
+          <a class="nav-link" href="#"><img src="/images/wishlist.png" alt="wishlist"></a>
+        </li>
+        <li class="nav-item pe-4">
+          <a class="nav-link" href="/cart"><img src="/images/cart.png" alt="cart"></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/youraccount"><img src="/images/user.png" alt="profile"></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<!--left side-->
+<div class="container">
+  <div class="row">
+    <div class="col col-md-3 col-lg-3">
+
+      <form action="/userproducts/filter" method="get">
+
+      <div class="mt-5 pt-5  p-2 filter-text-size"><span class="float-left">Filter</span><a
+          href="/userproducts" class="btn float-end btn-outline-dark px-3 py-0">Clear</a></div>
+
+      <button type="button" class="btn btn-white ps-1 border-top border-2 px-5 mt-1 py-3 filter-text-size" data-bs-toggle="collapse"
+        href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Brand <i
+          class="fa fa-angle-down float-end mt-1"></i></button>
+
+      <div class="collapse multi-collapse" id="multiCollapseExample1">
+
+        <div class="form-check custom-checkbox">
+          {{#each productBrand}}
+          <input class="form-check-input shadow-none border" type="checkbox" value="{{this}}" name="brandFilter">
+          <label class="form-check-label" for="brand{{@index}}">{{this}} </label><br>
+          {{/each}}
+        </div>
+
+      </div><br>
+
+
+      <button type="button" class="btn btn-white ps-1 border-top border-2 px-5 mt-1 py-3 filter-text-size" data-bs-toggle="collapse"
+        href="#multiCollapseExample3" role="button" aria-expanded="false" aria-controls="multiCollapseExample3">Product
+        Material<i class="fa fa-angle-down float-end mt-1"></i></button>
+
+      <div class="collapse multi-collapse" id="multiCollapseExample3">
+
+        <div class="form-check custom-checkbox">
+          {{#each productMaterial}}
+          <input class="form-check-input shadow-none border" type="checkbox" value="{{this}}" name="filtermaterial" id="material{{@index}}">
+          <label class="form-check-label" for="material{{@index}}">{{this}} </label><br>
+          {{/each}}
+        </div>
+
+      </div><br>
+
+      <button type="button" class="btn btn-white ps-1 border-top border-2 px-5 mt-1 py-3 filter-text-size" data-bs-toggle="collapse"
+        href="#multiCollapseExample5" role="button" aria-expanded="false" aria-controls="multiCollapseExample5">Prices<i
+          class="fa fa-angle-down float-end mt-1"></i></button>
+
+      <div class="collapse multi-collapse" id="multiCollapseExample5">
+          <div class="form-check custom-checkbox">
+            <input class="form-check-input shadow-none border" type="radio" name="price" value="dessending" id="radioPrice1">
+            <label class="form-check-label" for="radioPrice1">High to Low</label>
+          </div>
+          <div class="form-check custom-checkbox">
+            <input class="form-check-input shadow-none border" type="radio" name="price" value="assending" id="radioPrice2"
+              checked>
+            <label class="form-check-label" for="radioPrice2">Low to High</label>
+          </div>
+
+      </div><br>
+
+      {{!-- <button type="button" class="btn btn-white ps-1 border-top border-2 px-5 mt-1 py-3 filter-text-size" data-bs-toggle="collapse"
+        href="#multiCollapseExample6" role="button" aria-expanded="false"
+        aria-controls="multiCollapseExample6">Discount<i class="fa fa-angle-down float-end mt-1"></i></button>
+
+      <div class="collapse multi-collapse" id="multiCollapseExample6">
+          <div class="form-check custom-checkbox">
+            <input class="form-check-input shadow-none border" type="radio" name="offer" value="80" id="radioDiscount1">
+            <label class="form-check-label" for="radioDiscount1">80% Off or more</label>
+          </div>
+          <div class="form-check custom-checkbox">
+            <input class="form-check-input shadow-none border" type="radio" name="offer" value="50" id="radioDiscount2"
+              checked>
+            <label class="form-check-label" for="radioDiscount2">50% Off or more</label>
+          </div>
+          <div class="form-check custom-checkbox">
+            <input class="form-check-input shadow-none border" type="radio" name="offer" value="20" id="radioDiscount3">
+            <label class="form-check-label" for="radioDiscount3">20% Off or more</label>
+          </div>
+          <div class="form-check custom-checkbox">
+            <input class="form-check-input shadow-none border" type="radio" name="offer" value="10" id="radioDiscount4">
+            <label class="form-check-label" for="radioDiscount4">10% Off or more</label>
+          </div>
+      </div><br> --}}
+
+      <div class="text-center">
+        <button type="submit" class="btn btn-outline-dark mt-4 px-5 text-center">Show Maches</button>
+        </form>
+      </div>
+
+      
+
+    </div>
+
+    <!--right side-->
+
+    <div class="col col-md-9 col-lg-9">
+      <div class="row">
+        <div class="col col-md-12 col-lg-12">
+          <div class="container mt-2" id="product_selection1">
+
+            <ul class="nav mb-4 ms-4 mt-4 nav-underline">
+              {{#each groupedData}}
+              <li class="nav-item">
+                <a class="nav-link text-dark {{#if @first}}active{{/if}}" data-bs-toggle="tab"
+                  href="#cat{{@index}}" data-tab-index="{{@index}}">{{this.name}}</a>
+              </li>
+              {{/each}}
+
+          </div>
+
+
+          <div class="container mt-5 ms-4">
+
+            <span>Selected Products : <span><b>{{length}}</b></span></span>
+
+
+            <div class="dropdown float-end">
+              <button class="btn btn-outline-dark dropdown-toggle px-4 me-4" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                By Rating
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">5 Star ★★★★★</a></li>
+                <li><a class="dropdown-item" href="#">4 Star ★★★★</a></li>
+                <li><a class="dropdown-item" href="#">3 star ★★★</a></li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="tab-content">
+
+        {{!-- ==============================================Dynamic data==================================== --}}
+        {{#each groupedData}}
+        <div class="tab-pane fade {{#if @first}}show active{{/if}}" id="cat{{@index}}">
+          <div class="row ms-3 me-0">
+            {{#each products}}
+
+            <div class="col col-6 col-sm-6 col-md-4 col-lg-4">
+              <form action="/productdetails" method="get">
+                <input type="hidden" name="productId" value="{{_id}}">
+
+                <div class="product-card-bg product-content">
+                  <div>
+                    <span class="product-card-rating"><span>4.0 </span> <span><svg xmlns="http://www.w3.org/2000/svg"
+                          height="10" width="11.25" viewBox="0 0 576 512">
+                          <path fill="#ffffff"
+                            d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z" />
+                        </svg></span>
+
+                      <button id="wishlistBtn" class="heart-button float-end">
+                        <svg class="heart-icon" viewBox="0 0 24 24">
+                          <path
+                            d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+                        </svg>
+                      </button>
+                  </div>
+                  <button type="submit" class="btn border-0">
+                    <div class="img-border">
+                      <img src="/images/products/{{this.imageUrl.[0]}}" alt="{{productName}}"
+                        class="product-card-img mx-auto d-block">
+                    </div>
+                    <h5 class="text-center pt-2 text-black"><b>{{productName}}</b></h5>
+                    <h2 class="text-center pt-2 fs-4">₹ <span>{{salePrice}}.00</span></h2>
+                  </button>
+                  <div class="text-center cart-button"><button type="button"
+                      class="btn btn-outline-dark mt-1 px-5 mb-3 btn-addCart">Add to Cart</button>
+                  </div>
+                </div>
+                </a>
+              </form>
+            </div>
+
+            {{/each}}
+
+          </div>
+        </div>
+
+        {{/each}}
+
+        <!-- Pagination -->
+    <div class="mt-5 mb-4 pagination-pro">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          {{#if (gt currentPage 1)}}
+          <li class="page-item">
+            <a class="page-link pagination-border shadow-none" href="/userproducts?page={{subtract currentPage 1}}"
+              aria-label="Previous">
+              <span aria-hidden="true" class="text-black">&lang;</span>
+            </a>
+          </li>
+          {{/if}}
+          {{#each (pagination totalPages)}}
+          <li class="page-item ms-2 {{#if (eq this ../currentPage)}}active{{/if}}">
+            <a class="page-link pagination-number" href="/userproducts?page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+
+          {{#if (lt currentPage totalPages)}}
+          <li class="page-item ms-2">
+            <a class="page-link pagination-border shadow-none" href="/userproducts?page={{add currentPage 1}}"
+              aria-label="Next">
+              <span aria-hidden="true" class="text-black">&rang;</span>
+            </a>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
+    </div>
+
+      </div>{{!-- tab content end --}}
+
+
+    </div>
+  </div>
+</div>
+
+
+<!--Footer-->
+
+<div class="bg-black text-white mt-3">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-md-6 pe-4">
+        <img src="/images/Logo-dark.png" alt="logo">
+        <p class="hf-p">We are a wolesale sports materials selling firm located in <br>ernakulam. Our shops
+          offers more than</p>
+
+        <a class="text-decoration-none pe-4" href="#"><img src="/images/Twitter.png" alt="Twitter"></a>
+        <a class="text-decoration-none pe-4" href="#"><img src="/images/Facebook.png" alt="Facebook"></a>
+        <a class="text-decoration-none pe-4" href="#"><img src="/images/Instagram.png" alt="Instagram"></a>
+      </div>
+      <div class="col-md-3">
+        <h5 class="hf-h5">Info</h5>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Contact Us</p>
+        </a>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">About Us</p>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <h5 class="hf-h5">Assistance to the buyer</h5>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Find an order</p>
+        </a>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Terms and conditions</p>
+        </a>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Exchange and return of goods</p>
+        </a>
+        <a class="text-decoration-none text-white" href="#">
+          <p class="hf-p">Cookie policy</p>
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 pt-5">
+        <h5 class="text-center">© 2025 | SPORTS HUB | All Rights Reserved.</h5>
+      </div>
+    </div>
+
+  </div>
+</div>

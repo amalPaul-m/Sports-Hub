@@ -1,0 +1,32 @@
+body {
+     font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    color: black;
+}
+
+h1 {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.align {
+    margin-left: 25%;
+    margin-right: 25%;
+   
+}
+
+.btn2-size {
+    padding-left: 255px;
+    padding-right: 255px;
+    margin-top: 50px;
+}
+
+.field-icon {
+  float: right;
+  margin-left: -25px;
+  margin-top: -38px;
+  margin-right: 20px;
+  position: relative;
+  z-index: 2;
+}

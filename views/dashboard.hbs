@@ -1,0 +1,44 @@
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="px-4 mb-3">
+    <img src="images/Logo-dark.png" alt="logo" height="50">
+  </div>
+
+  <h6 class="px-3">Dashboard</h6>
+  <a class="nav-link active" href="/dashboard"><i class="bi bi-house-door"></i> Dashboard</a>
+  <a class="nav-link" href="#"><i class="bi bi-file-earmark"></i> Order List</a>
+  <a class="nav-link" href="/products"><i class="bi bi-inboxes"></i> All Products</a>
+  <a class="nav-link" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
+  <a class="nav-link" href="/customers"><i class="bi bi-people"></i> Customers</a>
+  <a class="nav-link" href="#"><i class="bi bi-ticket-detailed"></i> Coupon</a>
+  <a class="nav-link" href="#"><i class="bi bi-funnel"></i> Filter</a>
+  <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
+  <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+</div>
+
+<!-- Topbar -->
+<div class="topbar fixed-top" id="topbar">
+  <button class="btn text-white" onclick="toggleSidebar()"><i class="bi bi-list fs-4 text-dark"></i></button>
+  <div class="d-flex align-items-center gap-3">
+    <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;">
+    <i class="bi bi-bell-fill fs-5 text-dark"></i>
+
+    <!-- Large button groups (default and split) -->
+    <div class="btn-group">
+      <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        ADMIN
+      </button>
+      <ul class="dropdown-menu p-3">
+        <li><b>Admin</b></li>
+        <li class="pt-2"><a href="#" class="text-decoration-none text-dark">Change Password</a></li>
+        <form class="d-flex" role="search" action="/logout/admin">
+          <li class="pt-2"><button type="submit" class="text-decoration-none text-dark btn btn-white ">Logout <i
+                class="bi bi-box-arrow-right float-end ps-4"></i></button></li>
+        </form>
+
+      </ul>
+    </div>
+  </div>
+</div>
