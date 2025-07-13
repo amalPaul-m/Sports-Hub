@@ -17,3 +17,4 @@ window.addEventListener('DOMContentLoaded', () => {
     }).then(() => window.location.href = "/youraccount");
   }
 });
+

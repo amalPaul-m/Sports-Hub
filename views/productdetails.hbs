@@ -11,17 +11,18 @@
       <a class="navbar-brand pe-5" href="/home"><img src="images/logo.png" alt="logo"></a>
 
       <form role="search" action="/userproducts/search" method="get" class="d-flex gap-2 me-5">
-          <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;"
-            name="searchItem" value="{{query}}" required>
-          <button class="btn btn-outline-secondary btn-sm " type="submit">Search</button>
-        </form>
+        <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..."
+          style="width: 200px;" name="searchItem" value="{{query}}" required>
+        <button class="btn btn-outline-secondary btn-sm " type="submit">Search</button>
+      </form>
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link active pe-5" aria-current="page" href="/home">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link px-2" href="/home">New Arraival</a>
+          <a class="nav-link active pe-5" aria-current="page" href="/userproducts">All Products</a>
+          </a>
         </li>
       </ul>
 
@@ -103,50 +104,57 @@
           </div>
         </div>
 
-        <div>
+
           <span class="product-price">₹{{productDetails.salePrice}}</span><span
             class="text-decoration-line-through product-mrp">₹{{productDetails.regularPrice}}</span><br>
           <div class="mt-4">
 
-            <form action="" >
+            <form id="addToCartForm">
+            <input type="hidden" name="productId" value="{{productDetails._id}}">
+
             <span class="align-top select-color-text me-1">Select Color :</span>
             {{#each uniqueVariants}}
-            <a href="#"><span type="button" class="dot-size ms-2" style="background-color: {{this.color}};"></span></a>
+            <div class="form-check form-check-inline">
+              <input class="btn-check" type="radio" name="selectedColor" id="variantcolor{{@index}}" value="{{this.color}}"
+                {{#if @first}}checked{{/if}}>
+              <label class="btn btn-lg" style="background-color: {{this.color}};" for="variantcolor{{@index}}">
+              </label>
+            </div>
             {{/each}}
-          </div>
-        </div>
-
-       
-          {{#each productDetails.variants}}
+            <br>
+            <!-- Variant Size -->
+            {{#each productDetails.variants}}
             <div class="form-check form-check-inline mt-4">
-              <input class="btn-check" type="radio" name="selectedVariant" id="variant{{@index}}" value="{{this.size}}" 
+              <input class="btn-check" type="radio" name="selectedVariant" id="variant{{@index}}" value="{{this.size}}"
                 {{#if @first}}checked{{/if}}>
               <label class="btn btn-outline-dark" for="variant{{@index}}">
                 {{this.size}} {{../productDetails.unitSize}}
               </label>
             </div>
-          {{/each}}
-       </form>
+            {{/each}}
 
-        <p class="pt-4">{{cutWords productDetails.description 16}}</p>
-
-        <form class="form-inline">
-          <div class="input-group mt-4 w-75 mb-3">
-            <input type="text" class="form-control shadow-none py-1" placeholder="Apply your coupon code"
-              aria-label="Recipient's username" aria-describedby="basic-addon2">
-            <div class="input-group-append">
-              <button type="button" class="btn btn-outline-dark ms-2">Check</button>
+            <!-- Coupon Field -->
+            <p class="pt-4">{{cutWords productDetails.description 16}}</p>
+            <div class="form-inline">
+              <div class="input-group mt-4 w-75 mb-3">
+                <input type="text" class="form-control shadow-none py-1" placeholder="Apply your coupon code"
+                  aria-label="Recipient's username" aria-describedby="basic-addon2" name="coupon">
+                <div class="input-group-append">
+                  <button type="button" class="btn btn-outline-dark ms-2">Check</button>
+                </div>
+              </div>
             </div>
+
+            <!-- Submit Buttons -->
+            <div class="cart-button">
+              <button type="submit" name="action" class="btn btn-outline-dark px-5 py-3 mb-3 btn-addCart d-{{buttonVal}}" value="add" {{hide}}>{{btnvalue}}</button>
+              <a href="/cart" name="action" class="btn btn-outline-dark py-3 px-5 mb-5 mt-4 btn-buyNow d-{{buttonVal}}" value="buy">Go to Cart</a>
+            </div>
+          </form>
+          <div class="mt-5 mb-5">
+            <span class="text-danger pb-5 pt-5">{{message}}</span>
           </div>
-        </form>
-
-        <div class="pt-2 text-secondary">Delivery by <span class="text-dark">4 July 2025</span> | <span
-            class="text-success"><b>Free</b></span></div>
-
-        <form action="" class="cart-button">
-          <button type="button" class="btn btn-outline-dark px-5 py-3 mb-3 btn-addCart">Add to Cart</button>
-          <button type="button" class="btn btn-outline-dark py-3 px-5 mb-5 mt-4 btn-buyNow">Buy Now</button>
-        </form>
+          
 
         <div class="stock">
           <span><img src="images/stock.svg" alt="" class="border-stock"></span>

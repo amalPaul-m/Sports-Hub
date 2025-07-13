@@ -37,7 +37,10 @@ const userProductsRouter = require('./routes/userproducts');
 const productdetailsRouter = require('./routes/productdetails');
 const yourAccountRouter = require('./routes/youraccount');
 const cartRouter = require('./routes/cart');
-
+const checkoutRouter = require('./routes/checkout');
+const invoiceRouter = require('./routes/invoice');
+const orderslistRouter = require('./routes/orderslist');
+const returnsRouter = require('./routes/return');
 
 const app = express();
 
@@ -120,11 +123,42 @@ hbs.registerHelper('gte', function (a, b) {
   return a >= b;
 });
 
+hbs.registerHelper('firstImage', function (imagesArray) {
+  return imagesArray?.[0]; 
+});
+
+hbs.registerHelper('formatDateFull', function(date) {
+  if (!date) return '';
+  return new Date(date).toLocaleDateString('en-GB', {
+    weekday: 'short', 
+    day: '2-digit',    
+    month: 'long',      
+    year: 'numeric'     
+  }).replace(',', ''); 
+});
+
+hbs.registerHelper('gst', function (a) {
+  return (a-(a/1.18)).toFixed(2);
+});
+
+hbs.registerHelper('netAmount', function (a) {
+  return (a/1.18).toFixed(2);
+});
+
 
 // view engine setup
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+
+hbs.registerPartials(path.join(__dirname, 'views/partials'));
+
+hbs.registerHelper('or', function (a, b, options) {
+    return a || b ? options.fn(this) : options.inverse(this);
+});
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // middlewares
 
@@ -144,7 +178,7 @@ app.use('/forgot', forgotRouter);
 app.use('/verifyOtp', verifyOtpRouter);
 app.use('/reset', resetRouter);
 app.use('/auth', authRouter);
-app.use('/admin', adminRouter); // Uncomment if you have an admin route
+app.use('/admin', adminRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/customers', customersRouter);
 app.use('/category', categoryRouter)
@@ -152,6 +186,10 @@ app.use('/userproducts', userProductsRouter);
 app.use('/productdetails', productdetailsRouter);
 app.use('/youraccount', yourAccountRouter);
 app.use('/cart', cartRouter);
+app.use('/checkout', checkoutRouter);
+app.use('/invoice', invoiceRouter);
+app.use('/orderslist', orderslistRouter);
+app.use('/return', returnsRouter);
 
 app.use(errorHandler);
 

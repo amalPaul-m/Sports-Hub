@@ -1,0 +1,107 @@
+    /* .step-container {
+      overflow: hidden;
+      position: relative;
+      height: auto;
+    }
+    .step-slide {
+      width: 300%;
+      display: flex;
+      transition: transform 0.4s ease-in-out;
+    }
+    .step-panel {
+      width: 100%;
+      flex-shrink: 0;
+      padding: 20px;
+    }
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 30px;
+    }
+    .step-indicator div {
+      text-align: center;
+      opacity: 0.4;
+    }
+    .step-indicator .active-step {
+      font-weight: bold;
+      opacity: 1;
+    }
+    .address-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      position: relative;
+    }
+    .address-type {
+      font-size: 0.75rem;
+      background: black;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 10px;
+    }
+    .address-actions {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+    }
+    .step-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    .list-group-item img {
+      vertical-align: middle;
+      max-height: 25px;
+    } */
+
+      .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 30px;
+    }
+    .step-indicator div {
+      text-align: center;
+      opacity: 0.4;
+      font-size: 14px;
+    }
+    .step-indicator .active {
+      font-weight: bold;
+      opacity: 1;
+    }
+    .address-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      
+    }
+    .address-details {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .address-type {
+      font-size: 0.75rem;
+      background: black;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 10px;
+    }
+    .add-address {
+      text-align: center;
+      margin: 30px 0;
+      cursor: pointer;
+    }
+    .step-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }

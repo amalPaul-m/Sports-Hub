@@ -1,0 +1,152 @@
+<style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: #000;
+      padding: 20px;
+    }
+
+    .invoice-box {
+      width: 100%;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      padding: 0;
+    }
+
+    .heading {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .section {
+      margin-top: 15px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-decoration: underline;
+    }
+
+    .details, .summary {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .details th, .details td, .summary th, .summary td {
+      border: 1px solid #000;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .text-left {
+      text-align: left;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .signature {
+      margin-top: 40px;
+      text-align: right;
+    }
+
+    .small {
+      font-size: 10px;
+    }
+  </style>
+
+    <div class="invoice-box">
+    <div class="heading">TAX INVOICE</div>
+
+    <div class="section">
+      <div class="section-title">Invoice Info</div>
+      <table style="width: 100%;">
+        <tr>
+          <td><strong>Invoice Number:</strong> {{orderId}}</td>
+          <td><strong>Invoice Date:</strong> {{date}}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Seller Details</div>
+      <div>
+        <strong>Sports Hub Pvt. Ltd.</strong><br>
+        GSTIN: 32AACDE1234F2Z5<br>
+        Address: 123 Stadium Road, kadavathra, Kochi - 560001
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Buyer Details</div>
+      <div>
+        <strong>{{customername}}</strong><br>
+        {{customeraddress}}<br>
+        Phone: {{customerphone}}<br>
+        <span class="small">GSTIN: </span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Product Details</div>
+      <table class="details">
+        <thead>
+          <tr>
+            <th>Sl No.</th>
+            <th class="text-left">Product</th>
+            <th>Qty</th>
+            <th>Rate (₹)</th>
+            <th>Amount (₹)</th>
+            <th>GST %</th>
+            <th>GST Amt (₹)</th>
+            <th>Total (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each items}}
+          <tr>
+            <td>{{addone @index}}</td>
+            <td class="text-left">{{name}}</td>
+            <td>{{qty}}</td>
+            <td>{{price}}</td>
+            <td>{{calcTotal qty price}}</td>
+            <td>18%</td>
+            <td>{{calcGST qty price 18}}</td>
+            <td>{{calcTotalWithGST qty price 18}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Total Summary</div>
+      <table class="summary">
+        <tr>
+          <th class="text-right">Total Amount</th>
+          <td class="text-right">₹{{calcGrandTotal items 18}}</td>
+        </tr>
+        <tr>
+          <th class="text-right">Total GST (18%)</th>
+          <td class="text-right">₹{{calcGSTTotal items 18}}</td>
+        </tr>
+        <tr>
+          <th class="text-right">Grand Total</th>
+          <td class="text-right">₹{{total}}.00</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="signature">
+      <p>Authorized Signatory</p>
+    </div>
+  </div>

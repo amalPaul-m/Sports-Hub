@@ -1,0 +1,330 @@
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="px-4 mb-3">
+    <img src="/images/Logo-dark.png" alt="logo" height="50">
+  </div>
+
+  <h6 class="px-3">Dashboard</h6>
+  <a class="nav-link" href="/dashboard"><i class="bi bi-house-door"></i> Dashboard</a>
+  <a class="nav-link active" href="#"><i class="bi bi-file-earmark"></i> Order List</a>
+  <a class="nav-link" href="/products"><i class="bi bi-inboxes"></i> All Products</a>
+  <a class="nav-link" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
+  <a class="nav-link" href="/customers"><i class="bi bi-people"></i> Customers</a>
+  <a class="nav-link" href="#"><i class="bi bi-ticket-detailed"></i> Coupon</a>
+  <a class="nav-link" href="#"><i class="bi bi-funnel"></i> Filter</a>
+  <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
+  <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+</div>
+
+<!-- Topbar -->
+<div class="topbar border-bottom fixed-top" id="topbar">
+  <button class="btn text-white" onclick="toggleSidebar()"><i class="bi bi-list fs-4 text-dark"></i></button>
+  <div class="d-flex align-items-center gap-3">
+    <form role="search" action="" method="get" class="d-flex gap-2">
+          <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;"
+            name="q" value="{{query}}" required>
+          <button class="btn btn-outline-secondary btn-sm " type="submit">Search</button>
+    </form>
+    <i class="bi bi-bell-fill fs-5 text-dark"></i>
+
+    <!-- Large button groups (default and split) -->
+    <div class="btn-group">
+      <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        ADMIN
+      </button>
+      <ul class="dropdown-menu p-3">
+        <li><b>Admin</b></li>
+        <li class="pt-2"><a href="#" class="text-decoration-none text-dark">Change Password</a></li>
+        <form class="d-flex" role="search" action="/logout/admin">
+          <li class="pt-2"><button type="submit" class="text-decoration-none text-dark btn btn-white ">Logout <i
+                class="bi bi-box-arrow-right float-end ps-4"></i></button></li>
+        </form>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- Main Content -->
+
+
+
+<div class="main-content" id="main">
+
+  <div class="container mt-5">
+    <h4><b>Order List</b></h4>
+
+    <!-- breadcrumb -->
+
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard" class="text-decoration-none text-secondary">Dashboard</a></li>
+        <li class="breadcrumb-item active text-dark" aria-current="page">Order List</li>
+      </ol>
+    </nav>
+
+
+    <div class="d-flex align-items-center mb-3">
+      <a href="/orderslist" class="tab-link text-decoration-none" >Active Orders</a>
+      <a href="/orderslist/ordersreturnlist" class="tab-link text-decoration-none active" >Return Orders</a>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-0 flex-wrap">
+      <div>
+
+      </div>
+      <div>
+        <a class="btn btn-outline-dark m-1" href="/orderslist/ordersreturnlist" type="button"><i class="bi bi-arrow-clockwise"></i></a>
+        {{!-- <button class="btn btn-outline-secondary me-2">Filters <i class="bi bi-funnel"></i></button> --}}
+        <button class="btn btn-outline-dark">Export <i class="bi bi-download"></i></button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Sl.No <a href="" class="text-dark ms-1"><i class="bi bi-arrow-down-up"></i></a></th>
+            <th>Order ID <a href="" class="text-dark ms-1"><i class="bi bi-arrow-down-up"></i></a></th>
+            <th>Date <a href="" class="text-dark ms-1"><i class="bi bi-arrow-down-up"></i></a></th>
+            <th>Payment<a href="" class="text-dark ms-1"><i class="bi bi-arrow-down-up"></i></a></i></th>
+            <th>Amount <a href="" class="text-dark ms-1"><i class="bi bi-arrow-down-up"></i></a></th>
+            <th>Status <a href="" class="text-dark ms-1"><i class="bi bi-arrow-down-up"></i></a></th>
+            <th>Action <a href="" class="text-dark ms-1"><i class="bi bi-arrow-down-up"></i></a></th>
+          </tr>
+        </thead>
+        <tbody>
+         
+          <!-- Example Rows -->
+          {{#each returns}}
+          {{#with this.orderId}}
+          {{#each this.productInfo}}
+          {{#if (eq this.status "returned")}}
+          <tr>
+            <td>{{addOne @../index}}</td>
+            <td><a href="" class="text-decoration-none" data-bs-toggle="modal" 
+            data-bs-target="#staticBackdrop{{../this.orderId}}">{{../this.orderId}}</a></td>
+            <td>{{formatDateFull ../../createdAt}}</td>
+            {{#each ../this.paymentInfo}}
+            <td>{{this.paymentMethod}}</td>
+            <td>{{../this.price}}.00</td>
+            {{/each}}
+            <td><span class="{{../../status}}">
+              {{../../status}}</span></td>
+            <td>
+
+                <div class="dropdown">
+                <button class="btn btn-outline-dark dropdown-toggle btn-sm" data-bs-toggle="dropdown">Return Status</button>
+                <ul class="dropdown-menu">
+
+                    <li><a class="dropdown-item" href="" data-bs-toggle="modal" 
+                    data-bs-target="#unBlockModal1{{../../_id}}" class="unblock">Accept</a></li>
+                    
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" 
+                    data-bs-target="#unBlockModal2{{../../_id}}" class="unblock">Reject</a></li>
+                </ul>
+                </div>
+            </td>
+          </tr>
+
+          <!-- product details -->
+          <div class="modal fade modal-lg" id="staticBackdrop{{../this.orderId}}" tabindex="-1" aria-labelledby="addressModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5>Order ID: <strong>#{{../this.orderId}}</strong></h5>
+          
+                          <div class="dropdown ms-3">
+                          <button class="btn btn-outline-dark dropdown-toggle btn-sm" data-bs-toggle="dropdown">Return Status</button>
+                          <ul class="dropdown-menu">
+
+                              <li><a class="dropdown-item" href="" data-bs-toggle="modal" 
+                              data-bs-target="#unBlockModal1{{../../_id}}" class="unblock">Accept</a></li>
+                              
+                              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" 
+                              data-bs-target="#unBlockModal2{{../../_id}}" class="unblock">Reject</a></li>
+                          </ul>
+                          </div>
+          
+                          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <div class="container mt-3">
+                              <div class="order-box bg-white mb-4">
+
+                                 
+                                  {{!-- {{#if (eq this.status "confirmed")}} --}}
+                                  <div class="row bordrer-card">
+                                      <div class="col col-md-2">
+                                          <img src="/images/products/{{firstImage this.productId.imageUrl}}" class="img-fluid" alt="Product Image">
+                                      </div>
+                                      <div class="col col-md-8">
+                                          <div>
+                                              <h6 class="mb-1">{{productId.productName}}</h6>
+                                              </h6>
+          
+                                              <p class="mb-1 text-muted">Color: <button class="btn" style="background-color: {{this.color}};"></button>
+                                                <br>Size: {{this.size}} {{this.productId.unitSize}}
+                                                <br>Quantity: {{this.quantity}}</p>
+                                              <p class="text-muted mb-0" style="font-size: 0.85rem;">
+                                                  Product ID: {{last8 this._id}}<br>
+                                                  User ID: {{last8 ../this.userId}}
+                                              </p>
+                                          </div>
+                                      </div>
+                                      <div class="col col-md-2 mt-5">
+                                          <h5 class="fw-bold">₹{{this.productId.salePrice}}.00</h5>
+                                      </div>
+                                  </div>
+                                  {{!-- {{/if}} --}}
+                                 
+
+
+                              </div>
+          
+                              <div class="mb-4 mt-5">
+                                  <h6 class="mb-2 fw-bold">Reason for Return</h6>
+                                  <p class="mb-1">{{../../this.reason}}</p>
+                              </div>
+          
+                              {{!-- <div class="mb-4">
+                                  <h6 class="mb-2 fw-bold">Payment Type</h6>
+                                  {{#each this.paymentInfo}}
+                                  <p>{{this.paymentMethod}}</p>
+                                  {{/each}}
+                              </div> --}}
+                                  {{!-- {{#each this.paymentInfo}}
+                              <div class="mb-4">
+                                  <div class="d-flex justify-content-between">
+                                      <span class="info-label">Net Amount</span>
+                                      <span>₹{{netAmount this.totalAmount}}</span>
+                                  </div>
+                                  <div class="d-flex justify-content-between">
+                                      <span class="info-label">GST</span>
+                                      <span>₹{{gst this.totalAmount}}</span>
+                                  </div>
+                                  <div class="d-flex justify-content-between">
+                                      <span class="info-label">Shipping & Handling Fee</span>
+                                      <span>₹0.00</span>
+                                  </div>
+                              </div>
+          
+                              <div class="d-flex justify-content-between border-top pt-3">
+                                  <h5 class="fw-bold">Total Amount</h5>
+                                  <h5 class="fw-bold">₹{{this.totalAmount}}.00</h5>
+                                  {{/each}}
+                              </div> --}}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+
+          {{!-- poup window mark as accept return --}}
+
+          <div class="modal fade bg-setting" id="unBlockModal1{{../../_id}}" tabindex="-1"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog float-end me-5">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Accept Return Request </h1>
+                  <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Are you sure you want to Accept Return Request ?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+
+                  <form action="/orderslist/accept/{{../../_id}}?_method=PATCH" method="POST">
+                    <input type="hidden" name="_method" value="PATCH" />
+                    <button type="submit" class="btn btn-outline-success">Accept</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {{!-- poup window mark as reject return --}}
+
+          <div class="modal fade bg-setting" id="unBlockModal2{{../../_id}}" tabindex="-1"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog float-end me-5">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Reject Return Request </h1>
+                  <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Are you sure you want to rejectreturn request ?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+
+                  <form action="/orderslist/reject/{{../../_id}}?_method=PATCH" method="POST">
+                    <input type="hidden" name="_method" value="PATCH" />
+                    <button type="submit" class="btn btn-outline-danger">Reject</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{/if}}
+    
+          {{/each}}
+          {{/with}}
+          {{/each}}
+
+
+          
+
+
+        </tbody>
+      </table>
+    </div>
+
+    
+
+    <!-- Pagination -->
+    <div class="mt-3 mb-4 pagination-pro">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          {{#if (gt currentPage 1)}}
+          <li class="page-item">
+            <a class="page-link pagination-border shadow-none" href="/orderslist/ordersreturnlist?page={{subtract currentPage 1}}"
+              aria-label="Previous">
+              <span aria-hidden="true" class="text-black">&lang;</span>
+            </a>
+          </li>
+          {{/if}}
+          {{#each (pagination totalPages)}}
+          <li class="page-item ms-2 {{#if (eq this ../currentPage)}}active{{/if}}">
+            <a class="page-link pagination-number" href="/orderslist/ordersreturnlist?page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+
+          {{#if (lt currentPage totalPages)}}
+          <li class="page-item ms-2">
+            <a class="page-link pagination-border shadow-none" href="/orderslist/ordersreturnlist?page={{add currentPage 1}}"
+              aria-label="Next">
+              <span aria-hidden="true" class="text-black">&rang;</span>
+            </a>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+
+
+

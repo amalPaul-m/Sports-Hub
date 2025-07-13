@@ -1,0 +1,102 @@
+<nav class="navbar navbar-expand-lg bg-body-white border-bottom bg-white sticky-top">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+            aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <a class="navbar-brand pe-5" href="/home"><img src="/images/logo.png" alt="logo"></a>
+
+            <form role="search" action="/userproducts/search" method="get" class="d-flex gap-2 me-5">
+                <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;"
+                    name="searchItem" value="{{query}}" required>
+                <button class="btn btn-outline-secondary btn-sm " type="submit">Search</button>
+            </form>
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active pe-5" aria-current="page" href="/home">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active pe-5" aria-current="page" href="/userproducts">All Products</a>
+                  </a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav mb-2 mb-lg-0 ">
+                <li class="nav-item pe-4">
+                    <a class="nav-link" href="#"><img src="/images/wishlist.png" alt="wishlist"></a>
+                </li>
+                <li class="nav-item pe-4">
+                    <a class="nav-link" href="/cart"><img src="/images/cart.png" alt="cart"></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/youraccount"><img src="/images/user.png" alt="profile"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="text-center mt-5 pt-5 mb-5 pb-5">
+    
+    <img src="/images/tick.webp" alt="" width="200">
+
+    <h3 class="mb-4 fw-semibold">Thank you for your purchase</h3>
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-center gap-2">
+      <a href="/youraccount/yourorders" class="btn btn-outline-dark px-4">View Orders</a>
+      <a href="/userproducts" class="btn btn-dark px-4">Continue Shopping</a>
+    </div>
+  </div>
+
+
+   <!--Footer-->
+
+<div class="bg-black text-white">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-6 pe-4">
+                <img src="/images/Logo-dark.png" alt="logo">
+                <p class="hf-p">We are a wolesale sports materials selling firm located in <br>ernakulam. Our shops
+                    offers more than</p>
+
+                <a class="text-decoration-none pe-4" href="#"><img src="/images/Twitter.png" alt="Twitter"></a>
+                <a class="text-decoration-none pe-4" href="#"><img src="/images/Facebook.png" alt="Facebook"></a>
+                <a class="text-decoration-none pe-4" href="#"><img src="/images/Instagram.png" alt="Instagram"></a>
+            </div>
+            <div class="col-md-3">
+                <h5 class="hf-h5">Info</h5>
+                <a class="text-decoration-none" href="#">
+                    <p class="hf-p text-white">Contact Us</p>
+                </a>
+                <a class="text-decoration-none" href="#">
+                    <p class="hf-p text-white">About Us</p>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <h5 class="hf-h5">Assistance to the buyer</h5>
+                <a class="text-decoration-none" href="#">
+                    <p class="hf-p text-white">Find an order</p>
+                </a>
+                <a class="text-decoration-none" href="#">
+                    <p class="hf-p text-white">Terms and conditions</p>
+                </a>
+                <a class="text-decoration-none" href="#">
+                    <p class="hf-p text-white">Exchange and return of goods</p>
+                </a>
+                <a class="text-decoration-none" href="#">
+                    <p class="hf-p text-white">Cookie policy</p>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 pt-5">
+                <h5 class="text-center">© 2025 | SPORTS HUB | All Rights Reserved.</h5>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -183,46 +183,19 @@ const editThumbGetProducts = async function (req, res, next) {
     err.message = 'Error edit products';
     next(err);
   }
-
 };
 
 
+
 const updatePostProducts = async function (req, res, next) {
-
-
   try {
 
+    console.log(req.body);
     const imageNames = req.files.map(file => file.filename);
-
-    const body = req.body;
-
-    const parseVariants = () => {
-    const result = [];
-    let i = 0;
-    while (req.body[`variantSize_${i}`]) {
-      result.push({
-        size: req.body[`variantSize_${i}`],
-        color: req.body[`variantColor_${i}`],
-        stockQuantity: parseInt(req.body[`variantStock_${i}`])
-      });
-      i++;
-    }
-    return result;
-  };
-
-    const variants = parseVariants();
-
-    const variantNames = variants.map(v => ({
-        size: v.size,
-        color: v.color,
-        stockQuantity: parseFloat(v.stockQuantity)
-      }))
-    
-
     const referId = req.body.id;
-    console.log(referId)
 
-      const product = {
+    // Update Product Fields
+    const product = {
       productName: req.body.productName,
       description: req.body.description,
       category: req.body.category,
@@ -237,29 +210,64 @@ const updatePostProducts = async function (req, res, next) {
     };
 
     await productsSchema.findByIdAndUpdate(
-  referId,
-  {
-    $set: {
-      ...product
-    },
-    $addToSet: {
-      variants: { $each: variantNames },
-      imageUrl: { $each: imageNames }
-    }
-  },
-  { new: true, runValidators: true }
-);
+      referId,
+      {
+        $set: { ...product },
+        $addToSet: { imageUrl: { $each: imageNames } }
+      },
+      { new: true, runValidators: true }
+    );
 
+
+      const variantIndexes = Object.keys(req.body)
+      .filter(key => key.startsWith('variantSize_'))
+      .map(key => key.split('_')[1]);
+
+    for (let index of variantIndexes) {
+      const variantId = req.body[`variantId_${index}`];
+      const size = req.body[`variantSize_${index}`];
+      const color = req.body[`variantColor_${index}`];
+      const stockQuantity = parseInt(req.body[`variantStock_${index}`]) || 0;
+
+      if (variantId) {
+        await productsSchema.updateOne(
+          { _id: referId, "variants._id": variantId },
+          {
+            $set: {
+              "variants.$.size": size,
+              "variants.$.color": color,
+              "variants.$.stockQuantity": stockQuantity
+            }
+          }
+        );
+      } else if (size && color) {
+        await productsSchema.findByIdAndUpdate(
+          referId,
+          {
+            $push: {
+              variants: {
+                size,
+                color,
+                stockQuantity
+              }
+            }
+          }
+        );
+      }
+    }
 
 
     res.redirect('/products/add?success=2');
 
   } catch (err) {
     err.message = 'Error edit products';
-    console.log(err)
+    console.log(err);
     next(err);
   }
 };
+
+
+
 
 
 

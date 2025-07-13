@@ -168,7 +168,7 @@ console.log('--------------------------------',variantCount)
               </div>
               <div class="col-md-5 mb-3">
                 <label class="form-label">Stock Quantity</label>
-                <input type="number" class="form-control shadow-none" name="variantStock_${variantCount}" required min="1"
+                <input type="number" class="form-control shadow-none" name="variantStock_${variantCount}" required min="0"
                   placeholder="Stock quantity">
                 <div class="invalid-feedback">Enter valid stock quantity.</div>
               </div>  

@@ -1,6 +1,11 @@
 const usersSchema = require('../models/usersSchema');
 const addressSchema = require('../models/addressSchema');
+const ordersSchema = require('../models/ordersSchema');
+const productsSchema = require('../models/productsSchema');
+const returnSchema = require('../models/returnSchema');
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;
 
 const getyouraccount = async (req, res, next) => {
 
@@ -206,14 +211,281 @@ const deleteaddress = async (req,res,next) => {
 
 };
 
-const getyourorders = (req,res,next) => {
+const getyourorders = async (req, res, next) => {
+  try {
+    const email = req.session.users?.email;
+    if (!email) return res.redirect('/login');
 
-    res.render('yourorders', {cssFile: '/stylesheets/yourorders.css',
-        jsFile: '/javascripts/yourorders.js'
+    const user = await usersSchema.findOne({ email });
+    if (!user) return res.redirect('/login');
+
+    const userId = user._id;
+
+    // Pagination for undelivered
+    const page = parseInt(req.query.page) || 1;
+    const limit = 2;
+    const skip = (page - 1) * limit;
+
+    // Pagination for delivered
+    const page1 = parseInt(req.query.page1) || 1;
+    const limit1 = 2;
+    const skip1 = (page1 - 1) * limit1;
+
+    // Undelivered orders with at least one confirmed item
+    const [orderData, totalOrders] = await Promise.all([
+      ordersSchema.find({
+        userId,
+        deliveryStatus: { $nin: ['delivered', 'cancelled'] },
+        "productInfo.status": "confirmed"
+      })
+        .populate('productInfo.productId')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      ordersSchema.countDocuments({
+        userId,
+        deliveryStatus: { $nin: ['delivered', 'cancelled'] },
+        "productInfo.status": "confirmed"
+      }),
+    ]);
+
+
+    // Delivered orders
+    const [orderData1, totalOrders1] = await Promise.all([
+      ordersSchema.find({
+        userId,
+        deliveryStatus: 'delivered',
+        "productInfo.status": "confirmed"
+      })
+        .populate('productInfo.productId')
+        .sort({ createdAt: -1 })
+        .skip(skip1)
+        .limit(limit1),
+
+      ordersSchema.countDocuments({
+        userId,
+        deliveryStatus: 'delivered',
+        "productInfo.status": "confirmed"
+      }),
+    ]);
+
+    // Render only once
+    res.render('yourorders', {
+      cssFile: '/stylesheets/yourorders.css',
+      jsFile: '/javascripts/yourorders.js',
+      orderData,
+      currentPage: page,
+      totalPages: Math.ceil(totalOrders / limit),
+      orderData1,
+      currentPage1: page1,
+      totalPages1: Math.ceil(totalOrders1 / limit1)
     });
 
+  } catch (error) {
+    err.message = 'Error getting orders';
+    console.log(error);
+    next(error);
+  }
 };
 
-module.exports = { getyouraccount, getyourprofile, posteditprofile, getchangepassword, patchchangepassword,
-    getaddress, postaddress, editaddress, deleteaddress, getyourorders
+
+
+const cancelorder = async (req, res, next) => {
+
+    try {
+        const orderId = String(req.params.orderId); 
+        const productId = new mongoose.Types.ObjectId(req.params.productId);
+        const order = await ordersSchema.findOneAndUpdate(
+        { orderId: orderId, "productInfo.productId": productId },
+        { $set: { "productInfo.$.status": "cancelled" } },
+        { new: true, runValidators: true }
+        );
+
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+
+        // Find the cancelled item
+        const item = order.productInfo.find(p => {
+        const pid = p.productId?._id || p.productId;
+        return String(pid) === String(productId);
+        });
+
+        if (!item) return res.status(404).send('Item not found in order');
+
+        const quantity = Number(item.quantity) || 0;
+        if (quantity <= 0) return res.status(400).send('Invalid quantity to restore');
+
+        const normalizedColor = String(item.color || '').replace('#', '').trim().toLowerCase();
+        const normalizedSize  = String(item.size || '').trim().toLowerCase();
+
+        // Restore quantity to product variant
+        const result = await productsSchema.updateOne(
+        {
+            _id: productId,
+            variants: {
+            $elemMatch: {
+                color: { $regex: new RegExp(`^#?${normalizedColor}$`, 'i') },
+                size:  { $regex: new RegExp(`^${normalizedSize}$`, 'i') }
+            }
+            }
+        },
+        {
+            $inc: { "variants.$.stockQuantity": quantity }
+        }
+        );
+
+
+         // Check if all items in the order are cancelled
+        const updatedOrder = await ordersSchema.findOne({ orderId });
+
+        const allCancelled = updatedOrder.productInfo.every(p => p.status === "cancelled");
+
+        if (allCancelled) {
+        await ordersSchema.updateOne(
+            { orderId },
+            { $set: { deliveryStatus: "cancelled" } }
+        );
+        }
+
+
+        res.redirect('/youraccount/yourorders?success=3');
+
+    } catch (error) {
+        err.message = 'Error cancel order';
+        console.log(error);
+        next(error);
+    }
+};
+
+
+
+const postReturn = async (req, res, next) => {
+  try {
+    const email = req.session.users?.email;
+    const usersData = await usersSchema.findOne({ email });
+
+    if (!email) {
+      return res.redirect('/login');        
+    }
+
+    const { orderId, productId, reason } = req.body;
+    const objectOrderId = new ObjectId(orderId);
+    const objectProductId = new ObjectId(productId);
+
+    const returnData = new returnSchema({
+      orderId: objectOrderId,
+      userId: usersData._id,
+      productId: objectProductId,
+      reason: reason
+    });
+
+    console.log('Return Data:', returnData);
+    await returnData.save();
+
+    await ordersSchema.findOneAndUpdate(
+      { _id: objectOrderId, "productInfo.productId": objectProductId }, 
+        { $set: { "productInfo.$.status": "returned" } },
+        { new: true, runValidators: true }
+    );
+
+    res.render('return');
+
+    } catch (error) {
+
+        error.message = 'Error cancel order';
+        console.log(error);
+        next(error);
+    }
+}
+
+
+
+const getCancelledOrders = async (req, res, next) => {
+    try {
+        const email = req.session.users?.email;
+        if (!email) return res.redirect('/login');
+
+        const user = await usersSchema.findOne({ email });
+        if (!user) return res.redirect('/login');
+
+        const userId = user._id;
+        const perPage = 2;
+        const page = parseInt(req.query.page) || 1;
+
+        const totalOrders = await ordersSchema.countDocuments({
+            userId,
+            "productInfo.status": "cancelled"
+        });
+
+        const cancelledOrders = await ordersSchema.find({
+            userId,
+            $or: [
+                { deliveryStatus: 'cancelled' },
+                { "productInfo.status": "cancelled" }
+                ]
+            })
+            .populate('productInfo.productId')
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * perPage)
+            .limit(perPage);
+
+        const totalPages = Math.ceil(totalOrders / perPage);
+
+
+
+        // returned orders
+
+        const perPage1 = 2;
+        const page1 = parseInt(req.query.page) || 1;
+
+        const totalOrders1 = await returnSchema.countDocuments({
+            userId
+        });
+
+        const returnedOrders = await returnSchema.find({ userId })
+        .populate({
+            path: 'orderId',
+            populate: {
+                path: 'productInfo.productId',
+                model: 'products'
+            }
+        })
+        .populate('productId')
+        .sort({ createdAt: -1 })
+        .skip((page1 - 1) * perPage1)
+        .limit(perPage1);
+
+        const totalPages1 = Math.ceil(totalOrders1 / perPage1);
+
+
+
+        res.render('cancelledorders', {
+            cssFile: '/stylesheets/yourorders.css',
+            jsFile: '/javascripts/yourorders.js',
+            orderData: cancelledOrders,
+            returnData: returnedOrders,
+            currentPage: page,
+            totalPages,
+            currentPage1: page1,
+            totalPages1
+        });
+
+        
+
+    } catch (error) {
+        error.message = 'Error getting cancelled orders';
+        console.log(error);
+        next(error);
+    }
+}
+
+
+
+module.exports = { 
+    getyouraccount, getyourprofile, posteditprofile, 
+    getchangepassword, patchchangepassword,getaddress, postaddress, 
+    editaddress, deleteaddress, getyourorders, cancelorder, postReturn,
+    getCancelledOrders
  }

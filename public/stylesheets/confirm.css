@@ -1,0 +1,66 @@
+    .summary-card {
+      border: 1px solid #e7e7e7;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      margin-right: 15px;
+    }
+
+    .btn-black {
+      background-color: #000;
+      color: #fff;
+      border: none;
+    }
+
+    .btn-black:hover {
+      background-color: #222;
+    }
+
+    .order-total {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .payment-logo {
+      width: 80px;
+      margin-right: 8px;
+    }
+
+    .form-check-input {
+      cursor: pointer;
+    }
+
+
+     .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 30px;
+    }
+    .step-indicator div {
+      text-align: center;
+      opacity: 0.4;
+      font-size: 14px;
+    }
+    .step-indicator .active {
+      font-weight: bold;
+      opacity: 1;
+    }
