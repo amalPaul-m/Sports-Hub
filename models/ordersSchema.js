@@ -68,7 +68,7 @@ const ordersSchema = new mongoose.Schema({
       },
       paymentMethod: {
         type: String,
-        enum: ['credit', 'debit', 'UPI', 'COD', 'wallet','razorpay'],
+        enum: ['COD', 'wallet','online'],
         required: true
       },
       paymentStatus: {
@@ -76,9 +76,10 @@ const ordersSchema = new mongoose.Schema({
         enum: ['paid', 'unpaid'],
         required: true
       },
-    //   transactionId: {
-    //     type: mongoose.Schema.Types.ObjectId
-    //   }
+      transactionId: {
+        type: String,
+        default: null
+      }
     }
   ]
 //   ,

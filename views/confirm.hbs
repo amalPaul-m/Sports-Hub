@@ -25,7 +25,7 @@
 
             <ul class="navbar-nav mb-2 mb-lg-0 ">
                 <li class="nav-item pe-4">
-                    <a class="nav-link" href="#"><img src="/images/wishlist.png" alt="wishlist"></a>
+                    <a class="nav-link" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist"></a>
                 </li>
                 <li class="nav-item pe-4">
                     <a class="nav-link" href="/cart"><img src="/images/cart.png" alt="cart"></a>
@@ -43,10 +43,10 @@
   <div class="step-indicator justify-content-around mt-4 mb-4">
     <div class="text-start">
     <small>Step 1</small><br><span class="fs-">Address</span></div>
+    <div class="active  text-start">
+    <small>Step 2</small><br><span class="fs-">Confirmation</span></div>
     <div class="text-start">
-    <small>Step 2</small><br><span class="fs-">Payment</span></div>
-    <div class="active text-start">
-    <small>Step 3</small><br><span class="fs-">Confirmation</span></div>
+    <small>Step 3</small><br><span class="fs-">Payment</span></div>
   </div>
 
 <div class="container py-5">
@@ -81,11 +81,11 @@
         <h5 class="mb-4 fw-bold">Confirmation</h5>
 
         <!-- Payment -->
-        <p class="mb-1 text-secondary fw-semibold">Payment Method</p>
+        {{!-- <p class="mb-1 text-secondary fw-semibold">Payment Method</p>
         <div class="d-flex align-items-center mb-3">
-          {{!-- <img src="" class="payment-logo" alt="Razorpay"> --}}
-          <span>{{paymentType}}</span>
-        </div>
+          <img src="" class="payment-logo" alt="Razorpay">
+          <span></span>
+        </div> --}}
 
         <!-- Address -->
         <p class="mb-1 text-secondary fw-semibold">Address</p>
@@ -108,8 +108,8 @@
         </div> --}}
 
         <div class="d-flex gap-3 mt-4 float-end">
-          <a href="/checkout/payment" class="btn btn-outline-dark px-5">Back</a>
-          <button type="submit" class="btn btn-black px-5">Pay</button>
+          <a href="/checkout" class="btn btn-outline-dark px-5">Back</a>
+          <button type="submit" class="btn btn-dark px-5">Pay</button>
         </div>
         </form>
       </div>

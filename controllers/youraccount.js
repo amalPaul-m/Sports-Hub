@@ -97,7 +97,7 @@ const patchchangepassword = async (req,res,next) => {
             { new: true }                      
         );
     
-        res.redirect('/youraccount?success=1');
+        res.redirect('/logout?success=1');
 
      }   
    } catch (err) {
@@ -214,10 +214,8 @@ const deleteaddress = async (req,res,next) => {
 const getyourorders = async (req, res, next) => {
   try {
     const email = req.session.users?.email;
-    if (!email) return res.redirect('/login');
 
     const user = await usersSchema.findOne({ email });
-    if (!user) return res.redirect('/login');
 
     const userId = user._id;
 
@@ -366,10 +364,6 @@ const postReturn = async (req, res, next) => {
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
 
-    if (!email) {
-      return res.redirect('/login');        
-    }
-
     const { orderId, productId, reason } = req.body;
     const objectOrderId = new ObjectId(orderId);
     const objectProductId = new ObjectId(productId);
@@ -405,7 +399,6 @@ const postReturn = async (req, res, next) => {
 const getCancelledOrders = async (req, res, next) => {
     try {
         const email = req.session.users?.email;
-        if (!email) return res.redirect('/login');
 
         const user = await usersSchema.findOne({ email });
         if (!user) return res.redirect('/login');

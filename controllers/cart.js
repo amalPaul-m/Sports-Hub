@@ -1,6 +1,7 @@
 const cartSchema = require('../models/cartSchema');
 const productsSchema = require('../models/productsSchema');
 const usersSchema = require('../models/usersSchema');
+const wishlistSchema = require('../models/wishlistSchema');
 
 const getCart = async (req,res,next) => {
 
@@ -18,7 +19,9 @@ const getCart = async (req,res,next) => {
     if (!cartItem || !cartItem.items || cartItem.items.length === 0) {
     return res.render('cart', { cssFile: '/stylesheets/cart.css', jsFile: '/javascripts/cart.js',
         cartItems: [],
-        totalAmount: 0
+        totalAmount: 0,
+        tax: 0,
+        net: 0
     });
 }
 
@@ -26,7 +29,7 @@ const getCart = async (req,res,next) => {
         return sum + (parseFloat(item.price) * parseInt(item.quantity));
         }, 0);
     const tax = Math.round(totalAmount-(totalAmount/1.18)); 
-    const netAmount = Math.round(totalAmount/1.18);
+    const net= Math.round(totalAmount/1.18);
 
     let errorMessage = null;
     const errorType = req.query.error;
@@ -37,7 +40,7 @@ const getCart = async (req,res,next) => {
       errorMessage = 'Your cart is empty.';
     }
 
-    res.render('cart', {errorMessage, cartItem, totalAmount, tax, netAmount, cssFile: '/stylesheets/cart.css', jsFile: '/javascripts/cart.js'})
+    res.render('cart', {errorMessage, cartItem, net, totalAmount, tax, cssFile: '/stylesheets/cart.css', jsFile: '/javascripts/cart.js'})
 
 };
 
@@ -84,6 +87,11 @@ const productDetailAddCart = async (req,res,next) => {
             { _id: cart._id },
             { $push: { items: addData } }
             );
+
+        await wishlistSchema.findOneAndUpdate(
+            { userId: usersData._id },
+            { $pull: { productId: productId } }
+        );
 
         }
 
@@ -166,7 +174,8 @@ const increaseItemCount = async (req, res) => {
     await cart.save();
 
     const updatedPrice = item.quantity * item.price;
-    const cartTotal = cart.items.reduce((sum, i) => sum + i.quantity * i.price, 0);
+    const cartTotal = cart.items.reduce((sum, i) => sum + (i.quantity * i.price), 0);
+    const netAmount = +(cartTotal / 1.18).toFixed(2);
     const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
     const grandTotal = +(cartTotal).toFixed(2);
 
@@ -176,7 +185,8 @@ const increaseItemCount = async (req, res) => {
       updatedPrice,
       cartTotal,
       totalTax,
-      grandTotal
+      grandTotal,
+      netAmount
     });
 
   } catch (err) {
@@ -204,6 +214,7 @@ const decreaseItemCount = async (req, res) => {
 
     if (item.quantity === 1) {
       const cartTotal = cart.items.reduce((sum, i) => sum + i.quantity * i.price, 0);
+      const netAmount = +(cartTotal / 1.18).toFixed(2);
       const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
       const grandTotal = +(cartTotal).toFixed(2);
 
@@ -213,7 +224,8 @@ const decreaseItemCount = async (req, res) => {
         updatedPrice: item.quantity * item.price,
         cartTotal,
         totalTax,
-        grandTotal
+        grandTotal,
+        netAmount
       });
     }
 
@@ -223,6 +235,7 @@ const decreaseItemCount = async (req, res) => {
 
     const updatedPrice = item.quantity * item.price;
     const cartTotal = cart.items.reduce((sum, i) => sum + i.quantity * i.price, 0);
+    const netAmount = +(cartTotal / 1.18).toFixed(2);
     const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
     const grandTotal = +(cartTotal).toFixed(2);
 
@@ -232,7 +245,8 @@ const decreaseItemCount = async (req, res) => {
       updatedPrice,
       cartTotal,
       totalTax,
-      grandTotal
+      grandTotal,
+      netAmount
     });
   } catch (err) {
     console.error(err);

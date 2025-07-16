@@ -26,7 +26,7 @@
 
             <ul class="navbar-nav mb-2 mb-lg-0 ">
                 <li class="nav-item pe-4">
-                    <a class="nav-link" href="#"><img src="/images/wishlist.png" alt="wishlist"></a>
+                    <a class="nav-link" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist"></a>
                 </li>
                 <li class="nav-item pe-4">
                     <a class="nav-link" href="/cart"><img src="/images/cart.png" alt="cart"></a>
@@ -42,81 +42,56 @@
 <div class="step-indicator justify-content-around mt-4 mb-4">
     <div class="text-start">
     <small>Step 1</small><br><span class="fs-">Address</span></div>
-    <div class="active text-start">
-    <small>Step 2</small><br><span class="fs-">Payment</span></div>
     <div class="text-start">
-    <small>Step 3</small><br><span class="fs-">Confirmation</span></div>
+    <small>Step 2</small><br><span class="fs-">Confirmation</span></div>
+    <div class="active text-start">
+    <small>Step 3</small><br><span class="fs-">Payment</span></div>
   </div>
 
 <div class="container my-5">
     <h5 class="mb-4 fw-bold"><small>Payment Method</small></h5>
-    <form action="/checkout/payment" method="post">
     <div class="row">
-    <div class="col col-md-6 col-sm-12">
-    <!-- Razorpay -->
-    <label class="payment-option">
-      <input type="radio" name="payment" value="Razorpay" disabled>
-      <img src="/images/razor-pay.png" alt="Razorpay" width="130">
-      <span class="payment-label">Razorpay</span>
-    </label>
-    </div>
+        <div class="col col-md-6 col-sm-12">
+            <!-- Razorpay -->
+            <a id="rzp-button" class="text-decoration-none text-dark">
+                <label class="payment-option">
+                    <img src="/images/razor-pay.png" alt="Razorpay" width="130">
+                    <img src="/images/g-pay.png" alt="GPay">
+                    <img src="/images/phone-pe.png" alt="PhonePe">
+                    <div>
+                        <span class="payment-label">Debit/Credit/UPI Payment</span>
+                        <div class="payment-description">Pay by debit, credit and UPI</div>
+                    </div>
+                </label>
+            </a>
+        </div>
 
-    <div class="col col-md-6 col-sm-12">
-    <!-- GPay + PhonePe -->
-    <label class="payment-option">
-      <input type="radio" name="payment" value="UPI" disabled>
-      <img src="/images/g-pay.png" alt="GPay">
-      <img src="/images/phone-pe.png" alt="PhonePe">
-      <div>
-        <div class="payment-label">UPI Payment</div>
-        <div class="payment-description">Pay by any UPI app</div>
-      </div>
-    </label>
-
-    </div>
-    </div>
-
-    <div class="row">
-    <div class="col col-md-6 col-sm-12">
-    <!-- Card -->
-    <label class="payment-option">
-      <input type="radio" name="payment" value="Card" disabled>
-      <span>
-        <div class="payment-label">Credit/Debit/ATM Card</div>
-        <div class="payment-description">Pick a date when you want to get your delivery</div>
-      </span>
-    </label>
-    </div>
-
-    <div class="col col-md-6 col-sm-12">
-    <!-- Wallet -->
-    <label class="payment-option">
-      <input type="radio" name="payment" value="Wallet" disabled>
-      <span>
-        <div class="payment-label">Wallets</div>
-        <div class="payment-description">Use your Sports Hub wallet</div>
-      </span>
-    </label>
-
-    </div>
+        <div class="col col-md-6 col-sm-12">
+            <!-- Wallet -->
+            <a href="" class="text-decoration-none text-dark">
+                <label class="payment-option">
+                    <span class="ps-4">
+                        <div class="payment-label">Wallets</div>
+                        <div class="payment-description">Use your Sports Hub wallet</div>
+                    </span>
+                </label>
+            </a>
+        </div>
     </div>
 
     <!-- COD -->
-    <label class="payment-option">
-      <input type="radio" name="payment" value="COD" checked>
-      <span>
-        <div class="payment-label">Cash on Delivery</div>
-      </span>
-    </label>
-
-
+    <a href="/checkout/payment/COD" class="text-decoration-none text-dark py-5">
+        <label class="payment-option">
+            <span>
+                <div class="payment-label ps-4">Cash on Delivery</div>
+            </span>
+        </label>
+    </a>
 
     <div class="step-buttons mb-5 mt-5">
-      <a href="/checkout" class="btn btn-outline-dark px-5">Back</a>
-      <button type="submit" class="btn btn-dark px-5">Next</button>
+        <a href="/checkout/confirm" class="btn btn-outline-dark px-5">Back</a>
     </div>
-    </form>
-  </div>
+</div>
 
 
    <!--Footer-->
@@ -166,3 +141,7 @@
 
     </div>
 </div>
+
+<script>
+    const razorpayKey = '{{razorpayKey}}';
+</script>

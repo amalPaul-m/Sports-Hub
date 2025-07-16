@@ -25,11 +25,20 @@ const zoom = document.getElementById("mainImage");
   
 // wishlist
 
-const wishlistBtn = document.getElementById('wishlistBtn');
+document.querySelectorAll('.wishlist-btn').forEach(button => {
+  button.addEventListener('click', async () => {
+    const productId = button.dataset.productId;
+    console.log('Toggling wishlist for product ID:', productId);
 
-wishlistBtn.addEventListener('click', () => {
-  wishlistBtn.classList.toggle('active');
+    const res = await fetch(`/wishlist/${productId}`, { method: 'POST' });
+    const data = await res.json();
+
+    if (data.success) {
+      button.classList.toggle('active');
+    }
+  });
 });
+
 
 // Add to cart button
 

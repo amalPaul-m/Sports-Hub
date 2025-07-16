@@ -110,8 +110,27 @@ saveCropBtn.addEventListener('click', () => {
 const form = document.getElementById('productForm');
 const imageError = document.getElementById('imageError');
 
+  const regularPriceInput = document.getElementById('regularPrice');
+  const salePriceInput = document.getElementById('salePrice');
+  const salePriceError = document.getElementById('salePriceError');
+
 form.addEventListener('submit', async function (event) {
   event.preventDefault();
+
+
+  const regularPrice = parseFloat(regularPriceInput.value);
+  const salePrice = parseFloat(salePriceInput.value);
+
+  // Reset custom error
+  salePriceInput.classList.remove('is-invalid');
+  salePriceError.textContent = 'Sale price required.';
+
+  if (regularPrice < salePrice) {
+    salePriceInput.classList.add('is-invalid');
+    salePriceError.textContent = 'Sale price cannot be greater than regular price.';
+    return;
+  }
+
 
   if (!form.checkValidity() || croppedFiles.length < 0) {
     event.stopPropagation();

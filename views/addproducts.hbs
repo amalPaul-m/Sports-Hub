@@ -126,14 +126,14 @@
               <div class="col-md-6 mb-3">
                 <label class="form-label">Regular Price</label>
                 <input type="number" class="form-control shadow-none" name="regularPrice" required min="0"
-                  placeholder="Enter product MRP">
+                  placeholder="Enter product MRP" id="regularPrice">
                 <div class="invalid-feedback">Regular price required.</div>
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label">Sale Price</label>
                 <input type="number" class="form-control shadow-none" name="salePrice" required min="0"
-                  placeholder="Enter sale price">
-                <div class="invalid-feedback">Sale price required.</div>
+                  placeholder="Enter sale price" id="salePrice">
+                <div class="invalid-feedback" id="salePriceError">Sale price required.</div>
               </div>
             </div>
 
@@ -258,3 +258,4 @@
           </div>
         </div>
       </div>
+

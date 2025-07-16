@@ -9,7 +9,9 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const hbs = require('hbs');
 const dotenv = require('dotenv');
+const Razorpay = require('razorpay');
 dotenv.config();
+require('dotenv').config();
 const methodOverride = require('method-override');
 const moment = require('moment');
 const errorHandler = require('./middleware/errorHandler');
@@ -41,6 +43,7 @@ const checkoutRouter = require('./routes/checkout');
 const invoiceRouter = require('./routes/invoice');
 const orderslistRouter = require('./routes/orderslist');
 const returnsRouter = require('./routes/return');
+const wishlistRouter = require('./routes/wishlist');
 
 const app = express();
 
@@ -145,6 +148,10 @@ hbs.registerHelper('netAmount', function (a) {
   return (a/1.18).toFixed(2);
 });
 
+hbs.handlebars.registerHelper('includes', function (array, value) {
+    if (!array) return false;
+    return array.includes(value.toString());
+});
 
 // view engine setup
 
@@ -156,6 +163,8 @@ hbs.registerPartials(path.join(__dirname, 'views/partials'));
 hbs.registerHelper('or', function (a, b, options) {
     return a || b ? options.fn(this) : options.inverse(this);
 });
+
+
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -190,6 +199,7 @@ app.use('/checkout', checkoutRouter);
 app.use('/invoice', invoiceRouter);
 app.use('/orderslist', orderslistRouter);
 app.use('/return', returnsRouter);
+app.use('/wishlist', wishlistRouter);
 
 app.use(errorHandler);
 

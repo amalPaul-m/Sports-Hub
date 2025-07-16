@@ -1,5 +1,7 @@
 const productsSchema = require('../models/productsSchema')
 const productTypesSchema = require('../models/productTypesSchema')
+const wishlistSchema = require('../models/wishlistSchema')
+const usersSchema = require('../models/usersSchema');
 
 const getUserProducts = async function (req, res, next) {
   try {
@@ -44,6 +46,18 @@ const getUserProducts = async function (req, res, next) {
     const productMaterial = (await productsSchema.distinct('material')).sort();
     const productBrand = (await productsSchema.distinct('brandName')).sort();
 
+
+
+
+    const email = req.session.users?.email;
+    const usersData = await usersSchema.findOne({ email });
+
+    const wishlistProducts = await wishlistSchema.findOne({ userId: usersData._id });
+
+    if (wishlistProducts) {
+      wishlistProducts.productId = wishlistProducts.productId.map(id => id.toString());
+    }
+
     res.render('allproducts', {
       cssFile: '/stylesheets/listAllProducts.css',
       jsFile: '/javascripts/listAllProducts.js',
@@ -51,7 +65,8 @@ const getUserProducts = async function (req, res, next) {
       currentPage: page,
       totalPages,
       productMaterial,
-      productBrand
+      productBrand,
+      wishlistProducts: wishlistProducts.productId
     });
 
   } catch (err) {

@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const checkBlockedUser = require('../middleware/checkBlockedUser');
+const userAuthantication = require('../middleware/userAuthantication');
 const cartController = require('../controllers/cart')
 
-router.get('/', checkBlockedUser, cartController.getCart);
-router.post('/add-buy-cart', checkBlockedUser, cartController.productDetailAddCart);
-router.patch('/remove/:id', checkBlockedUser, cartController.removeCart);
+router.get('/',userAuthantication, checkBlockedUser, cartController.getCart);
+router.post('/add-buy-cart',userAuthantication, checkBlockedUser, cartController.productDetailAddCart);
+router.patch('/remove/:id',userAuthantication, checkBlockedUser, cartController.removeCart);
 
-router.patch('/increase/:productId', checkBlockedUser, cartController.increaseItemCount);
-router.patch('/decrease/:productId', checkBlockedUser, cartController.decreaseItemCount);
+router.patch('/increase/:productId',userAuthantication, checkBlockedUser, cartController.increaseItemCount);
+router.patch('/decrease/:productId',userAuthantication, checkBlockedUser, cartController.decreaseItemCount);
 
 
 

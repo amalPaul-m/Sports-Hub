@@ -29,6 +29,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "puppeteer": "^24.12.1",
+    "razorpay": "^2.9.6",
     "sweetalert": "^2.1.2",
     "uuid": "^11.1.0",
     "uuidv4": "^6.2.13"

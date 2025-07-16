@@ -28,7 +28,7 @@
 
       <ul class="navbar-nav mb-2 mb-lg-0 ">
         <li class="nav-item pe-4">
-          <a class="nav-link" href="#"><img src="images/wishlist.png" alt="wishlist"></a>
+          <a class="nav-link" href="/wishlist"><img src="images/wishlist.png" alt="wishlist"></a>
         </li>
         <li class="nav-item pe-4">
           <a class="nav-link" href="/cart"><img src="images/cart.png" alt="cart"></a>
@@ -95,7 +95,7 @@
             <h1>{{productDetails.productName}}</h1>
           </div>
           <div class="col col-md-2 col-lg-2 mt-5">
-            <button id="wishlistBtn" class="heart-button float-end">
+            <button id="" class="heart-button float-end wishlist-btn" data-product-id="{{productDetails._id}}">
               <svg class="heart-icon" viewBox="0 0 24 24">
                 <path
                   d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />

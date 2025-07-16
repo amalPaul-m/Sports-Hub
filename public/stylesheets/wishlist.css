@@ -1,0 +1,291 @@
+body {
+     font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    overflow-x: hidden;
+
+}
+
+
+/* tab link */
+
+.tab-link {
+      padding: 8px 2px;
+      margin-right: 10px;
+      border-bottom: 2px solid transparent;
+      color: #000;
+      cursor: pointer;
+    }
+    .tab-link.active {
+      border-color: black;
+      font-weight: bold;
+    }
+
+
+/* image-border setting */
+
+.img-border {
+    border: 0px black;
+    height: 160px;
+    margin-top: 20px;
+}
+
+
+
+
+
+h1 {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+h5 {
+    font-size: 16px;
+    font-weight: 300;
+}
+
+.slide {
+    margin-left: 20px;
+    font-weight: 500;
+    color: rgb(70, 70, 70);
+    
+}
+
+.slide:hover {
+    font-weight: 500;
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+}
+
+.filter-text-size {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.border-top {
+    width: 280px;
+    border-radius: 0px;
+    text-align: left;
+    outline: none;
+    border: none;
+}
+
+.border-top:focus,
+.border-top:active {
+  outline: none;
+  border: none;
+}
+
+.custom-checkbox .form-check-input:checked {
+  background-color: rgb(0, 0, 0); 
+  border-color: rgb(0, 0, 0);    
+}
+
+.dropdown-item:active {
+    background-color: #000000;
+}
+
+.prod-number {
+    font-size: 12px;
+}
+
+
+.product-card-bg {
+    border: 0px black;
+    background-color: #F6F6F6;
+    border-radius: 14px;
+    padding: 30px;
+    margin-top: 30px;
+    height: 380px;
+}
+
+.product-card-rating {
+    border: 0px black;
+    background-color: #006616;
+    color: #ffffff;
+    border-radius: 5px;
+    height: 5px;
+    width: 10px;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.product-card-img {
+    height: 150px;
+}
+
+/* ==================wishlist icon =========================== */
+
+
+.heart-button {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: -5px;
+}
+
+.heart-icon {
+  stroke: gray;
+  fill: none;
+  stroke-width: 1;
+  transition: all 0.3s ease;
+  height: 28px;
+  width: 28px;
+}
+
+.heart-button.active .heart-icon {
+  fill: red;
+  stroke: red;
+  animation: pop 0.5s ease;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.wishlist-msg {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff4d4d;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.heart-button.active .wishlist-msg {
+  opacity: 1;
+  animation: fadeOut 2s forwards 0.8s;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+.true .heart-icon {
+  fill: red;
+  stroke: red;
+}
+
+.true .wishlist-msg {
+  opacity: 1;
+  animation: fadeOut 2s forwards 0.8s;
+}
+
+/* ==================wishlist icon end =========================== */
+
+
+/* ================= add to cart button ================== */
+
+
+    .btn-addCart{
+      position: relative;
+      display: inline-block;
+      padding: 10px 52px;
+      background: #000000;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: background 0.3s ease;
+    }
+
+    
+    .btn-addCart::before {
+      content: "✔ Added";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      color: #006616;
+      font-size: 18px;
+      transition: transform 0.4s ease;
+      pointer-events: none;
+    }
+
+    .btn-addCart span {
+      display: inline-block;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .btn-addCart.clicked {
+      background: transparent;
+    }
+
+    .btn-addCart.clicked span {
+      transform: translateY(-30px);
+      opacity: 0;
+    }
+
+    .btn-addCart.clicked::before {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+
+    /* ======================== end add to cart ===================== */
+
+
+    .pagination-pro {
+
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination {
+        border: 0px;
+    }
+
+    .pagination-border {
+        border : 0px white;
+    }
+
+    .pagination-number {
+        border : 0px white;
+        color: black;
+    }
+
+    .pagination-number:hover, .pagination-number:active {
+        border : 0px white;
+        color: rgb(255, 255, 255);
+        background-color: #000000;
+        border-radius: 5px;
+    }
+
+
+
+    .active>.page-link, .page-link.active {
+    z-index: 3;
+    color: #ffffff;
+    background-color: #000000;
+    border-color: #000000;
+}
+
+
+

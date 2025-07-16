@@ -29,7 +29,7 @@ document.querySelectorAll('.qty-btn').forEach(button => {
     if (data.success) {
       // update quantity
       document.querySelector(`#price-total`).textContent = data.grandTotal.toFixed(2);
-      document.querySelector(`#cart-total`).textContent = data.cartTotal.toFixed(2);
+      document.querySelector(`#cart-total`).textContent = data.netAmount.toFixed(2);
       document.querySelector(`#total-tax`).textContent = data.totalTax.toFixed(2);
     } else if (data.removeItem) {
       // Optionally remove the item if quantity is 0
