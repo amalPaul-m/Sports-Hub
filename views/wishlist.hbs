@@ -53,7 +53,7 @@
 
             <div class="container mt-5">
 
-                <span class="fw-semibold">Selected Products : <span><b>{{length}}</b></span></span>
+                <span class="fw-semibold">Selected Products : <span>{{wishlist.productId.length}}</span></span>
 
 
                 <div class="dropdown float-end">
@@ -75,7 +75,7 @@
 
     <div class="tab-content">
 
-        
+        {{#if wishlist.productId.length}}
         <div class="row">
         {{#each wishlist}}
         {{#each this.productId}}
@@ -114,6 +114,11 @@
         {{/each}}
         {{/each}}
         </div>
+        {{else}}
+            <div class="text-center mt-5 pt-5 mb-5 pb-5">
+            <p class="text-secondary mt-5 mb-5 pb-5">No Products are Available in Wishlist</p>
+            </div>
+        {{/if}}
         
 
 

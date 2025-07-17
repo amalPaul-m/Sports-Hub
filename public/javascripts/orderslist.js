@@ -75,3 +75,10 @@ btn4.addEventListener('click', () => {
     btn3.disabled = true;
     btn3.classList.add('disabled');
 });
+
+
+
+function showProcessing() {
+    document.getElementById('processing-overlay').style.display = 'flex';
+    document.getElementById('accept').style.display = 'none';
+}

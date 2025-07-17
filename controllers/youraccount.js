@@ -3,6 +3,7 @@ const addressSchema = require('../models/addressSchema');
 const ordersSchema = require('../models/ordersSchema');
 const productsSchema = require('../models/productsSchema');
 const returnSchema = require('../models/returnSchema');
+const walletSchema = require('../models/walletSchema')
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
@@ -300,6 +301,8 @@ const cancelorder = async (req, res, next) => {
         { new: true, runValidators: true }
         );
 
+       
+
         if (!order) {
             return res.status(404).send('Order not found');
         }
@@ -347,15 +350,54 @@ const cancelorder = async (req, res, next) => {
         );
         }
 
+        //amount return to wallet
 
-        res.redirect('/youraccount/yourorders?success=3');
+        if(order.paymentInfo[0].paymentMethod==='online'||order.paymentInfo[0].paymentMethod==='wallet'){
 
-    } catch (error) {
-        err.message = 'Error cancel order';
-        console.log(error);
-        next(error);
-    }
-};
+        const email = req.session.users?.email;
+        const usersData = await usersSchema.findOne({ email });
+        const totalAmount = item.price*item.quantity;
+
+        const existingWallet = await walletSchema.findOne({ userId: usersData._id });
+
+        if (existingWallet) {
+            await walletSchema.updateOne(
+                { userId: usersData._id },
+                {
+                    $inc: { balance: totalAmount },
+                    $push: {
+                        transaction: {
+                            type: 'add',
+                            amount: totalAmount,
+                            description: 'Refund for cancelled order',
+                        }
+                    }
+                }
+            );
+        } else {
+            const walletData = new walletSchema({
+                userId: usersData._id,
+                balance: totalAmount,
+                transaction: [{
+                    type: 'add',
+                    amount: totalAmount,
+                    description: 'Refund for cancelled order',
+                }]
+            });
+
+                await walletData.save();
+
+                }
+            }
+
+                res.redirect('/youraccount/yourorders?success=3');
+
+            } catch (error) {
+                error.message = 'Error cancel order';
+                console.log(error);
+                next(error);
+            }
+        };
 
 
 

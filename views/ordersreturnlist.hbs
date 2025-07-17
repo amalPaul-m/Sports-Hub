@@ -116,7 +116,7 @@
             <td>
 
                 <div class="dropdown">
-                <button class="btn btn-outline-dark dropdown-toggle btn-sm" data-bs-toggle="dropdown">Return Status</button>
+                <button class="btn btn-outline-dark dropdown-toggle btn-sm {{../../status}}-but" data-bs-toggle="dropdown">Return Status</button>
                 <ul class="dropdown-menu">
 
                     <li><a class="dropdown-item" href="" data-bs-toggle="modal" 
@@ -138,7 +138,7 @@
                           <h5>Order ID: <strong>#{{../this.orderId}}</strong></h5>
           
                           <div class="dropdown ms-3">
-                          <button class="btn btn-outline-dark dropdown-toggle btn-sm" data-bs-toggle="dropdown">Return Status</button>
+                          <button class="btn btn-outline-dark dropdown-toggle btn-sm {{../../status}}-but" data-bs-toggle="dropdown">Return Status</button>
                           <ul class="dropdown-menu">
 
                               <li><a class="dropdown-item" href="" data-bs-toggle="modal" 
@@ -231,24 +231,31 @@
             <div class="modal-dialog float-end me-5">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel">Accept Return Request </h1>
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Accept Return and <span class="text-danger">Refund Amount</span> </h1>
                   <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
                     aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  Are you sure you want to Accept Return Request ?
+                  Are you sure you want to Accept Return Request and initiate Refund ?
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
 
-                  <form action="/orderslist/accept/{{../../_id}}?_method=PATCH" method="POST">
+                  <form action="/orderslist/accept/{{../../_id}}?_method=PATCH" method="POST" onsubmit="showProcessing()">
                     <input type="hidden" name="_method" value="PATCH" />
-                    <button type="submit" class="btn btn-outline-success">Accept</button>
+                    <button type="submit" id="accept" class="btn btn-outline-success" style="display: flex;">Refund</button>
+                    
+                    <button class="btn outline-success text-success" id="processing-overlay" type="button" style="display: none;" disabled>
+                    <span class="spinner-border spinner-border-sm mt-1 me-2 text-success" role="status" aria-hidden="true"></span>
+                    Processing...
+                  </button>
                   </form>
                 </div>
               </div>
             </div>
           </div>
+
+
           
           {{!-- poup window mark as reject return --}}
 

@@ -1,5 +1,6 @@
 const ordersSchema = require('../models/ordersSchema');
 const returnsSchema = require('../models/returnSchema');
+const razorpayInstance = require('../configuration/razorpay');
 
 
 const getOrderslist = async (req, res,next) => {
@@ -189,17 +190,70 @@ const getReturnOrderslist = async (req, res, next) => {
 const acceptReturn = async (req, res, next) => {
     try {
         const returnId = req.params.id;
-        console.log(returnId);
 
-        const updatedReturn = await returnsSchema.findByIdAndUpdate(
-            returnId,
-            { status: 'accept' },
-            { new: true }
-        );
+        const updatedReturn = await returnsSchema.findById(
+            returnId
+
+        ).populate({
+        path: 'orderId',
+        select: 'paymentInfo' 
+        });
 
         if (!updatedReturn) {
             return res.status(404).send('Return request not found');
         }
+
+        const paymentInfo = updatedReturn.orderId?.paymentInfo;
+        const itemId = updatedReturn.productId;
+        const orderId = updatedReturn.orderId._id;
+
+        if (paymentInfo[0].paymentMethod === 'online'){
+
+            
+
+        const order = await ordersSchema.findOne(
+            { _id: orderId, "productInfo.productId": itemId },
+            { productInfo: { $elemMatch: { productId: itemId } } }
+        );
+
+        const productInfo = order.productInfo[0];
+        const totalAmount = productInfo.price*productInfo.quantity;
+            
+        await razorpayInstance.payments.refund(paymentInfo[0].transactionId, {
+            amount: totalAmount * 100, // Amount in paise
+        });
+
+
+        await returnsSchema.findByIdAndUpdate(
+            returnId,
+            { status: 'accept' },
+            { new: true }
+        ).populate({
+        path: 'orderId',
+        select: 'paymentInfo' 
+        });
+
+        if (!updatedReturn) {
+            return res.status(404).send('Return request not found');
+        }
+
+        
+        }else {
+
+            await returnsSchema.findByIdAndUpdate(
+            returnId,
+            { status: 'accept' },
+            { new: true }
+        ).populate({
+        path: 'orderId',
+        select: 'paymentInfo' 
+        });
+
+        if (!updatedReturn) {
+            return res.status(404).send('Return request not found');
+        }
+
+    }
 
         res.redirect('/orderslist/ordersreturnlist');
 

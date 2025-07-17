@@ -19,4 +19,8 @@ router.post('/create-razorpay-order', userAuthantication, checkBlockedUser, chec
 router.get('/razorpay-success', userAuthantication, checkBlockedUser, checkoutControll.getRazorpaySuccess);
 router.get('/payment-cancelled', userAuthantication, checkBlockedUser, checkoutControll.getRazorpayFailure);
 
+router.post('/wallet-payment', userAuthantication, checkBlockedUser, checkoutControll.postWallet);
+
+router.get('/success', userAuthantication, checkBlockedUser, checkoutControll.getSuccess);
+
 module.exports = router;

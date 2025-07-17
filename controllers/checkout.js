@@ -2,6 +2,7 @@ const addressSchema = require('../models/addressSchema');
 const usersSchema = require('../models/usersSchema');
 const cartSchema = require('../models/cartSchema');
 const ordersSchema = require('../models/ordersSchema');
+const walletSchema = require('../models/walletSchema');
 const mongoose = require('mongoose');
 const productsSchema = require('../models/productsSchema');
 const generateOrderId = require('../helpers/generateOrderId');
@@ -122,10 +123,10 @@ const getConfirm = async (req,res,next) => {
         }, 0);
 
     const tax = Math.round(totalAmount-(totalAmount/1.18)); 
-    const netAmount = parseFloat(Math.round(totalAmount/1.18));
+    const net = parseFloat(Math.round(totalAmount/1.18));
 
     res.render('confirm', {cssFile: '/stylesheets/confirm.css', cartItem, orderAddress, 
-        totalAmount, tax, netAmount});
+        totalAmount, tax, net});
 
   } catch(err) {
         err.message = 'not get data';  
@@ -150,9 +151,19 @@ const postConfirm = async (req,res,next) => {
 };
 
 const getPayment = async (req,res,next) => {
+
+    const email = req.session.users?.email;
+    if (!email) return res.redirect('/login');
+
+    const usersData = await usersSchema.findOne({ email });
+    if (!usersData) return res.redirect('/login');
+
+    const wallet = await walletSchema.findOne({userId:usersData._id});
+
     res.render('payment',{cssFile: '/stylesheets/payment.css', 
         jsFile: '/javascripts/payment.js',
-        razorpayKey: process.env.RAZORPAY_API_KEY
+        razorpayKey: process.env.RAZORPAY_API_KEY,
+        wallet
     });
 };
 
@@ -246,7 +257,107 @@ const postPayment = async (req,res,next) => {
 
 
 
+const postWallet = async (req,res,next) => {
 
+  try {
+        const email = req.session.users?.email;
+        const userData = await usersSchema.findOne({ email });
+        const user = userData._id;
+        const wallet = await walletSchema.findOne({ userId: user });
+
+
+        const rawAddress = req.session.selectedAddressId;
+        const addressId = typeof rawAddress === 'object' ? rawAddress.addressId : rawAddress;
+
+            if (!mongoose.Types.ObjectId.isValid(addressId)) {
+              res.redirect('/login')
+            }
+
+            const orderId = await generateOrderId();
+
+            const validAddressId = new mongoose.Types.ObjectId(addressId);
+            const paymentType = 'wallet';    
+            const cartItem = await cartSchema.findOne({ userId: user });
+
+            const totalAmount = cartItem.items.reduce((sum, item) => {
+                return sum + item.price * item.quantity;
+                }, 0);
+
+
+                if (!wallet || wallet.balance < totalAmount) {
+                    return res.json({ success: false, message: 'Sorry! Insufficient Wallet Balance' });
+                }
+
+                
+                 await walletSchema.updateOne(
+                 { userId: user._id },
+                 {
+                  $inc: { balance: -totalAmount },
+                  $push: {
+                  transaction: {
+                  type: 'deduct',
+                  amount: totalAmount,
+                  description: 'Deduction for purchase'
+                  }}});
+                       
+                                           
+            const newOrder = new ordersSchema({
+              orderId,
+              userId: user,
+              deliveryStatus: 'pending',
+              productInfo: cartItem.items.map(item => ({
+                productId: item.productId._id,
+                quantity: item.quantity,
+                price : item.price,
+                color: item.color,
+                size: item.size,
+              })),
+              addressId: validAddressId,
+              paymentInfo: {
+                totalAmount: totalAmount,
+                paymentMethod: paymentType,
+                paymentStatus: 'paid'
+              }
+            });
+
+            await newOrder.save();
+
+            //update quantity
+
+            for (const item of newOrder.productInfo) {
+              const normalizedColor = String(item.color).replace('#', '').trim().toLowerCase();
+              const normalizedSize = String(item.size).trim().toLowerCase();
+
+              const updateResult = await productsSchema.updateOne(
+                {
+                  _id: item.productId,
+                  "variants.color": { $regex: new RegExp(`^#?${normalizedColor}$`, 'i') },
+                  "variants.size": { $regex: new RegExp(`^${normalizedSize}$`, 'i') }
+                },
+                {
+                  $inc: { "variants.$.stockQuantity": -item.quantity }
+                }
+              );
+
+              if (updateResult.modifiedCount === 0) {
+                throw new Error(`Failed to update stock for product ${item.productId}`);
+              }
+            }
+
+
+                res.json({ success: true });
+
+                await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
+                delete req.session.selectedAddressId;
+                delete req.session.selectedPaymentType;
+
+               
+
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+}
 
 
 
@@ -426,5 +537,14 @@ const getRazorpayFailure = (req, res, next) => {
     });
 };
 
+
+
+const getSuccess =  (req,res,next) => {
+
+  res.render('ordersuccess');
+  
+}
+
 module.exports = {getCheckout, postCheckout, getPayment, postPayment, 
-  getConfirm, postConfirm, createRazorpayOrder, getRazorpaySuccess, getRazorpayFailure}
+  getConfirm, postConfirm, createRazorpayOrder, getRazorpaySuccess, 
+  getRazorpayFailure, postWallet, getSuccess}

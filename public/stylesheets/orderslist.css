@@ -311,6 +311,25 @@
   border-radius: 5px;
 }
 
+.accept-but,
+.reject-but {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+.delivered-but {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.cancelled-but {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 
 .dropdown-item.disabled {
     opacity: 0.5;

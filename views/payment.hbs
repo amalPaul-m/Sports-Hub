@@ -68,7 +68,7 @@
 
         <div class="col col-md-6 col-sm-12">
             <!-- Wallet -->
-            <a href="" class="text-decoration-none text-dark">
+            <a href="" data-bs-toggle="modal" data-bs-target="#exampleModal" class="text-decoration-none text-dark">
                 <label class="payment-option">
                     <span class="ps-4">
                         <div class="payment-label">Wallets</div>
@@ -76,7 +76,72 @@
                     </span>
                 </label>
             </a>
+            
         </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade bg-setting" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body bg-dark">
+        <span class="fw-bold fs-5 text-white">Sports Hub Wallet</span>
+
+
+        <div class="row">
+            <div class="col col-md-5">
+                <div class="card mb-3 mt-3">
+                    <div class="card__info">
+                        <div class="card__logo">Sports Hub</div>
+                        <div class="card__chip">
+                            <svg class="card__chip-lines" role="img" width="20px" height="20px" viewBox="0 0 100 100"
+                                aria-label="Chip">
+                                <g opacity="0.8">
+                                    <polyline points="0,50 35,50" fill="none" stroke="#000" stroke-width="2" />
+                                    <polyline points="0,20 20,20 35,35" fill="none" stroke="#000" stroke-width="2" />
+                                    <polyline points="50,0 50,35" fill="none" stroke="#000" stroke-width="2" />
+                                    <polyline points="65,35 80,20 100,20" fill="none" stroke="#000" stroke-width="2" />
+                                    <polyline points="100,50 65,50" fill="none" stroke="#000" stroke-width="2" />
+                                    <polyline points="35,35 65,35 65,65 35,65 35,35" fill="none" stroke="#000"
+                                        stroke-width="2" />
+                                    <polyline points="0,80 20,80 35,65" fill="none" stroke="#000" stroke-width="2" />
+                                    <polyline points="50,100 50,65" fill="none" stroke="#000" stroke-width="2" />
+                                    <polyline points="65,65 80,80 100,80" fill="none" stroke="#000" stroke-width="2" />
+                                </g>
+                            </svg>
+                            <div class="card__chip-texture"></div>
+                        </div>
+                        <div class="card__type">Wallet</div>
+                        <div class="card__number">
+                            <span class="card__digit-group">0000</span>
+                            <span class="card__digit-group">0021</span>
+                            <span class="card__digit-group">4748</span>
+                            <span class="card__digit-group">3647</span>
+                        </div>
+                        <div class="card__valid-thru" aria-label="Valid thru"></div>
+                        <div class="card__exp-date"><time datetime="2038-01"></time></div>
+                        <div class="card__name" aria-label="Dee Stroyer">Premium Customer</div>
+        
+                    </div>
+                    <div class="card__texture"></div>
+                </div>
+            </div>
+            <div class="col col-md-7 text-white">
+        
+                <h3 class="mt-2">Balance ₹ {{wallet.balance}}.00</h3>
+                <p class="fw-light opacity-50" style="font-size: 12px;">It allows users to store refunded amounts, receive offers as
+                     wallet credits, and later use this balance for future purchases.</p>
+                <p id="walletError" class="text-light"></p>
+            </div>
+        </div>
+      </div>
+        <button id="walletPayBtn" type="button" class="btn fw-bold py-3">Make Payment</button>
+    </div>
+  </div>
+</div>
+
+
     </div>
 
     <!-- COD -->

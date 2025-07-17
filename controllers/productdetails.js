@@ -1,6 +1,7 @@
 const productsSchema = require('../models/productsSchema');
 const cartSchema = require('../models/cartSchema');
 const usersSchema = require('../models/usersSchema');
+const wishlistSchema = require('../models/wishlistSchema');
 
 
 const getProductDetails = async function (req, res, next) {
@@ -26,6 +27,8 @@ const getProductDetails = async function (req, res, next) {
 
         
         const productDetails = await productsSchema.findOne({ _id : id });
+        const productDetailsId = productDetails.toObject();
+
 
         const cat = productDetails.category;
         const relatedProducts = await productsSchema.find({_id: { $ne: id },category: cat}).limit(4);
@@ -56,6 +59,10 @@ const getProductDetails = async function (req, res, next) {
             message = 'out of Stock'
         }
 
+        const wishlistProductIds = await wishlistSchema.find({ userId:userId }).distinct('productId');
+        productDetails.isWishlisted = wishlistProductIds
+        .map(id => id.toString())
+        .includes(productDetails._id.toString());
 
         if (productDetails.isActive) {
 

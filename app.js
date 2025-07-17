@@ -44,6 +44,7 @@ const invoiceRouter = require('./routes/invoice');
 const orderslistRouter = require('./routes/orderslist');
 const returnsRouter = require('./routes/return');
 const wishlistRouter = require('./routes/wishlist');
+const walletRouter = require('./routes/wallet')
 
 const app = express();
 
@@ -100,7 +101,9 @@ hbs.registerHelper('subtract', (a, b) => a - b);
 hbs.registerHelper('eq', (a, b) => a === b);
 hbs.registerHelper('gt', (a, b) => a > b);
 hbs.registerHelper('lt', (a, b) => a < b);
-hbs.registerHelper('eq', (a, b) => a === b);
+hbs.registerHelper('or', function (a, b, options) {
+    return a || b ? options.fn(this) : options.inverse(this);
+});
 hbs.registerHelper('json', function (context) {
   return JSON.stringify(context);
 });
@@ -138,6 +141,17 @@ hbs.registerHelper('formatDateFull', function(date) {
     month: 'long',      
     year: 'numeric'     
   }).replace(',', ''); 
+});
+
+
+hbs.registerHelper('splitTime', function (datetime) {
+    const date = new Date(datetime);
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes}:${seconds} ${ampm}`;
 });
 
 hbs.registerHelper('gst', function (a) {
@@ -200,6 +214,7 @@ app.use('/invoice', invoiceRouter);
 app.use('/orderslist', orderslistRouter);
 app.use('/return', returnsRouter);
 app.use('/wishlist', wishlistRouter);
+app.use('/wallet', walletRouter);
 
 app.use(errorHandler);
 

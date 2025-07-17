@@ -24,3 +24,23 @@ document.getElementById('rzp-button').onclick = async function () {
     const rzp1 = new Razorpay(options);
     rzp1.open();
 };
+
+
+
+document.getElementById('walletPayBtn').addEventListener('click', function () {
+    fetch('/checkout/wallet-payment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/checkout/success';
+        } else {
+            document.getElementById('walletError').textContent = data.message;
+        }
+    })
+    .catch(err => console.error(err));
+});

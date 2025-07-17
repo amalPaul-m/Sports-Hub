@@ -113,7 +113,7 @@
             <td>
 
                 <div class="dropdown">
-                <button class="btn btn-outline-dark dropdown-toggle btn-sm" data-bs-toggle="dropdown">Change Status</button>
+                <button class="btn btn-outline-dark dropdown-toggle btn-sm {{this.deliveryStatus}}-but" data-bs-toggle="dropdown">Change Status</button>
                 <ul class="dropdown-menu">
 
                     <li><button type="button" class="dropdown-item status-btn" data-bs-toggle="modal" 
@@ -167,7 +167,7 @@
                               <div class="order-box bg-white mb-4">
 
                                   {{#each this.productInfo}}
-                                  {{#if (eq this.status "confirmed")}}
+                                  {{#or (eq this.status "confirmed") (eq this.status "returned")}}
                                   {{!-- {{#if (eq this.status "confirmed")}} --}}
                                   <div class="row bordrer-card">
                                       <div class="col col-md-2">
@@ -195,7 +195,7 @@
                                           {{/unless}}
                                       </div>
                                   </div>
-                                  {{/if}}
+                                  {{/or}}
                                   {{/each}}
 
 

@@ -24,20 +24,36 @@ const getUserProducts = async function (req, res, next) {
       .find({ isActive: true })
       .sort({ updatedAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
+
+    const email = req.session.users?.email;
+    const usersData = await usersSchema.findOne({ email });
+
+     // Fetch user's wishlist product IDs
+    const wishlistProductIds = await wishlistSchema.find({ userId: usersData._id }).distinct('productId');
+    const wishlistProductIdStrings = wishlistProductIds.map(id => id.toString());
+
+    // Mark wishlisted products
+    const updatedProducts = products.map(product => ({
+        ...product,
+        isWishlisted: wishlistProductIdStrings.includes(product._id.toString())
+    }));
+          
+
 
     // Group by category
     const groupedData = categories.map(cat => ({
       _id: cat._id,
       name: cat.name,
-      products: products.filter(p => p.category === cat.name),
+      products: updatedProducts.filter(p => p.category === cat.name),
     }));
 
     // All tab
     const allProductsTab = {
       _id: 'all',
       name: 'All',
-      products: products, // already paginated
+      products: updatedProducts // already paginated
     };
 
     const finalData = [allProductsTab, ...groupedData];
@@ -48,16 +64,7 @@ const getUserProducts = async function (req, res, next) {
 
 
 
-
-    const email = req.session.users?.email;
-    const usersData = await usersSchema.findOne({ email });
-
-    const wishlistProducts = await wishlistSchema.findOne({ userId: usersData._id });
-
-    if (wishlistProducts) {
-      wishlistProducts.productId = wishlistProducts.productId.map(id => id.toString());
-    }
-
+  
     res.render('allproducts', {
       cssFile: '/stylesheets/listAllProducts.css',
       jsFile: '/javascripts/listAllProducts.js',
@@ -65,8 +72,7 @@ const getUserProducts = async function (req, res, next) {
       currentPage: page,
       totalPages,
       productMaterial,
-      productBrand,
-      wishlistProducts: wishlistProducts.productId
+      productBrand
     });
 
   } catch (err) {
@@ -115,18 +121,32 @@ const filterUserProducts = async function (req, res, next) {
       .find(filter)
       .sort(sortOption)
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
+
+    const email = req.session.users?.email;
+    const usersData = await usersSchema.findOne({ email });
+
+     // Fetch user's wishlist product IDs
+    const wishlistProductIds = await wishlistSchema.find({ userId: usersData._id }).distinct('productId');
+    const wishlistProductIdStrings = wishlistProductIds.map(id => id.toString());
+
+    // Mark wishlisted products
+    const updatedProducts = products.map(product => ({
+        ...product,
+        isWishlisted: wishlistProductIdStrings.includes(product._id.toString())
+    }));
 
     const groupedData = categories.map(cat => ({
       _id: cat._id,
       name: cat.name,
-      products: products.filter(p => p.category === cat.name),
+      products: updatedProducts.filter(p => p.category === cat.name),
     }));
 
     const allProductsTab = {
       _id: 'all',
       name: 'All',
-      products: products,
+      products: updatedProducts,
     };
 
     const finalData = [allProductsTab, ...groupedData];
@@ -177,12 +197,28 @@ const searchUserProducts = async (req,res,next)=>{
       .find(filter)
       .sort({ updatedAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
+
+
+    const email = req.session.users?.email;
+    const usersData = await usersSchema.findOne({ email });
+
+     // Fetch user's wishlist product IDs
+    const wishlistProductIds = await wishlistSchema.find({ userId: usersData._id }).distinct('productId');
+    const wishlistProductIdStrings = wishlistProductIds.map(id => id.toString());
+
+    // Mark wishlisted products
+    const updatedProducts = products.map(product => ({
+        ...product,
+        isWishlisted: wishlistProductIdStrings.includes(product._id.toString())
+    }));
+
 
     const allProductsTab = {
       _id: 'all',
       name: 'All',
-      products: products,
+      products: updatedProducts,
     };
 
     const finalData = [allProductsTab];
