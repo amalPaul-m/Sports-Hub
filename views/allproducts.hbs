@@ -153,7 +153,7 @@
 
           <div class="container mt-5 ms-4">
 
-            <span>Selected Products : <span><b>{{length}}</b></span></span>
+            <span>Selected Products : <span><b>{{this.length}}</b></span></span>
 
 
             <div class="dropdown float-end">
@@ -209,7 +209,7 @@
                         class="product-card-img mx-auto d-block">
                     </div>
                     <h5 class="text-center pt-2 text-black"><b>{{productName}}</b></h5>
-                    <h2 class="text-center pt-2 fs-4">₹ <span>{{salePrice}}.00</span></h2>
+                    <h2 class=" pt-2 fs-5"><span>₹ {{salePrice}}</span> <del class="fs-6 fw-normal opacity-50">₹{{this.regularPrice}}</del></h2>
                   </button>
                   {{!-- <div class="text-center cart-button"><button type="button"
                       class="btn btn-outline-dark mt-1 px-5 mb-3 btn-addCart">Add to Cart</button>

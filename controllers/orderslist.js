@@ -1,6 +1,8 @@
 const ordersSchema = require('../models/ordersSchema');
 const returnsSchema = require('../models/returnSchema');
 const razorpayInstance = require('../configuration/razorpay');
+const walletSchema = require('../models/walletSchema');
+const usersSchema = require('../models/usersSchema');
 
 
 const getOrderslist = async (req, res,next) => {
@@ -206,6 +208,7 @@ const acceptReturn = async (req, res, next) => {
         const paymentInfo = updatedReturn.orderId?.paymentInfo;
         const itemId = updatedReturn.productId;
         const orderId = updatedReturn.orderId._id;
+        let totalAmount = 0;
 
         if (paymentInfo[0].paymentMethod === 'online'){
 
@@ -216,11 +219,38 @@ const acceptReturn = async (req, res, next) => {
             { productInfo: { $elemMatch: { productId: itemId } } }
         );
 
+        const orderData = await ordersSchema.findOne({
+            _id: orderId
+        })
+
         const productInfo = order.productInfo[0];
-        const totalAmount = productInfo.price*productInfo.quantity;
+        totalAmount = productInfo.price*productInfo.quantity;
+
+
+                let returnAmount = 0;
+        
+                if(orderData.couponInfo?.[0]?.discountAmount!==null && orderData.couponInfo?.[0]?.discountAmount!==0){
+        
+                    const discount = orderData.couponInfo?.[0]?.discountAmount;
+                    const count = orderData.productInfo.length;
+                    const difference = discount / count;
+                    returnAmount = Math.ceil(totalAmount - difference);
+        
+        
+                }else if(orderData.couponInfo?.[0]?.discountPercentage!==null && orderData.couponInfo?.[0]?.discountPercentage!==0){
+        
+                    const discountPer = orderData.couponInfo?.[0]?.discountPercentage;
+                    const discount = totalAmount * (discountPer / 100);
+                    returnAmount = Math.ceil(totalAmount - discount);
+                }else {
+                    
+                    returnAmount = totalAmount;
+                }
+
+
             
         await razorpayInstance.payments.refund(paymentInfo[0].transactionId, {
-            amount: totalAmount * 100, // Amount in paise
+            amount: returnAmount * 100, // Amount in paise
         });
 
 
@@ -240,14 +270,85 @@ const acceptReturn = async (req, res, next) => {
         
         }else {
 
+
+            const order = await ordersSchema.findOne(
+            { _id: orderId, "productInfo.productId": itemId },
+            { productInfo: { $elemMatch: { productId: itemId } } }
+            );
+
+            const productInfo = order.productInfo[0];
+            totalAmount = productInfo.price*productInfo.quantity;
+
+            const email = req.session.users?.email;
+            const usersData = await usersSchema.findOne({ email });
+
+            const orderData = await ordersSchema.findOne({_id: orderId});
+
+            
+
+            let returnAmount = 0;
+        
+                if(orderData.couponInfo?.[0]?.discountAmount!==null && orderData.couponInfo?.[0]?.discountAmount!==0){
+        
+                    const discount = orderData.couponInfo?.[0]?.discountAmount || 0;
+                    const count = orderData.productInfo.length;
+                    const difference = discount / count;
+                    returnAmount = Math.ceil(totalAmount - difference);
+        
+        
+                }else if(orderData.couponInfo?.[0]?.discountPercentage!==null && orderData.couponInfo?.[0]?.discountPercentage!==0){
+        
+                    const discountPer = orderData.couponInfo?.[0]?.discountPercentage  || 0;
+                    const discount = totalAmount * (discountPer / 100);
+                    returnAmount = Math.ceil(totalAmount - discount);
+                    
+                }else {
+
+                    returnAmount = totalAmount;
+
+                }
+
+
+                const existingWallet = await walletSchema.findOne({ userId: usersData._id });
+            
+                    if (existingWallet) {
+                        await walletSchema.updateOne(
+                            { userId: usersData._id },
+                            {
+                                $inc: { balance: returnAmount },
+                                $push: {
+                                    transaction: {
+                                        type: 'add',
+                                        amount: returnAmount,
+                                        description: 'Refund for returned order',
+                                    }
+                                }
+                            }
+                        );
+                    } else {
+                        const walletData = new walletSchema({
+                            userId: usersData._id,
+                            balance: returnAmount,
+                            transaction: [{
+                                type: 'add',
+                                amount: returnAmount,
+                                description: 'Refund for returned order',
+                            }]
+                        });
+            
+                            await walletData.save();
+            
+                    }
+            
+
             await returnsSchema.findByIdAndUpdate(
             returnId,
             { status: 'accept' },
             { new: true }
-        ).populate({
-        path: 'orderId',
-        select: 'paymentInfo' 
-        });
+            ).populate({
+            path: 'orderId',
+            select: 'paymentInfo' 
+            });
 
         if (!updatedReturn) {
             return res.status(404).send('Return request not found');

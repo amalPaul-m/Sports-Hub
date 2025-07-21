@@ -41,24 +41,25 @@
 
 <div class="container py-5">
 
-    <div class="mb-4">
-        <h4 class="pb-3">Your wallet balance <span class="wallet-balance ms-3">₹{{walletData.balance}}.00</span></h4>
-        <div class="input-group my-3">
-            <span class="input-group-text fw-bold py-2 fs-5">₹</span>
-            <input type="number" id="walletInput" class="form-control shadow-none" placeholder="Add money to your Wallet">
-            <button class="btn btn-dark px-5 fw-bold">PAY</button>
-            <button class="btn btn-outline-dark ms-3 fw-bold quick-add" data-amount="100">₹100</button>
-            <button class="btn btn-outline-dark ms-3 fw-bold quick-add" data-amount="200">₹200</button>
-            <button class="btn btn-outline-dark ms-3 fw-bold quick-add" data-amount="500">₹500</button>
-            <button class="btn btn-outline-dark ms-3 fw-bold quick-add" data-amount="1000">₹1000</button>
-            <button class="btn btn-outline-dark ms-3 fw-bold quick-add" data-amount="2000">₹2000</button>
+        <div class="mb-4">
+            <h4 class="pb-3">Your wallet balance <span class="wallet-balance ms-3">₹{{walletData.balance}}.00</span></h4>
+            <div class="input-group my-3">
+                <span class="input-group-text fw-bold py-2 fs-5">₹</span>
+                <input type="number" id="walletInput" class="form-control shadow-none" name="walletAmount" placeholder="Add money to your Wallet" min="50" required>
+                <button type="button" id="walletPayBtn" class="btn btn-dark px-5 fw-bold">PAY</button>
+                <span class="btn btn-outline-dark ms-3 pt-2 fw-bold quick-add" data-amount="100">₹100</span>
+                <span class="btn btn-outline-dark ms-3 pt-2 fw-bold quick-add" data-amount="200">₹200</span>
+                <span class="btn btn-outline-dark ms-3 pt-2 fw-bold quick-add" data-amount="500">₹500</span>
+                <span class="btn btn-outline-dark ms-3 pt-2 fw-bold quick-add" data-amount="1000">₹1000</span>
+                <span class="btn btn-outline-dark ms-3 pt-2 fw-bold quick-add" data-amount="2000">₹2000</span>
+            </div>
+            <span id="wallet-amount-error" class="text-danger"></span>
         </div>
-    </div>
+    
 
-    <h6 class="mb-4 pt-3 fs-5">Transaction History</h6>
+    <h6 class="mb-4 pt-4 fs-5">Transaction History</h6>
 
-    {{#with walletData}}
-    {{#each this.transaction}}
+    {{#each transactions}}
     {{#if (eq this.type "add")}}
     <div class="transaction">
         <div>
@@ -79,16 +80,36 @@
     </div>
     {{/if}}
     {{/each}}
-    {{/with}}
 
-    <nav>
+    <!-- Pagination -->
+    <div class="mt-5 mb-4 pagination-pro">
+      <nav aria-label="Page navigation example">
         <ul class="pagination">
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
-            <li class="page-item"><a class="page-link" href="#">4</a></li>
+          {{#if (gt currentPage 1)}}
+          <li class="page-item">
+            <a class="page-link pagination-border shadow-none" href="/wallet?page={{subtract currentPage 1}}"
+              aria-label="Previous">
+              <span aria-hidden="true" class="text-black">&lang;</span>
+            </a>
+          </li>
+          {{/if}}
+          {{#each (pagination totalPages)}}
+          <li class="page-item ms-2 {{#if (eq this ../currentPage)}}active{{/if}}">
+            <a class="page-link pagination-number" href="/wallet?page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+
+          {{#if (lt currentPage totalPages)}}
+          <li class="page-item ms-2">
+            <a class="page-link pagination-border shadow-none" href="/wallet?page={{add currentPage 1}}"
+              aria-label="Next">
+              <span aria-hidden="true" class="text-black">&rang;</span>
+            </a>
+          </li>
+          {{/if}}
         </ul>
-    </nav>
+      </nav>
+    </div>
 
 </div>
 <!--Footer-->
@@ -138,3 +159,7 @@
 
     </div>
 </div>
+
+<script>
+    const razorpayKey = '{{razorpayKey}}';
+</script>

@@ -2,9 +2,44 @@ const productsSchema = require('../models/productsSchema')
 const productTypesSchema = require('../models/productTypesSchema')
 const wishlistSchema = require('../models/wishlistSchema')
 const usersSchema = require('../models/usersSchema');
+const offersSchema = require('../models/offersSchema');
 
 const getUserProducts = async function (req, res, next) {
   try {
+
+    //Active offers Checking
+
+    const productsList = await productsSchema.find();
+
+    for(const product of productsList) {
+
+      if(product.discountPercentage>0) {
+      const currentDate = new Date();
+      const activeFrom = new Date(product.startDate);
+      const expireTo = new Date(product.endDate);
+
+      const dateCheck = currentDate >= activeFrom && currentDate <= expireTo;
+console.log(dateCheck)
+      if(dateCheck){
+        const offerAmount = Math.ceil(product.regularPrice - ((product.regularPrice * product.
+        discountPercentage)/100));
+
+        await productsSchema.findByIdAndUpdate({_id: product._id},
+          {$set: {salePrice: offerAmount}}
+        );
+      }else{
+        await productsSchema.findByIdAndUpdate({_id: product._id},
+          {$set: {salePrice: product.regularPrice}}
+        );
+      }
+
+    }else {
+        await productsSchema.findByIdAndUpdate({_id: product._id},
+          {$set: {salePrice: product.regularPrice}}
+        );
+    }
+    }
+
 
     // Pagination
     const page = Math.max(parseInt(req.query.page) || 1, 1);

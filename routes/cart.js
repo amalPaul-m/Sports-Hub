@@ -11,6 +11,7 @@ router.patch('/remove/:id',userAuthantication, checkBlockedUser, cartController.
 router.patch('/increase/:productId',userAuthantication, checkBlockedUser, cartController.increaseItemCount);
 router.patch('/decrease/:productId',userAuthantication, checkBlockedUser, cartController.decreaseItemCount);
 
+router.post('/checkCoupon', userAuthantication, checkBlockedUser, cartController.checkCoupon);
 
 
 module.exports = router;

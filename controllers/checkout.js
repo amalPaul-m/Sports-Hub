@@ -8,6 +8,7 @@ const productsSchema = require('../models/productsSchema');
 const generateOrderId = require('../helpers/generateOrderId');
 const razorpayInstance = require('../configuration/razorpay');
 const transactionSchema = require('../models/transactionSchema');
+const couponSchema = require('../models/couponSchema');
 
 const getCheckout = async (req,res,next) => {
   
@@ -51,6 +52,8 @@ const getCheckout = async (req,res,next) => {
     if (unavailableItems.length > 0) {
       return res.redirect('/cart?error=out_of_stock');
     }
+
+
 
     const addressData = await addressSchema.find({ userId: user });
 
@@ -125,8 +128,39 @@ const getConfirm = async (req,res,next) => {
     const tax = Math.round(totalAmount-(totalAmount/1.18)); 
     const net = parseFloat(Math.round(totalAmount/1.18));
 
+    
+    // COUPON HANDLING
+
+    const code = req.session.couponCode;
+       
+    let payableAmount=0;
+    let discountAmount=0;
+
+ 
+    if(code){
+
+    const couponData = await couponSchema.findOne({ code: code });
+    
+    if(couponData.discountAmount !== null) {
+
+       payableAmount = totalAmount-couponData.discountAmount;
+       discountAmount = couponData.discountAmount;
+
+    } else if(couponData.discountPercentage !==null) {
+
+      discountAmount = Math.floor((couponData.discountPercentage / 100) * totalAmount);
+      payableAmount = Math.floor(totalAmount - discountAmount);
+    }
+
+  }else {
+    payableAmount = totalAmount;
+    discountAmount = 0;
+  }
+    
+    req.session.payableAmount=payableAmount;
+
     res.render('confirm', {cssFile: '/stylesheets/confirm.css', cartItem, orderAddress, 
-        totalAmount, tax, net});
+       totalAmount, tax, net, payableAmount, discountAmount, code });
 
   } catch(err) {
         err.message = 'not get data';  
@@ -147,6 +181,13 @@ const postConfirm = async (req,res,next) => {
   //   req.session.selectedPaymentType = paymentType;
     res.redirect('/checkout/payment');
     
+
+};
+
+const removeConfirm = (req,res,next) => {
+
+  delete req.session.couponCode;
+  res.redirect('/checkout/confirm');
 
 };
 
@@ -178,8 +219,6 @@ const postPayment = async (req,res,next) => {
       res.redirect('/login')
     }
 
-    // const lastOrder = await ordersSchema.findOne().sort({ orderId: -1 }).select('orderId');
-    // const newOrderId = lastOrder ? lastOrder.orderId + 1 : 11111111;
     const orderId = await generateOrderId();
 
     const validAddressId = new mongoose.Types.ObjectId(addressId);
@@ -193,7 +232,9 @@ const postPayment = async (req,res,next) => {
         return sum + item.price * item.quantity;
         }, 0);
 
+    const discount = Math.floor(totalAmount-req.session.payableAmount);
 
+    const couponData = await couponSchema.findOne({code: req.session.couponCode});
 
     const newOrder = new ordersSchema({
       orderId,
@@ -203,19 +244,35 @@ const postPayment = async (req,res,next) => {
         productId: item.productId._id,
         quantity: item.quantity,
         price : item.price,
+        regularPrice: item.regularPrice,
         color: item.color,
         size: item.size,
       })),
       addressId: validAddressId,
       paymentInfo: {
-        totalAmount: totalAmount,
+        totalAmount: req.session.payableAmount,
         paymentMethod: paymentType,
         paymentStatus: paymentType === 'COD' ? 'unpaid' : 'paid',
         // transactionId: paymentType === 'Razorpay' ? req.session.razorpayPaymentId  : null
+      },
+      couponInfo: {
+      couponCode: req.session.couponCode || null,
+      discount: discount || 0,
+      discountAmount: couponData ? couponData.discountAmount : 0,
+      discountPercentage: couponData ? couponData.discountPercentage : 0
       }
     });
 
     await newOrder.save();
+
+    if(req.session.couponCode) {
+    await couponSchema.findOneAndUpdate({ code: req.session.couponCode },
+      { $inc: { balance: -1 }}
+    );
+  }
+
+    delete req.session.payableAmount;
+    delete req.session.couponCode;
 
     //update quantity
 
@@ -283,6 +340,8 @@ const postWallet = async (req,res,next) => {
                 return sum + item.price * item.quantity;
                 }, 0);
 
+            const discount = Math.floor(totalAmount - req.session.payableAmount);
+
 
                 if (!wallet || wallet.balance < totalAmount) {
                     return res.json({ success: false, message: 'Sorry! Insufficient Wallet Balance' });
@@ -292,14 +351,15 @@ const postWallet = async (req,res,next) => {
                  await walletSchema.updateOne(
                  { userId: user._id },
                  {
-                  $inc: { balance: -totalAmount },
+                  $inc: { balance: -req.session.payableAmount },
                   $push: {
                   transaction: {
                   type: 'deduct',
-                  amount: totalAmount,
+                  amount: req.session.payableAmount,
                   description: 'Deduction for purchase'
                   }}});
-                       
+             
+            const couponData = await couponSchema.findOne({code: req.session.couponCode});
                                            
             const newOrder = new ordersSchema({
               orderId,
@@ -309,18 +369,34 @@ const postWallet = async (req,res,next) => {
                 productId: item.productId._id,
                 quantity: item.quantity,
                 price : item.price,
+                regularPrice: item.regularPrice,
                 color: item.color,
                 size: item.size,
               })),
               addressId: validAddressId,
               paymentInfo: {
-                totalAmount: totalAmount,
+                totalAmount: req.session.payableAmount,
                 paymentMethod: paymentType,
                 paymentStatus: 'paid'
+              },
+              couponInfo: {
+              couponCode: req.session.couponCode || null,
+              discount: discount ||0,
+              discountAmount: couponData?.discountAmount || 0,
+              discountPercentage: couponData?.discountPercentage || 0
               }
             });
 
             await newOrder.save();
+
+            if(req.session.couponCode) {
+            await couponSchema.findOneAndUpdate({ code: req.session.couponCode },
+              { $inc: { balance: -1 }}
+            );
+          }
+
+            delete req.session.payableAmount;
+            delete req.session.couponCode;
 
             //update quantity
 
@@ -386,7 +462,7 @@ const createRazorpayOrder = async (req, res, next) => {
         }, 0);
 
         const options = {
-            amount: totalAmount * 100, // in paisa
+            amount: req.session.payableAmount * 100, // in paisa
             currency: "INR",
             receipt: `order_rcptid_${Date.now()}`
         };
@@ -438,6 +514,9 @@ const getRazorpaySuccess = async (req, res, next) => {
             return sum + item.price * item.quantity;
             }, 0);
 
+        const discount = Math.floor(totalAmount-req.session.payableAmount);
+
+        const couponData = await couponSchema.findOne({code: req.session.couponCode});
 
         const newOrderOnline = new ordersSchema({
           orderId,
@@ -447,19 +526,35 @@ const getRazorpaySuccess = async (req, res, next) => {
             productId: item.productId._id,
             quantity: item.quantity,
             price : item.price,
+            regularPrice: item.regularPrice,
             color: item.color,
             size: item.size,
           })),
           addressId: validAddressId,
           paymentInfo: {
-            totalAmount: totalAmount,
+            totalAmount: req.session.payableAmount,
             paymentMethod: req.session.selectedPaymentType,
             paymentStatus: req.session.selectedPaymentType === 'COD' ? 'unpaid' : 'paid',
             transactionId: req.session.selectedPaymentType === 'online' ? req.session.razorpayPaymentId  : null
+          },
+          couponInfo: {
+            couponCode: req.session.couponCode || null,
+            discount: discount || 0,
+            discountAmount: couponData?.discountAmount || 0,
+            discountPercentage: couponData?.discountPercentage || 0
           }
         });
 
         await newOrderOnline.save();
+
+        if(req.session.couponCode){
+        await couponSchema.findOneAndUpdate({ code: req.session.couponCode },
+          { $inc: { balance: -1 }}
+        );
+      }
+
+        delete req.session.payableAmount;
+        delete req.session.couponCode;
 
         //update quantity
 
@@ -547,4 +642,4 @@ const getSuccess =  (req,res,next) => {
 
 module.exports = {getCheckout, postCheckout, getPayment, postPayment, 
   getConfirm, postConfirm, createRazorpayOrder, getRazorpaySuccess, 
-  getRazorpayFailure, postWallet, getSuccess}
+  getRazorpayFailure, postWallet, getSuccess, removeConfirm}

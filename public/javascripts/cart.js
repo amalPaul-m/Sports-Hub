@@ -39,3 +39,34 @@ document.querySelectorAll('.qty-btn').forEach(button => {
     }
   });
 });
+
+
+// coupon applied
+
+document.getElementById('couponbtn').addEventListener('click', () => {
+    const couponCode = document.getElementById('promo').value.trim();
+
+    fetch('/cart/checkCoupon', {
+        method: 'POST',
+        body: JSON.stringify({ couponCode: couponCode }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const errorSpan = document.getElementById('coupon-error');
+        if (data.success) {
+            errorSpan.innerText = data.message;
+            errorSpan.style.color = 'green';  
+          
+        } else {
+            errorSpan.innerText = data.message;
+            errorSpan.style.color = 'red';
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById('coupon-error').innerText = 'Something went wrong!';
+    });
+});

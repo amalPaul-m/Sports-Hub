@@ -44,7 +44,10 @@ const invoiceRouter = require('./routes/invoice');
 const orderslistRouter = require('./routes/orderslist');
 const returnsRouter = require('./routes/return');
 const wishlistRouter = require('./routes/wishlist');
-const walletRouter = require('./routes/wallet')
+const walletRouter = require('./routes/wallet');
+const couponRouter = require('./routes/coupon');
+const offersRouter = require('./routes/offers');
+const salesreportRouter = require('./routes/salesreport');
 
 const app = express();
 
@@ -167,6 +170,7 @@ hbs.handlebars.registerHelper('includes', function (array, value) {
     return array.includes(value.toString());
 });
 
+
 // view engine setup
 
 app.set('views', path.join(__dirname, 'views'));
@@ -178,7 +182,15 @@ hbs.registerHelper('or', function (a, b, options) {
     return a || b ? options.fn(this) : options.inverse(this);
 });
 
-
+hbs.registerHelper('calcTotalRegularPrice', function (productInfo) {
+    let total = 0;
+    productInfo.forEach(item => {
+        if (!isNaN(item.regularPrice)) {
+            total += Number(item.regularPrice);
+        }
+    });
+    return total;
+});
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -215,6 +227,9 @@ app.use('/orderslist', orderslistRouter);
 app.use('/return', returnsRouter);
 app.use('/wishlist', wishlistRouter);
 app.use('/wallet', walletRouter);
+app.use('/coupon', couponRouter);
+app.use('/offers', offersRouter);
+app.use('/salesreport',salesreportRouter);
 
 app.use(errorHandler);
 

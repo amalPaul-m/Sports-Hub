@@ -300,7 +300,6 @@ const cancelorder = async (req, res, next) => {
         { $set: { "productInfo.$.status": "cancelled" } },
         { new: true, runValidators: true }
         );
-
        
 
         if (!order) {
@@ -357,6 +356,25 @@ const cancelorder = async (req, res, next) => {
         const email = req.session.users?.email;
         const usersData = await usersSchema.findOne({ email });
         const totalAmount = item.price*item.quantity;
+        let returnAmount = 0;
+
+        if(order.couponInfo?.[0]?.discountAmount!==null || order.couponInfo?.[0]?.discountAmount!==0){
+
+            const discount = order.couponInfo?.[0]?.discountAmount;
+            const count = order.productInfo.length;
+            const difference = discount / count;
+            returnAmount = Math.ceil(totalAmount - difference);
+
+
+        }else if(order.couponInfo?.[0]?.discountPercentage!==null || order.couponInfo?.[0]?.discountPercentage!==0){
+
+            const discountPer = order.couponInfo?.[0]?.discountPercentage;
+            const discount = totalAmount * (discountPer / 100);
+            returnAmount = Math.ceil(totalAmount - discount);
+        }else {
+            returnAmount = totalAmount;
+        }
+
 
         const existingWallet = await walletSchema.findOne({ userId: usersData._id });
 
@@ -364,11 +382,11 @@ const cancelorder = async (req, res, next) => {
             await walletSchema.updateOne(
                 { userId: usersData._id },
                 {
-                    $inc: { balance: totalAmount },
+                    $inc: { balance: returnAmount },
                     $push: {
                         transaction: {
                             type: 'add',
-                            amount: totalAmount,
+                            amount: returnAmount,
                             description: 'Refund for cancelled order',
                         }
                     }
@@ -377,10 +395,10 @@ const cancelorder = async (req, res, next) => {
         } else {
             const walletData = new walletSchema({
                 userId: usersData._id,
-                balance: totalAmount,
+                balance: returnAmount,
                 transaction: [{
                     type: 'add',
-                    amount: totalAmount,
+                    amount: returnAmount,
                     description: 'Refund for cancelled order',
                 }]
             });

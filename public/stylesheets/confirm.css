@@ -64,3 +64,9 @@
       font-weight: bold;
       opacity: 1;
     }
+
+
+    .border-dotted-success {
+        border: 1px dashed var(--bs-success);
+        border-radius: 0.375rem; /* Optional: rounded corners like Bootstrap */
+    }
