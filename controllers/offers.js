@@ -14,15 +14,33 @@ const getOffers = async(req,res,next) => {
         const totalOffers = await offersSchema.countDocuments();
 
         const totalPages = Math.ceil(totalOffers / limit);
-                
-        const offersData = await offersSchema.find()
+
+
+
+        
+        const offerType = req.query.offerType;
+
+        let offersData;
+
+        if(!offerType) {
+
+            offersData = await offersSchema.find()
         .sort({createdAt: -1})
         .skip(skip).limit(limit);
-        
+
+        }else {
+
+        offersData = await offersSchema.find()
+        .sort({offerType: 1})
+        .skip(skip).limit(limit);
+
+        }
+
+                
+       
 
         res.render('offers', { 
-        cssFile: '/stylesheets/offers.css',
-        jsFile: '/javascripts/offers.js',
+
         offersData,
         currentPage: page,
         totalPages
@@ -42,11 +60,7 @@ const getAddProductOffers = async (req,res,next) => {
 
         const productsData = await productsSchema.distinct('productName')
 
-        res.render('productoffer', { 
-        cssFile: '/stylesheets/productoffer.css',
-        jsFile: '/javascripts/productoffer.js',
-        productsData
-    });
+        res.render('productoffer', { productsData });
 
     } catch (error) {
         err.message = 'Error get add product offers';
@@ -108,11 +122,7 @@ const getAddCategoryOffers = async(req,res,next) => {
     
         const categoryData = await productTypesSchema.find();
 
-        res.render('categoryoffer', { 
-            cssFile: '/stylesheets/categoryoffer.css',
-            jsFile: '/javascripts/categoryoffer.js',
-            categoryData
-        })
+        res.render('categoryoffer', { categoryData });
 
 
     } catch(error) {
@@ -162,9 +172,9 @@ const postAddCategoryOffers = async (req,res,next) => {
             )
         }
         }
-        
 
         res.redirect('/offers/add/category-offer?success=1');
+
     } catch (error) {
         error.message = 'Error get category offers';
         console.log(error);
@@ -271,11 +281,7 @@ const getEditProductOffers = async (req,res,next) => {
         const editData = await offersSchema.findByIdAndUpdate(offerId);
         const productsData = await productsSchema.distinct('productName');
 
-        res.render('editproductoffer', { 
-        cssFile: '/stylesheets/productoffer.css',
-        jsFile: '/javascripts/editproductoffer.js',
-        editData, productsData
-    });
+        res.render('editproductoffer', { editData, productsData });
 
     } catch(error) {
         error.message = 'Error edit product offers';
@@ -347,12 +353,8 @@ const getEditCategoryOffers = async (req,res,next) => {
         const offerId = req.params.id;
         const editData = await offersSchema.findByIdAndUpdate(offerId);
         const productTypesData = await productTypesSchema.distinct('name');
-console.log(productTypesData)
-        res.render('editcategoryoffer', { 
-        cssFile: '/stylesheets/categoryoffer.css',
-        jsFile: '/javascripts/editcategoryoffer.js',
-        editData, productTypesData
-    });
+
+        res.render('editcategoryoffer', { editData, productTypesData });
 
     } catch(error) {
         error.message = 'Error edit product offers';

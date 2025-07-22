@@ -24,8 +24,7 @@ const getOrderslist = async (req, res,next) => {
         
         console.log(orders);
         res.render('orderslist', {
-        cssFile: '/stylesheets/orderslist.css', 
-        jsFile: '/javascripts/orderslist.js', orders,
+        orders,
         currentPage: page,
         totalPages
         });
@@ -175,8 +174,6 @@ const getReturnOrderslist = async (req, res, next) => {
         const totalPages = Math.ceil(totalOrders / perPage);
         
         res.render('ordersreturnlist', {
-            cssFile: '/stylesheets/orderslist.css', 
-            jsFile: '/javascripts/orderslist.js', 
             returns,
             currentPage: page,
             totalPages

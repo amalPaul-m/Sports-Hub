@@ -101,8 +101,6 @@ console.log(dateCheck)
 
   
     res.render('allproducts', {
-      cssFile: '/stylesheets/listAllProducts.css',
-      jsFile: '/javascripts/listAllProducts.js',
       groupedData: finalData,
       currentPage: page,
       totalPages,
@@ -191,8 +189,6 @@ const filterUserProducts = async function (req, res, next) {
     const productBrand = (await productsSchema.distinct('brandName')).sort();
 
     res.render('allproducts', {
-      cssFile: '/stylesheets/listAllProducts.css',
-      jsFile: '/javascripts/listAllProducts.js',
       groupedData: finalData,
       currentPage: page,
       totalPages,
@@ -262,8 +258,6 @@ const searchUserProducts = async (req,res,next)=>{
     const productBrand = (await productsSchema.distinct('brandName')).sort();
 
     res.render('allproducts', {
-      cssFile: '/stylesheets/listAllProducts.css',
-      jsFile: '/javascripts/listAllProducts.js',
       groupedData: finalData,
       currentPage: page,
       totalPages,

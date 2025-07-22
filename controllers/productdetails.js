@@ -68,8 +68,7 @@ const getProductDetails = async function (req, res, next) {
 
             res.render('productdetails',
                 {
-                    cssFile: '/stylesheets/productdetails.css',
-                    jsFile: '/javascripts/productDetails.js', productDetails, 
+                    productDetails, 
                     relatedProducts,uniqueVariants, 
                     totalStock, hide, btnvalue, buttonVal, message
                 })
@@ -85,4 +84,4 @@ const getProductDetails = async function (req, res, next) {
     }
 };
 
-module.exports = {getProductDetails}
+module.exports = { getProductDetails }

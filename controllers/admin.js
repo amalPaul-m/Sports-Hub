@@ -7,9 +7,7 @@ const password = process.env.ADMIN_PASS;
 
 const getAdminLogin = function (req, res, next) {
 
-    res.render('adminlogin', 
-    { cssFile: '/stylesheets/adminlogin.css', 
-    jsFile: '/javascripts/adminlogin.js' });
+    res.render('adminlogin');
 
 };
 
@@ -25,12 +23,9 @@ const postAdminLogin = function (req, res, next) {
     } else {
         req.session.passwordwrong1 = true
         res.render('adminlogin', 
-        { message: 'Invalid email or password', 
-        cssFile: '/stylesheets/adminlogin.css', 
-        jsFile: '/javascripts/adminlogin.js' 
-    });
+        { message: 'Invalid email or password'});
     }
 
 };
 
-module.exports = {getAdminLogin, postAdminLogin}
+module.exports = { getAdminLogin, postAdminLogin }

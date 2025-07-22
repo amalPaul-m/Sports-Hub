@@ -35,9 +35,7 @@ const getCustomers = async (req, res, next) => {
       users,
       currentPage: page,
       totalPages,
-      query,
-      cssFile: '/stylesheets/customers.css',
-      jsFile: '/javascripts/customers.js',
+      query
     });
   } catch (err) {
     err.message = 'Error fetching customers';
@@ -111,10 +109,9 @@ const searchCustomers = async (req, res, next) => {
       users,
       query,
       currentPage: page,
-      totalPages,
-      cssFile: '/stylesheets/customers.css',
-      jsFile: '/javascripts/customers.js'
+      totalPages
     });
+    
   } catch (err) {
     err.message = 'Error searching customers';
     next(err);

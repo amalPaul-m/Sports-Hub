@@ -15,8 +15,6 @@ const getCoupon = async (req,res,next) => {
 
 
         res.render('coupon', {
-            cssFile: '/stylesheets/coupon.css', 
-            jsFile: '/javascripts/coupon.js',
             couponData,
             currentPage: page,
             totalPages
@@ -26,10 +24,7 @@ const getCoupon = async (req,res,next) => {
 
 const getAddCoupon = (req,res,next) => {
 
-    res.render('addcoupon', {
-        cssFile: '/stylesheets/addcoupon.css', 
-        jsFile: '/javascripts/addcoupon.js'
-    });
+    res.render('addcoupon');
 
 };
 
@@ -102,11 +97,7 @@ const getEditCoupon = async(req,res,next) => {
         const couponId = req.params.id;
         const couponData = await couponSchema.findById(couponId);
 
-        res.render('editcoupon', {
-            cssFile: '/stylesheets/editcoupon.css',
-            jsFile: '/javascripts/editcoupon.js',
-            couponData
-        })
+        res.render('editcoupon', { couponData });
 
     }catch (error) {
        error.message = 'not edit coupon data';

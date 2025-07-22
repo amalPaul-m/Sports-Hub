@@ -57,11 +57,7 @@ const getCheckout = async (req,res,next) => {
 
     const addressData = await addressSchema.find({ userId: user });
 
-    res.render('checkout', {
-      cssFile: '/stylesheets/checkout.css',
-      jsFile: '/javascripts/checkout.js',
-      addressData
-    });
+    res.render('checkout', { addressData });
 
   } catch (err) {
     err.message = 'Failed to load checkout page';
@@ -159,7 +155,7 @@ const getConfirm = async (req,res,next) => {
     
     req.session.payableAmount=payableAmount;
 
-    res.render('confirm', {cssFile: '/stylesheets/confirm.css', cartItem, orderAddress, 
+    res.render('confirm', { cartItem, orderAddress, 
        totalAmount, tax, net, payableAmount, discountAmount, code });
 
   } catch(err) {
@@ -201,8 +197,7 @@ const getPayment = async (req,res,next) => {
 
     const wallet = await walletSchema.findOne({userId:usersData._id});
 
-    res.render('payment',{cssFile: '/stylesheets/payment.css', 
-        jsFile: '/javascripts/payment.js',
+    res.render('payment',{
         razorpayKey: process.env.RAZORPAY_API_KEY,
         wallet
     });
@@ -593,10 +588,7 @@ const getRazorpaySuccess = async (req, res, next) => {
         delete req.session.selectedAddressId;
         delete req.session.selectedPaymentType;
 
-        res.render('ordersuccess', {
-            cssFile: '/stylesheets/ordersuccess.css',
-            jsFile: '/javascripts/ordersuccess.js'
-          });
+        res.render('ordersuccess');
 
 
         }else {
@@ -611,10 +603,7 @@ const getRazorpaySuccess = async (req, res, next) => {
             status: 'failed'
         });
 
-            res.render('orderfailed', {
-            cssFile: '/stylesheets/paymentcancelled.css',
-            jsFile: '/javascripts/paymentcancelled.js'
-            });
+            res.render('orderfailed');
         }
 
         
@@ -626,10 +615,9 @@ const getRazorpaySuccess = async (req, res, next) => {
 
 
 const getRazorpayFailure = (req, res, next) => {
-    res.render('orderfailed', {
-        cssFile: '/stylesheets/paymentcancelled.css',
-        jsFile: '/javascripts/paymentcancelled.js'
-    });
+
+    res.render('orderfailed');
+    
 };
 
 

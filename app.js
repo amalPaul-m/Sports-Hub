@@ -21,6 +21,7 @@ require('./auth/google'); // passport strategy
 
 
 
+
 const indexRouter = require('./routes/index');
 const homeRouter = require('./routes/home');
 const loginRouter = require('./routes/login')
@@ -100,6 +101,7 @@ hbs.registerHelper('last8', function (objectId) {
 });
 
 hbs.registerHelper('add', (a, b) => a + b);
+hbs.registerHelper('mul', (a, b) => a * b);
 hbs.registerHelper('subtract', (a, b) => a - b);
 hbs.registerHelper('eq', (a, b) => a === b);
 hbs.registerHelper('gt', (a, b) => a > b);
@@ -170,6 +172,12 @@ hbs.handlebars.registerHelper('includes', function (array, value) {
     return array.includes(value.toString());
 });
 
+hbs.registerHelper('formatDate', function(dateString) {
+    if (!dateString) return '';
+    return dateString.toISOString().slice(0, 10);
+});
+
+
 
 // view engine setup
 
@@ -177,6 +185,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
 hbs.registerPartials(path.join(__dirname, 'views/partials'));
+
+hbs.registerHelper('section', function (name, options) {
+    if (!this._sections) this._sections = {};
+    this._sections[name] = options.fn(this);
+    return null;
+});
 
 hbs.registerHelper('or', function (a, b, options) {
     return a || b ? options.fn(this) : options.inverse(this);

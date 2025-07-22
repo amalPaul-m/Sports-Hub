@@ -14,8 +14,7 @@ const getyouraccount = async (req, res, next) => {
         const email = req.session.users?.email;
         const usersData = await usersSchema.findOne({ email });
 
-        res.render('youraccount',
-        { usersData, cssFile: '/stylesheets/yourAccount.css', jsFile: '/javascripts/yourAccount.js' });
+        res.render('youraccount',{ usersData });
 
     } catch (err) {
 
@@ -31,8 +30,7 @@ const getyourprofile = async (req,res,next) => {
     try{
         const email = req.session.users?.email;
         const usersDetails = await usersSchema.findOne({ email });
-        res.render('yourprofile', { usersDetails, cssFile: '/stylesheets/yourprofile.css', 
-        jsFile: '/javascripts/yourprofile.js' })
+        res.render('yourprofile', { usersDetails });
 
     } catch(err) {
         err.message = 'Error get youraccount';
@@ -55,8 +53,7 @@ const posteditprofile = async (req,res,next) => {
 
         const usersDetails = await usersSchema.findOne({ email });
 
-        res.render('yourprofile', { usersDetails, cssFile: '/stylesheets/yourprofile.css', 
-        jsFile: '/javascripts/yourprofile.js' })
+        res.render('yourprofile', { usersDetails });
 
 
     } catch(err) {
@@ -70,8 +67,7 @@ const posteditprofile = async (req,res,next) => {
 
 const getchangepassword = async (req,res,next) => {
 
-    res.render('changepassword', { cssFile: '/stylesheets/changepassword.css', 
-        jsFile: '/javascripts/changepassword.js' })
+    res.render('changepassword');
 
 }
 
@@ -88,8 +84,7 @@ const patchchangepassword = async (req,res,next) => {
     const hashedPassword = await bcrypt.hash(newpassword, 10);
 
     if(!match) {
-        res.render('changepassword', { content: 'Invalid old passowrd', cssFile: '/stylesheets/changepassword.css', 
-        jsFile: '/javascripts/changepassword.js' })
+        res.render('changepassword', { content: 'Invalid old passowrd' });
     }else {
 
     await usersSchema.findOneAndUpdate(
@@ -120,8 +115,7 @@ const getaddress = async (req, res, next) => {
         const addressData = await addressSchema.find({userId});
         console.log(addressData)
 
-        res.render('address',
-        { addressData, cssFile: '/stylesheets/address.css', jsFile: '/javascripts/address.js' });
+        res.render('address',{ addressData });
 
     } catch (err) {
 
@@ -238,6 +232,7 @@ const getyourorders = async (req, res, next) => {
         "productInfo.status": "confirmed"
       })
         .populate('productInfo.productId')
+        .populate('addressId')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -271,8 +266,6 @@ const getyourorders = async (req, res, next) => {
 
     // Render only once
     res.render('yourorders', {
-      cssFile: '/stylesheets/yourorders.css',
-      jsFile: '/javascripts/yourorders.js',
       orderData,
       currentPage: page,
       totalPages: Math.ceil(totalOrders / limit),
@@ -295,9 +288,11 @@ const cancelorder = async (req, res, next) => {
     try {
         const orderId = String(req.params.orderId); 
         const productId = new mongoose.Types.ObjectId(req.params.productId);
+        const reason = req.body.reason;
         const order = await ordersSchema.findOneAndUpdate(
         { orderId: orderId, "productInfo.productId": productId },
-        { $set: { "productInfo.$.status": "cancelled" } },
+        { $set: { "productInfo.$.status": "cancelled", 
+            "productInfo.$.cancelReason": reason } },
         { new: true, runValidators: true }
         );
        
@@ -515,8 +510,6 @@ const getCancelledOrders = async (req, res, next) => {
 
 
         res.render('cancelledorders', {
-            cssFile: '/stylesheets/yourorders.css',
-            jsFile: '/javascripts/yourorders.js',
             orderData: cancelledOrders,
             returnData: returnedOrders,
             currentPage: page,

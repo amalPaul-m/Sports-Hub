@@ -27,11 +27,13 @@
     forms.forEach(form => {
         form.addEventListener('submit', event => {
             const amountInput = form.querySelector('.amount-input');
+            const minOrderInput = form.querySelector('.minimum-order-input');
             const percentageInput = form.querySelector('.percentage-input');
             const activeDateInput = form.querySelector('input[name="activeFrom"]');
             const expiryDateInput = form.querySelector('input[name="expireTo"]');
 
             const amountValue = amountInput.value.trim();
+            const minOrderValue = minOrderInput.value.trim();
             const percentageValue = percentageInput.value.trim();
             const activeDateValue = activeDateInput.value;
             const expiryDateValue = expiryDateInput.value;
@@ -56,6 +58,15 @@
             } else {
                 activeDateInput.classList.remove('is-invalid');
                 expiryDateInput.classList.remove('is-invalid');
+            }
+
+            if (!isNaN(amountValue) && !isNaN(minOrderValue)) {
+                if (minOrderValue <= amountValue) {
+                    customValidationFailed = true;
+                    minOrderInput.classList.add('is-invalid');
+                } else {
+                    minOrderInput.classList.remove('is-invalid');
+                }
             }
 
             if (!form.checkValidity() || customValidationFailed) {

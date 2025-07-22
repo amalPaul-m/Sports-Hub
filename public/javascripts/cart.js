@@ -31,6 +31,8 @@ document.querySelectorAll('.qty-btn').forEach(button => {
       document.querySelector(`#price-total`).textContent = data.grandTotal.toFixed(2);
       document.querySelector(`#cart-total`).textContent = data.netAmount.toFixed(2);
       document.querySelector(`#total-tax`).textContent = data.totalTax.toFixed(2);
+      document.querySelector(`#payable`).textContent = data.payable.toFixed(2);
+      document.querySelector(`#discount-total`).textContent = data.couponAmount.toFixed(2);
     } else if (data.removeItem) {
       // Optionally remove the item if quantity is 0
       document.getElementById(`cart-item-${productId}`).remove();
@@ -59,6 +61,8 @@ document.getElementById('couponbtn').addEventListener('click', () => {
         if (data.success) {
             errorSpan.innerText = data.message;
             errorSpan.style.color = 'green';  
+            document.querySelector(`#discount-total`).textContent = data.couponAmount.toFixed(2);
+            document.querySelector(`#payable`).textContent = data.payable.toFixed(2);
           
         } else {
             errorSpan.innerText = data.message;

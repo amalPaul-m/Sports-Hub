@@ -22,8 +22,6 @@ const getWallet = async (req, res, next) => {
         const paginatedTransactions = sortedTransactions.slice(skip, skip + limit);
 
         res.render('wallet', {
-            cssFile: '/stylesheets/wallet.css',
-            jsFile: '/javascripts/wallet.js',
             transactions: paginatedTransactions,
             currentPage: page,
             totalPages: Math.ceil(totalTransaction / limit),

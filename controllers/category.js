@@ -1,5 +1,5 @@
-const productsSchema = require('../models/productsSchema')
-const productTypesSchema = require('../models/productTypesSchema')
+const productsSchema = require('../models/productsSchema');
+const productTypesSchema = require('../models/productTypesSchema');
 
 
 // get category page
@@ -41,9 +41,7 @@ const getCategory = async function (req, res, next) {
       categoryList,
       currentPage: page,
       totalPages,
-      query,
-      cssFile: '/stylesheets/adminCategory.css',
-      jsFile: '/javascripts/adminCategory.js'
+      query
     });
 
 
@@ -118,6 +116,26 @@ const blockCategory = async function (req, res, next) {
     await productTypesSchema.findByIdAndUpdate(categoryId, { status: 'blocked' });
 
     await productsSchema.updateMany({ category: categoryName }, {$set: { isActive: false}})
+
+
+
+
+    // const productOffer = await productsSchema.find({ category: categoryName});
+
+    // let totalStock=0;
+    // productOffer.forEach( async product => {
+    // totalStock += product.variants.reduce((sum, items)=>{
+    //     return sum + items.stockQuantity;
+      
+    // },0);
+
+    // if(totalStock<5 && product.discountPercentage<1){
+    //   await productsSchema.findByIdAndDelete(product._id);
+    // }
+    
+    // });
+
+
 
     // Redirect back to the customers page
     res.redirect('/category');

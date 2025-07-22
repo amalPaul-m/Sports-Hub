@@ -1,3 +1,8 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/salesreport.css">
+{{/section}}
+
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="px-4 mb-3">
@@ -102,7 +107,7 @@
 
         <div class="mb-4"><span class="border rounded p-3 shadow-sm fs-6 fw-semibold">Total Sales Count : <span class="fw-bold fs-5">{{totalCoupons}}</span></span>
         <span class="border rounded p-3 ms-2 shadow-sm fs-6 fw-semibold">Total Order Amount : <span class="fw-bold fs-5">₹ {{grandTotalRegularPrice}}</span></span>
-        <span class="border rounded p-3 ms-2 shadow-sm fs-6 fw-semibold">Total Discount : <span class="fw-bold fs-5">{{totalDiscountSum}}</span></span></div>
+        <span class="border rounded p-3 ms-2 shadow-sm fs-6 fw-semibold">Total Discount : <span class="fw-bold fs-5">₹ {{totalDiscountSum}}</span></span></div>
 
 
   <div class="table-responsive">
@@ -182,3 +187,7 @@
 
     </div>
     </div>
+
+{{#section 'scripts'}}
+<script src="/javascripts/salesreport.js"></script>
+{{/section}}

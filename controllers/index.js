@@ -17,8 +17,6 @@ const getIndex = async function (req, res, next) {
 
     res.render('index',
       {
-        cssFile: '/stylesheets/home.css',
-        jsFile: '/javascripts/homeBefore.js',
         category,
         products,
         discountProducts
@@ -32,4 +30,4 @@ const getIndex = async function (req, res, next) {
   }
 };
 
-module.exports = {getIndex}
+module.exports = { getIndex }

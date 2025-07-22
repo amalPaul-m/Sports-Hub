@@ -1,3 +1,8 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/editcoupon.css">
+{{/section}}
+
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="px-4 mb-3">
@@ -107,13 +112,13 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Active Date</label>
                             <input type="date" id="activeDate1" class="form-control shadow-none" 
-                            name="activeFrom" required value="{{couponData.activeFrom}}">
+                            name="activeFrom" required value="{{formatDate couponData.activeFrom}}">
                             <div class="invalid-feedback">Please check active date.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Expire Date</label>
                             <input type="date" id="activeDate2" class="form-control shadow-none" 
-                            name="expireTo" required value="{{couponData.expireTo}}">
+                            name="expireTo" required value="{{formatDate couponData.expireTo}}">
                             <div class="invalid-feedback">Active date must be before or same as expiry date.</div>
                         </div>
                         <div class="col-md-6">
@@ -125,7 +130,7 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Minimum Order Amount</label>
                             <input type="number" min="1" class="form-control shadow-none minimum-order-input" name="minimumOrderAmount" 
-                            placeholder="Enter minimum order" required value="{{couponData.minimumOrderAmount}}">
+                            placeholder="Enter minimum order" value="{{couponData.minimumOrderAmount}}" required>
                             <div class="invalid-feedback">Minimum Order Amount must be greater than Discount Amount.</div>
                         </div>
                     </div>
@@ -138,3 +143,7 @@
 
     </div>
     </div>
+
+{{#section 'scripts'}}
+<script src="/javascripts/editcoupon.js"></script>
+{{/section}}

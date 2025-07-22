@@ -61,8 +61,7 @@ const getSalesReport = async (req, res, next) => {
         req.session.totaldiscount = totalDiscountSum;
 
         res.render('salesreport', {
-            cssFile: '/stylesheets/salesreport.css',
-            jsFile: '/javascripts/salesreport.js',
+
             ordersData,
             currentPage: page,
             totalPages,
@@ -196,4 +195,4 @@ const exportPdfSalesReport = async (req, res, next) => {
 
 
 module.exports = { getSalesReport, exportExcelSalesReport, 
-     getSalesReportExport , exportPdfSalesReport}
+     getSalesReportExport , exportPdfSalesReport }

@@ -7,10 +7,6 @@ const postVerifyOtp = async (req, res, next) => {
 
     const otp = req.body.otp;
 
-    console.log('Received OTP:', otp);
-    console.log('Session OTP:', req.session.otp);
-    console.log('userData:', req.session.userData);
-
     if (otp === req.session.otp) {
       const userData = new usersSchema( req.session.userData ); // Retrieve user data from session
       console.log(userData)
@@ -55,4 +51,4 @@ const postResendOtp = async (req, res, next) => {
 };
 
 
-module.exports = {postVerifyOtp, postResendOtp}
+module.exports = { postVerifyOtp, postResendOtp }

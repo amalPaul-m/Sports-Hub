@@ -1,3 +1,9 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/adminProduct.css">
+{{/section}}
+
+
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="px-4 mb-3">
@@ -124,7 +130,7 @@
                 <tr>
                   <th scope="col">Sl.No</th>
                   <th scope="col" class="ps-4">Product ID</th>
-                  <th scope="col" class="ps-4">Name</th>
+                  <th scope="col" class="ps-4" style="width: 50px;">Name</th>
                   <th class="col" class="ps-4">Sale Price</th>
                   <th scope="col" class="ps-4">Brand</th>
                   <th class="col" class="ps-4">Category</th>
@@ -145,7 +151,7 @@
                   <th scope="row">{{addOne @index}}</th>
                   <td class="ps-4">#{{last8 this._id}}</td>
                   <td class="ps-4">{{this.productName}}</td>
-                  <th class="ps-4">₹{{this.salePrice}}</th>
+                  <th class="ps-4">₹{{this.regularPrice}}</th>
                   <td class="ps-4">{{this.brandName}}</td>
                   <td class="ps-4">{{this.category}}</td>
                   <td class="ps-4">{{this.material}}</td>
@@ -331,7 +337,7 @@
                   <th scope="row">{{addOne @index}}</th>
                   <td class="ps-4">#{{last8 this._id}}</td>
                   <td class="ps-4">{{this.productName}}</td>
-                  <th class="ps-4">₹{{this.salePrice}}</th>
+                  <th class="ps-4">₹{{this.regularPrice}}</th>
                   <td class="ps-4">{{this.brandName}}</td>
                   <td class="ps-4">{{this.category}}</td>
                   <td class="ps-4">{{this.material}}</td>
@@ -475,11 +481,14 @@
       </nav>
     </div>
 
-
-
     </div>
 
 
   </div>
 
 </div>
+
+
+{{#section 'scripts'}}
+<script src="/javascripts/adminProduct.js"></script>
+{{/section}}

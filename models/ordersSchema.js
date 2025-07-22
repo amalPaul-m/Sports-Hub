@@ -46,6 +46,7 @@ const ordersSchema = new mongoose.Schema({
         enum: ['confirmed', 'cancelled','returned'],
         default: 'confirmed'
       },
+      cancelStatus: String,
       price: {
         type: Number,
         required: true

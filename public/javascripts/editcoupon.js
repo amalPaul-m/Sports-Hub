@@ -62,7 +62,7 @@
             }
 
             if (!isNaN(amountValue) && !isNaN(minOrderValue)) {
-                if (minOrderValue <= amountValue) {
+                if (minOrderValue < amountValue) {
                     customValidationFailed = true;
                     minOrderInput.classList.add('is-invalid');
                 } else {

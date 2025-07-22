@@ -5,10 +5,7 @@ const bcrypt = require('bcrypt');
 const getRest = (req, res, next) => {
   if (!req.session.resetEmail) return res.redirect('/forgot');
 
-  res.render('reset', {
-    cssFile: '/stylesheets/reset.css',
-    jsFile: '/javascripts/reset.js'
-  });
+  res.render('reset');
 };
 
 
@@ -41,4 +38,4 @@ const postRest = async (req, res, next) => {
 };
 
 
-module.exports = {getRest, postRest}
+module.exports = { getRest, postRest }

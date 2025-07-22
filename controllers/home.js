@@ -22,9 +22,6 @@ const getHome = async function (req, res, next) {
 
     res.render('home',
       {
-        cssFile: '/stylesheets/home.css',
-        jsFile: '/javascripts/home.js',
-        category,
         products,
         discountProducts
       });

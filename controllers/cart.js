@@ -61,7 +61,7 @@ const getCart = async (req,res,next) => {
 
 
     if (!cartItem || !cartItem.items || cartItem.items.length === 0) {
-    return res.render('cart', { cssFile: '/stylesheets/cart.css', jsFile: '/javascripts/cart.js',
+    return res.render('cart', {
         cartItems: [],
         totalAmount: 0,
         tax: 0,
@@ -88,7 +88,7 @@ const getCart = async (req,res,next) => {
 
     couponSessionClr(req);
 
-    res.render('cart', {errorMessage, cartItem, net, totalAmount, tax, cssFile: '/stylesheets/cart.css', jsFile: '/javascripts/cart.js'})
+    res.render('cart', {errorMessage, cartItem, net, totalAmount, tax})
 
 };
 
@@ -172,6 +172,7 @@ const removeCart = async (req,res,next) => {
     couponSessionClr(req);
 
     res.redirect('/cart');
+    
     } catch (err) {
 
         err.message = 'not delete cart data';  
@@ -247,7 +248,7 @@ const increaseItemCount = async (req, res) => {
     req.session.totalAmount= cartTotal;
 
     couponSessionClr(req);
-
+    const payable = grandTotal;
 
     res.json({
       success: true,
@@ -256,7 +257,9 @@ const increaseItemCount = async (req, res) => {
       cartTotal,
       totalTax,
       grandTotal,
-      netAmount
+      netAmount,
+      payable,
+      couponAmount: 0
     });
 
   } catch (err) {
@@ -292,6 +295,8 @@ const decreaseItemCount = async (req, res) => {
 
       couponSessionClr(req);
 
+      const payable = grandTotal;
+
       return res.json({
         success: true,
         newQty: item.quantity,
@@ -299,7 +304,9 @@ const decreaseItemCount = async (req, res) => {
         cartTotal,
         totalTax,
         grandTotal,
-        netAmount
+        netAmount,
+        payable,
+        couponAmount:0
       });
     }
 
@@ -316,6 +323,7 @@ const decreaseItemCount = async (req, res) => {
     req.session.totalAmount= cartTotal;
 
     couponSessionClr(req);
+    const payable = grandTotal;
 
     res.json({
       success: true,
@@ -324,7 +332,9 @@ const decreaseItemCount = async (req, res) => {
       cartTotal,
       totalTax,
       grandTotal,
-      netAmount
+      netAmount,
+      payable,
+      couponAmount:0
     });
   } catch (err) {
     console.error(err);
@@ -346,6 +356,7 @@ const checkCoupon = async (req,res,next) => {
     userId: userId, 
     "couponInfo.couponCode" : couponCode
   });
+    
 
   if(codeExist && codeExist.couponInfo[0].couponCode === couponCode){
     return res.json({
@@ -373,11 +384,24 @@ const checkCoupon = async (req,res,next) => {
     console.log(dateCheck, balance, validAmount, status)
     if(dateCheck && balance && validAmount && status){
 
+
+    let couponAmount = 0;
+
+    if (couponList.discountAmount !== null) {
+        couponAmount = couponList.discountAmount;
+    } else if (couponList.discountPercentage !== null) {
+        couponAmount = req.session.totalAmount * (couponList.discountPercentage / 100);
+    }
+
+    const payable = req.session.totalAmount - couponAmount;
+
       req.session.couponCode = couponCode;
 
     res.json({
       success: true,
-      message: 'Coupon Code Applied Successfully!'
+      message: 'Coupon Code Applied Successfully!',
+      couponAmount,
+      payable
     })
 
     }else {
