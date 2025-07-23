@@ -12,7 +12,7 @@ const getSignup = function (req, res, next) {
 
 
 
-const postSignup = async (req, res) => {
+const postSignup = async (req, res, next) => {
   try {
     console.log(req.body)
 
@@ -67,6 +67,7 @@ const postSignup = async (req, res) => {
   }
   } catch (err) {
     err.message = 'Error inserting user';
+    console.log(err)
     next(err);
   }
 };

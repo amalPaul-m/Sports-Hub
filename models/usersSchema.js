@@ -14,12 +14,10 @@ const userSchema = new mongoose.Schema({
     unique: true
   },
   password: {
-    type: String,
-    required: true
+    type: String
   },
   phone: {
-    type: String,
-    required: true
+    type: String
   },
   status: {
     type: String,

@@ -177,6 +177,9 @@ hbs.registerHelper('formatDate', function(dateString) {
     return dateString.toISOString().slice(0, 10);
 });
 
+hbs.registerHelper('json', function(context) {
+  return JSON.stringify(context);
+});
 
 
 // view engine setup

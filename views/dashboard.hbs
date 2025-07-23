@@ -24,7 +24,7 @@
 </div>
 
 <!-- Topbar -->
-<div class="topbar fixed-top" id="topbar">
+<div class="topbar border-bottom fixed-top" id="topbar">
   <button class="btn text-white" onclick="toggleSidebar()"><i class="bi bi-list fs-4 text-dark"></i></button>
   <div class="d-flex align-items-center gap-3">
     <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;">
@@ -49,6 +49,134 @@
   </div>
 </div>
 
+
+<div class="main-content" id="main">
+<div class="container py-4 mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4 class="dashboard-header">Dashboard</h4>
+      </div>
+      <form method="GET" action="/dashboard" class="mb-4">
+                <div class="row g-3">
+                    <div class="col">
+                        <label>From Date</label>
+                        <input type="date" class="form-control" name="fromDate" value="{{fromDate}}" placeholder="From Date">
+                    </div>
+                    <div class="col">
+                        <label>To Date</label>
+                        <input type="date" class="form-control" name="toDate" value="{{toDate}}">
+                    </div>
+                    <div class="col d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-dark">Filter</button>
+                    </div>
+                    <div class="col d-flex align-items-end">
+                        <a class="btn btn-outline-dark" href="/dashboard" type="button"><i class="bi bi-arrow-clockwise"></i></a>
+                    </div>
+                </div>
+            </form>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <div class="metric-box border border-1 border-primary">
+          <div class="metric-title text-primary">Total Sales</div>
+          <div class="metric-value">₹{{totalSale}}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="metric-box border border-1 border-success">
+          <div class="metric-title text-success">Total Orders</div>
+          <div class="metric-value">{{orderCount}}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="metric-box border border-1 border-warning">
+          <div class="metric-title text-warning">Customers</div>
+          <div class="metric-value">{{usersCount}}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="metric-box border border-1 border-danger">
+          <div class="metric-title text-danger">Return Orders</div>
+          <div class="metric-value">{{returnCount}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-8">
+        <div class="card p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Sale Graph</h6>
+          </div>
+          <div class="chart-container">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-4" style="height: 398px;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Top Selling Category</h6>
+          </div>
+          <ul class="list-unstyled top-products">
+            {{#each topCategories}}
+            <li>
+              <div>{{this.category}}</div>
+              <div><small>{{this.totalSold}} Orders</small></div>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card p-4" style="height: 980px;">
+          <div class="d-flex mb-3">
+            <h6 class="mb-0">Top Selling Products</h6>
+          </div>
+          <ul class="list-unstyled top-products">
+            {{#each topSellingProducts}}
+            <li>
+              <div class="col col-md-1">
+              <img src="/images/products/{{this.firstImage}}" alt="Product">
+              </div>
+              <div class="col col-md-7">
+              <div class="float-left">{{this.productName}}<br><small>{{this.totalSold}} sales</small></div>
+              </div>
+              <div class="fw-semibold">₹{{this.totalRevenue}}</div>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card p-4" style="height: 980px;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Top Selling Brands</h6>
+          </div>
+          <ul class="list-unstyled top-products">
+            {{#each topSellingBrands}}
+            <li>
+              <div>{{this.brandName}}<br></div>
+              <div><small>{{this.totalSold}} orders</small></div>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const monthlySales = {{{json monthlyTotals}}}; 
+</script>
 
 {{#section 'scripts'}}
 <script src="/javascripts/adminDashboard.js"></script>

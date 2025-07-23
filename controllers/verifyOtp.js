@@ -12,7 +12,6 @@ const postVerifyOtp = async (req, res, next) => {
       console.log(userData)
 
       await userData.save();
-
       return res.json({ success: true, redirectUrl: '/login' });
     } else {
 
