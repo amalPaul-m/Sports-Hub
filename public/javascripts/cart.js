@@ -33,6 +33,7 @@ document.querySelectorAll('.qty-btn').forEach(button => {
       document.querySelector(`#total-tax`).textContent = data.totalTax.toFixed(2);
       document.querySelector(`#payable`).textContent = data.payable.toFixed(2);
       document.querySelector(`#discount-total`).textContent = data.couponAmount.toFixed(2);
+      document.querySelector(`#shipping-charge`).textContent = data.shippingCharge.toFixed(2);
     } else if (data.removeItem) {
       // Optionally remove the item if quantity is 0
       document.getElementById(`cart-item-${productId}`).remove();

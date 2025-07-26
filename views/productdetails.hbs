@@ -141,7 +141,7 @@
 
             <!-- Coupon Field -->
             <p class="pt-4">{{cutWords productDetails.description 16}}</p>
-            <div class="form-inline">
+            {{!-- <div class="form-inline">
               <div class="input-group mt-4 w-75 mb-3">
                 <input type="text" class="form-control shadow-none py-1" placeholder="Apply your coupon code"
                   aria-label="Recipient's username" aria-describedby="basic-addon2" name="coupon">
@@ -149,7 +149,7 @@
                   <button type="button" class="btn btn-outline-dark ms-2">Check</button>
                 </div>
               </div>
-            </div>
+            </div> --}}
 
             <!-- Submit Buttons -->
             <div class="cart-button">
@@ -177,6 +177,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
 
@@ -244,14 +245,12 @@
   <div class="row">
     <!-- Rating Overview -->
     <div class="col-md-3 col-lg-3 text-center rating-border">
-      <h1 class="pt-3 rating-num">4.0</h1>
-      <p class="text-secondary">of <span>125</span> reviews</p>
+      <h1 class="pt-3 rating-num">{{averageRating}}</h1>
+      <p class="text-secondary">of <span>{{count}}</span> reviews</p>
       <div class="pb-4">
+        {{#times averageRating}}
         <img src="images/star.png" alt="star" height="30" class="mx-1">
-        <img src="images/star.png" alt="star" height="30" class="mx-1">
-        <img src="images/star.png" alt="star" height="30" class="mx-1">
-        <img src="images/star.png" alt="star" height="30" class="mx-1">
-        <img src="images/star.png" alt="star" height="30" class="mx-1">
+        {{/times}}
       </div>
     </div>
 
@@ -261,41 +260,41 @@
         <div class="d-flex align-items-center mb-2">
           <span class="">Excellent</span>
           <div class="progress progress1 flex-fill">
-            <div class="progress-bar" style="width: 80%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar" style="width: {{review.review5Per}}%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
-          <span class="ms-3 me-5 text-secondary">500</span>
+          <span class="ms-3 me-5 text-secondary">{{review.review5}}</span>
         </div>
 
         <div class="d-flex align-items-center mb-2">
           <span class="">Good</span>
           <div class="progress progress2 flex-fill">
-            <div class="progress-bar" style="width: 60%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar" style="width: {{review.review4Per}}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
-          <span class="ms-3 me-5 text-secondary">100</span>
+          <span class="ms-3 me-5 text-secondary">{{review.review4}}</span>
         </div>
 
         <div class="d-flex align-items-center mb-2">
           <span class="">Average</span>
           <div class="progress progress3 flex-fill">
-            <div class="progress-bar" style="width: 40%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar" style="width: {{review.review3Per}}%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
-          <span class="ms-3 me-5 text-secondary">50</span>
+          <span class="ms-3 me-5 text-secondary">{{review.review3}}</span>
         </div>
 
         <div class="d-flex align-items-center mb-2">
           <span class="">Poor</span>
           <div class="progress progress4 flex-fill">
-            <div class="progress-bar" style="width: 20%" aria-valuenow="4" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar" style="width: {{review.review2Per}}%" aria-valuenow="4" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
-          <span class="ms-3 me-5 text-secondary">30</span>
+          <span class="ms-3 me-5 text-secondary">{{review.review2}}</span>
         </div>
 
         <div class="d-flex align-items-center mb-2">
           <span class="">Terrible</span>
           <div class="progress progress5 flex-fill">
-            <div class="progress-bar" style="width: 10%" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar" style="width: {{review.review1Per}}%" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
-          <span class="ms-3 me-5 text-secondary">5</span>
+          <span class="ms-3 me-5 text-secondary">{{review.review1}}</span>
         </div>
       </div>
     </div>
@@ -308,53 +307,21 @@
   <div class="row">
     <div class="col col-md-12 col-lg-12">
 
+      {{#each productReview}}
       <div class="review-border mt-3">
-        <h3><b>Amal Paul</b><span class="text-secondary float-end review-time">12 January 2025</span></h3>
+        <h3><b>{{this.userId.name}}</b><span class="text-secondary float-end review-time">{{formatDateFull this.createdAt}}</span></h3>
         <div>
+          {{#times this.rating}}
           <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
+          {{/times}}
         </div>
-        <p class="mt-3">I was a bit nervous to be buying a secondhand phone from Amazon, but I couldn’t be happier with
-          my
-          purchase!! I have a pre-paid data plan so I was worried that this phone wouldn’t connect with my data plan,
-          since the
-          new phones don’t have the physical Sim tray anymore, but couldn’t have been easier! I bought an Unlocked black
-          iPhone
-          14 Pro Max in excellent condition and everything is PERFECT. It was super easy to set up and the phone works
-          and looks
-          great. It truly was in excellent condition. Highly recommend!!!🖤</p>
-
-        <div class="gallery">
-          <img src="images/reviewimg1.png" alt="1" onclick="openLightbox('images/reviewimg1.png')">
-          <img src="images/reviewimg2.png" alt="2" onclick="openLightbox('images/reviewimg2.png')">
-        </div>
-
-        <!-- Lightbox -->
-        <div class="lightbox" id="lightbox">
-          <img id="popup-img" src="" alt="Large Image">
-        </div>
-
-      </div>
-
-      <div class="review-border mt-3">
-        <h3><b>Anto Sunny</b><span class="text-secondary float-end review-time">10 February 2025</span></h3>
-        <div>
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-        </div>
-        <p class="mt-3">I was a bit nervous to be buying a secondhand phone from Amazon, but I couldn’t be happier with
-          my purchase!! I have a pre-paid data plan so I was worried that this phone wouldn’t connect with my data plan,
-          since the new phones don’t have the physical Sim tray anymore, but couldn’t have been easier! </p>
+        <p class="mt-3">{{this.comment}} </p>
 
         <!-- Thumbnails -->
         <div class="gallery">
-          <img src="images/reviewimg1.png" alt="1" onclick="openLightbox('images/reviewimg1.png')">
-          <img src="images/reviewimg2.png" alt="2" onclick="openLightbox('images/reviewimg2.png')">
+          {{#each this.imageUrl}}
+          <img src="images/products/{{this}}" alt="1" onclick="openLightbox('images/products/{{this}}')" height="80" width="80">
+          {{/each}}
         </div>
 
         <!-- Lightbox -->
@@ -363,21 +330,7 @@
         </div>
 
       </div>
-
-      <div class="review-border mt-3">
-        <h3><b>Navaneeth George</b><span class="text-secondary float-end review-time">08 March 2025</span></h3>
-        <div>
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-          <img src="images/star.png" alt="star" height="15">
-        </div>
-        <p class="mt-3">I was a bit nervous to be buying a secondhand phone from Amazon, but I couldn’t be happier with
-          my purchase!! I have a pre-paid data plan so I was worried that this phone wouldn’t connect with my data plan,
-          since the new phones</p>
-
-      </div>
+      {{/each}}
 
     </div>
   </div>
@@ -431,7 +384,7 @@
 <!--Footer-->
 
 <div class="bg-black text-white">
-  <div class="container py-5">
+  <div class=" py-5">
     <div class="row">
       <div class="col-md-6 pe-4">
         <img src="images/Logo-dark.png" alt="logo">

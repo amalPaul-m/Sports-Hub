@@ -69,13 +69,19 @@ const getCart = async (req,res,next) => {
     });
 }
 
-    const totalAmount = cartItem.items.reduce((sum, item) => {
+    let totalAmount = cartItem.items.reduce((sum, item) => {
         return sum + (parseFloat(item.price) * parseInt(item.quantity));
         }, 0);
     const tax = Math.round(totalAmount-(totalAmount/1.18)); 
     const net= Math.round(totalAmount/1.18);
 
+    const shippingCharge = 40;
+    if(totalAmount<1000){
+      totalAmount= totalAmount + shippingCharge;
+    }
+
     req.session.totalAmount= totalAmount;
+    req.session.shippingCharge = shippingCharge;
 
     let errorMessage = null;
     const errorType = req.query.error;
@@ -88,7 +94,7 @@ const getCart = async (req,res,next) => {
 
     couponSessionClr(req);
 
-    res.render('cart', {errorMessage, cartItem, net, totalAmount, tax})
+    res.render('cart', {errorMessage, cartItem, net, totalAmount, tax, shippingCharge})
 
 };
 
@@ -243,8 +249,16 @@ const increaseItemCount = async (req, res) => {
     const cartTotal = cart.items.reduce((sum, i) => sum + (i.quantity * i.price), 0);
     const netAmount = +(cartTotal / 1.18).toFixed(2);
     const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
-    const grandTotal = +(cartTotal).toFixed(2);
+    let grandTotal = +(cartTotal).toFixed(2);
+    let shipping;
+    if(cartTotal<1000){
+      shipping = req.session.shippingCharge;
+      grandTotal= grandTotal + shipping;
+    }else {
+      shipping = '0.00';
+    }
 
+ 
     req.session.totalAmount= cartTotal;
 
     couponSessionClr(req);
@@ -259,6 +273,7 @@ const increaseItemCount = async (req, res) => {
       grandTotal,
       netAmount,
       payable,
+      shippingCharge: shipping,
       couponAmount: 0
     });
 
@@ -289,7 +304,14 @@ const decreaseItemCount = async (req, res) => {
       const cartTotal = cart.items.reduce((sum, i) => sum + i.quantity * i.price, 0);
       const netAmount = +(cartTotal / 1.18).toFixed(2);
       const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
-      const grandTotal = +(cartTotal).toFixed(2);
+      let grandTotal = +(cartTotal).toFixed(2);
+      let shipping;
+      if(cartTotal<1000){
+        shipping = req.session.shippingCharge;
+        grandTotal= grandTotal + shipping;
+      }else {
+        shipping = '0.00';
+      }
 
       req.session.totalAmount= cartTotal;
 
@@ -306,6 +328,7 @@ const decreaseItemCount = async (req, res) => {
         grandTotal,
         netAmount,
         payable,
+        shippingCharge: shipping,
         couponAmount:0
       });
     }
@@ -318,7 +341,14 @@ const decreaseItemCount = async (req, res) => {
     const cartTotal = cart.items.reduce((sum, i) => sum + i.quantity * i.price, 0);
     const netAmount = +(cartTotal / 1.18).toFixed(2);
     const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
-    const grandTotal = +(cartTotal).toFixed(2);
+    let grandTotal = +(cartTotal).toFixed(2);
+    let shipping1;
+      if(cartTotal<1000){
+        shipping1 = req.session.shippingCharge;
+        grandTotal= grandTotal + shipping1;
+      }else {
+        shipping1 = '0.00';
+      }
 
     req.session.totalAmount= cartTotal;
 
@@ -334,6 +364,7 @@ const decreaseItemCount = async (req, res) => {
       grandTotal,
       netAmount,
       payable,
+      shippingCharge: shipping1,
       couponAmount:0
     });
   } catch (err) {
@@ -381,7 +412,6 @@ const checkCoupon = async (req,res,next) => {
     const validAmount = req.session.totalAmount>=couponList.minimumOrderAmount ? true : false;
     const status = couponList.isActive;
 
-    console.log(dateCheck, balance, validAmount, status)
     if(dateCheck && balance && validAmount && status){
 
 
@@ -393,7 +423,11 @@ const checkCoupon = async (req,res,next) => {
         couponAmount = req.session.totalAmount * (couponList.discountPercentage / 100);
     }
 
-    const payable = req.session.totalAmount - couponAmount;
+    let payable = req.session.totalAmount - couponAmount;
+
+    if(req.session.totalAmount < 1000){
+      payable = payable + req.session.shippingCharge;
+    }
 
       req.session.couponCode = couponCode;
 

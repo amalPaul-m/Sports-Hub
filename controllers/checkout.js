@@ -117,7 +117,7 @@ const getConfirm = async (req,res,next) => {
         res.redirect('/cart');
     }
 
-    const totalAmount = cartItem.items.reduce((sum, item) => {
+    let totalAmount = cartItem.items.reduce((sum, item) => {
         return sum + item.price * item.quantity;
         }, 0);
 
@@ -153,10 +153,20 @@ const getConfirm = async (req,res,next) => {
     discountAmount = 0;
   }
     
+  let shipping;
+    if(payableAmount<1000){
+
+    shipping = req.session.shippingCharge;
+    payableAmount = payableAmount + shipping;
+    totalAmount = totalAmount + shipping;
+
+    }else {
+      shipping = '0.00';
+    }
     req.session.payableAmount=payableAmount;
 
     res.render('confirm', { cartItem, orderAddress, 
-       totalAmount, tax, net, payableAmount, discountAmount, code });
+       totalAmount, tax, net, payableAmount, discountAmount, code, shipping });
 
   } catch(err) {
         err.message = 'not get data';  
@@ -206,6 +216,13 @@ const getPayment = async (req,res,next) => {
 const postPayment = async (req,res,next) => {
 
   try {
+
+    
+    if(req.session.payableAmount > 1000){
+
+      return res.render('payment',{message: 'Cash on Delivery not applicable for order value greater than ₹1000'});
+      
+    }
 
     const rawAddress = req.session.selectedAddressId;
     const addressId = typeof rawAddress === 'object' ? rawAddress.addressId : rawAddress;
@@ -268,6 +285,7 @@ const postPayment = async (req,res,next) => {
 
     delete req.session.payableAmount;
     delete req.session.couponCode;
+    delete req.session.shippingCharge;
 
     //update quantity
 
@@ -295,6 +313,7 @@ const postPayment = async (req,res,next) => {
     await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
     delete req.session.selectedAddressId;
     delete req.session.selectedPaymentType;
+    delete req.session.shippingCharge;
     
 
     res.render('ordersuccess');
@@ -392,6 +411,7 @@ const postWallet = async (req,res,next) => {
 
             delete req.session.payableAmount;
             delete req.session.couponCode;
+            delete req.session.shippingCharge;
 
             //update quantity
 
@@ -421,6 +441,7 @@ const postWallet = async (req,res,next) => {
                 await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
                 delete req.session.selectedAddressId;
                 delete req.session.selectedPaymentType;
+                delete req.session.shippingCharge;
 
                
 
@@ -550,6 +571,7 @@ const getRazorpaySuccess = async (req, res, next) => {
 
         delete req.session.payableAmount;
         delete req.session.couponCode;
+        delete req.session.shippingCharge;
 
         //update quantity
 
@@ -587,6 +609,7 @@ const getRazorpaySuccess = async (req, res, next) => {
         await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
         delete req.session.selectedAddressId;
         delete req.session.selectedPaymentType;
+        delete req.session.shippingCharge;
 
         res.render('ordersuccess');
 

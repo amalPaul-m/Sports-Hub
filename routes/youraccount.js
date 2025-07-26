@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const checkBlockedUser = require('../middleware/checkBlockedUser');
 const userAuthantication = require('../middleware/userAuthantication');
+const upload = require('../middleware/upload');
 const accountController = require('../controllers/youraccount')
 
 router.get('/',checkBlockedUser, userAuthantication, accountController.getyouraccount);
@@ -21,5 +22,8 @@ router.patch('/cancelorder/:orderId/:productId', userAuthantication, accountCont
 router.post('/return', userAuthantication, accountController.postReturn);
 
 router.get('/cancelledorders', userAuthantication, accountController.getCancelledOrders);
+
+router.post('/review',upload.array('reviewImages', 5), userAuthantication, accountController.postReviews);
+// router.post('/review/edit', userAuthantication, accountController.postEditReviews);
 
 module.exports = router;

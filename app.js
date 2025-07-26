@@ -181,7 +181,22 @@ hbs.registerHelper('json', function(context) {
   return JSON.stringify(context);
 });
 
+hbs.registerHelper('times', function(n, block) {
+  let accum = '';
+  for (let i = 0; i < n; ++i) {
+    accum += block.fn(i);
+  }
+  return accum;
+});
 
+
+hbs.registerHelper('includes', function(array, value) {
+  return array && array.includes(value);
+});
+
+hbs.registerHelper('toString', function(value) {
+  return value.toString();
+});
 // view engine setup
 
 app.set('views', path.join(__dirname, 'views'));

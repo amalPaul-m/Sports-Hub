@@ -3,7 +3,8 @@ const addressSchema = require('../models/addressSchema');
 const ordersSchema = require('../models/ordersSchema');
 const productsSchema = require('../models/productsSchema');
 const returnSchema = require('../models/returnSchema');
-const walletSchema = require('../models/walletSchema')
+const walletSchema = require('../models/walletSchema');
+const reviewSchema = require('../models/reviewSchema');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
@@ -213,6 +214,9 @@ const getyourorders = async (req, res, next) => {
     const user = await usersSchema.findOne({ email });
 
     const userId = user._id;
+
+    // const reviewData = await reviewSchema.find({userId:userId});
+    // const reviewMap = reviewData.map(r => r.productId.toString());
 
     // Pagination for undelivered
     const page = parseInt(req.query.page) || 1;
@@ -529,9 +533,64 @@ const getCancelledOrders = async (req, res, next) => {
 
 
 
+const postReviews = async (req,res,next) => {
+
+    try {
+    const imageNames = req.files.map(file => file.filename);
+
+    const { rating, product, comment } = req.body;
+
+    const email = req.session.users?.email;
+
+    const user = await usersSchema.findOne({ email });
+    if (!user) return res.redirect('/login');
+    const userId = user._id;
+
+    const reviewData = await reviewSchema.findOne({userId:userId, productId:product});
+    console.log(reviewData)
+    if(reviewData){
+        res.redirect('/youraccount/yourorders?error=2');
+    }else {
+
+    const newReview = new reviewSchema({
+      userId: userId,
+      productId: product,
+      rating: rating,
+      comment: comment,
+      imageUrl: imageNames
+    });
+
+    await newReview.save();
+
+    res.redirect('/youraccount/yourorders?success=1'); 
+    }
+  } catch (error) {
+    error.message = 'Error post review';
+    console.log(error);
+    next(error);
+  }
+
+};
+
+
+
+// const postEditReviews = async (req,res,next) => {
+
+//     try {
+
+//         const reviewData = await reviewSchema.find()
+
+//     }catch (error) {
+//         error.message = 'Error edit review';
+//         console.log(error);
+//         next(error);
+//     }
+
+// };
+
 module.exports = { 
     getyouraccount, getyourprofile, posteditprofile, 
     getchangepassword, patchchangepassword,getaddress, postaddress, 
     editaddress, deleteaddress, getyourorders, cancelorder, postReturn,
-    getCancelledOrders
+    getCancelledOrders, postReviews, 
  }

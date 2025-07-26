@@ -275,10 +275,92 @@
         <a href="/invoice/download-invoice/{{../orderId}}" class="btn btn-outline-success px-4 mt-2">
           <i class="bi bi-download pe-2"></i> Invoice
         </a>
-        <button class="btn btn-dark btn-md mt-2 px-4">Add Review</button>
+
+        <button class="btn btn-dark btn-md mt-2 px-4" data-bs-toggle="modal" data-bs-target="#reviewModal{{this._id}}">Add Review</button>
+
       </div>
     </div>
+  </div>  
+
+
+
+<!-- Dispaly Error Modal -->
+<div class="modal fade m-0" id="errorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-transparent border border-0">
+      <div class="modal-body bg-danger text-light">
+        <h6 class="modal-title">Error! Review already submitted. Please edit the review.</h6>
+      </div>
+
+    </div>
   </div>
+</div>
+
+<!-- Dispaly success Modal -->
+<div class="modal fade m-0" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-transparent border border-0">
+      <div class="modal-body bg-success text-light">
+        <h6 class="modal-title">Success! your review is added.</h6>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal{{this._id}}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="modal-title">
+          <img src="/images/products/{{firstImage this.productId.imageUrl}}" class="img-fluid" alt="Product Image" height="70" width="70">
+          </i>How was the Item?
+        </h5>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form action="/youraccount/review" method="POST" enctype="multipart/form-data">
+
+      <div class="mb-4 text-center">
+        <span class="star" data-value="1">&#9733;</span>
+        <span class="star" data-value="2">&#9733;</span>
+        <span class="star" data-value="3">&#9733;</span>
+        <span class="star" data-value="4">&#9733;</span>
+        <span class="star" data-value="5">&#9733;</span>
+      </div>
+
+      <input type="hidden" name="rating" id="ratingInput">
+      <input type="hidden" name="product" value="{{this.productId._id}}">
+
+      <div class="mb-3">
+      <label class="form-label fw-bold">Show How The Item Looks</label>
+      <input type="file" name="reviewImages" id="imageUpload" class="form-control shadow-none" accept="image/*" multiple>
+
+      <div id="previewContainer" class="d-flex flex-wrap gap-2 mt-2"></div>
+       </div>
+
+
+      <div class="mb-4">
+        <label class="form-label fw-bold">Write A Review</label>
+        <textarea class="form-control shadow-none" name="comment" rows="4" placeholder="What should other customers know?"></textarea>
+      </div>
+
+
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-outline-dark">Edit Review</button>
+        <button type="submit" class="btn btn-dark">Confirm</button>
+      </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
 
 
 <!-- Modal -->
@@ -342,7 +424,7 @@
         <ul class="pagination">
           {{#if (gt currentPage1 1)}}
           <li class="page-item">
-            <a class="page-link pagination-border shadow-none" href="/youraccount/yourorders?page={{subtract currentPage1 1}}"
+            <a class="page-link pagination-border shadow-none" href="/youraccount/yourorders?page1={{subtract currentPage1 1}}"
               aria-label="Previous">
               <span aria-hidden="true" class="text-black">&lang;</span>
             </a>
@@ -350,13 +432,13 @@
           {{/if}}
           {{#each (pagination totalPages1)}}
           <li class="page-item ms-2 {{#if (eq this ../currentPage1)}}active{{/if}}">
-            <a class="page-link pagination-number" href="/youraccount/yourorders?page={{this}}">{{this}}</a>
+            <a class="page-link pagination-number" href="/youraccount/yourorders?page1={{this}}">{{this}}</a>
           </li>
           {{/each}}
 
           {{#if (lt currentPage1 totalPages1)}}
           <li class="page-item ms-2">
-            <a class="page-link pagination-border shadow-none" href="/youraccount/yourorders?page={{add currentPage1 1}}"
+            <a class="page-link pagination-border shadow-none" href="/youraccount/yourorders?page1={{add currentPage1 1}}"
               aria-label="Next">
               <span aria-hidden="true" class="text-black">&rang;</span>
             </a>
