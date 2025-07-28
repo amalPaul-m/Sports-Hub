@@ -11,7 +11,10 @@ const reviewSchema = new mongoose.Schema({
     ref: 'products' 
     },
     
-  rating: Number,
+  rating: {
+    type:Number,
+    required: true
+  },
   comment: String,
   imageUrl: [String]
 }, {

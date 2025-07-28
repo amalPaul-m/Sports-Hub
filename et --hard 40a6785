@@ -1,0 +1,17 @@
+[33m46fac7d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnewFeature[m[33m)[m HEAD@{0}: reset: moving to 46fac7d6a2d5e4eb06ad43207a9fe35a0b511196
+[33m46fac7d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnewFeature[m[33m)[m HEAD@{1}: reset: moving to 46fac7d6a2d5e4eb06ad43207a9fe35a0b511196
+[33m40a6785[m HEAD@{2}: checkout: moving from newFeature to newFeature
+[33m40a6785[m HEAD@{3}: commit: add review
+[33m46fac7d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnewFeature[m[33m)[m HEAD@{4}: commit: dashboard
+[33m05d3fd6[m HEAD@{5}: commit: compleate the pendings of 10th week review
+[33ma664326[m HEAD@{6}: checkout: moving from main to newFeature
+[33m41858d7[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{7}: checkout: moving from newFeature to main
+[33ma664326[m HEAD@{8}: commit: add paymentgateway,wallet,offers,coupon
+[33m41858d7[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{9}: checkout: moving from main to newFeature
+[33m41858d7[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{10}: commit: wallet compleated
+[33ma42f243[m HEAD@{11}: commit: razorpay implemented
+[33m4911ddf[m HEAD@{12}: commit: 9th week
+[33m63299d8[m HEAD@{13}: Branch: renamed refs/heads/master to refs/heads/main
+[33m63299d8[m HEAD@{15}: commit: Add .gitignore to ignore node_modules and other files
+[33m04d1b51[m HEAD@{16}: commit: Add .gitignore to ignore node_modules and other files
+[33m3af5667[m HEAD@{17}: commit (initial): Removed node_modules and added .gitignore
