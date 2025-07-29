@@ -1,4 +1,5 @@
-const usersSchema = require('../models/usersSchema')
+const usersSchema = require('../models/usersSchema');
+const ordersSchema = require('../models/ordersSchema');
 
 
 const getCustomers = async (req, res, next) => {
