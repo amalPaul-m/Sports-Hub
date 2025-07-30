@@ -224,6 +224,25 @@ hbs.registerHelper('calcTotalRegularPrice', function (productInfo) {
     return total;
 });
 
+hbs.registerHelper('length', function (value) {
+  if (Array.isArray(value) || typeof value === 'string') {
+    return value.length;
+  }
+  return 0;
+});
+
+hbs.registerHelper('for', function(from, to, step, block) {
+  let accum = '';
+  for (let i = from; i < to; i += step) {
+    accum += block.fn(i);
+  }
+  return accum;
+});
+
+hbs.registerHelper('getItem', function (array, index) {
+  return array?.[index];
+});
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 

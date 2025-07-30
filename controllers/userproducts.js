@@ -19,7 +19,7 @@ const getUserProducts = async function (req, res, next) {
       const expireTo = new Date(product.endDate);
 
       const dateCheck = currentDate >= activeFrom && currentDate <= expireTo;
-console.log(dateCheck)
+
       if(dateCheck){
         const offerAmount = Math.ceil(product.regularPrice - ((product.regularPrice * product.
         discountPercentage)/100));
@@ -188,12 +188,19 @@ const filterUserProducts = async function (req, res, next) {
     const productMaterial = (await productsSchema.distinct('material')).sort();
     const productBrand = (await productsSchema.distinct('brandName')).sort();
 
+
+    const queryObj = { ...req.query };
+delete queryObj.page; // Remove page to avoid duplication
+
+const queryParams = new URLSearchParams(queryObj).toString();
+
     res.render('allproducts', {
       groupedData: finalData,
       currentPage: page,
       totalPages,
       productMaterial,
-      productBrand
+      productBrand,
+        queryParams
     });
 
   } catch (err) {

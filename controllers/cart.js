@@ -177,6 +177,7 @@ const removeCart = async (req,res,next) => {
 
     couponSessionClr(req);
 
+
     res.redirect('/cart');
     
     } catch (err) {
@@ -227,6 +228,7 @@ const increaseItemCount = async (req, res) => {
       return res.json({
         success: false,
         outOfStock: true,
+        stock: matchedVariant.stockQuantity,
         message: `Only ${matchedVariant.stockQuantity} available in stock`
       });
     }
@@ -267,6 +269,7 @@ const increaseItemCount = async (req, res) => {
     res.json({
       success: true,
       newQty: item.quantity,
+      stock: matchedVariant.stockQuantity,
       updatedPrice,
       cartTotal,
       totalTax,

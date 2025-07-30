@@ -16,14 +16,14 @@ router.post('/address',checkBlockedUser, userAuthantication, accountController.p
 router.patch('/editaddress',checkBlockedUser, userAuthantication, accountController.editaddress);
 router.delete('/deleteaddress',checkBlockedUser, userAuthantication, accountController.deleteaddress);
 
-router.get('/yourorders', userAuthantication, accountController.getyourorders);
-router.patch('/cancelorder/:orderId/:productId', userAuthantication, accountController.cancelorder);
+router.get('/yourorders',checkBlockedUser, userAuthantication, accountController.getyourorders);
+router.patch('/cancelorder/:orderId/:productId',checkBlockedUser, userAuthantication, accountController.cancelorder);
 
-router.post('/return', userAuthantication, accountController.postReturn);
+router.post('/return',checkBlockedUser, userAuthantication, accountController.postReturn);
 
-router.get('/cancelledorders', userAuthantication, accountController.getCancelledOrders);
+router.get('/cancelledorders',checkBlockedUser, userAuthantication, accountController.getCancelledOrders);
 
-router.post('/review',upload.array('reviewImages', 5), userAuthantication, accountController.postReviews);
+router.post('/review',upload.array('reviewImages', 5), checkBlockedUser, userAuthantication, accountController.postReviews);
 // router.post('/review/edit', userAuthantication, accountController.postEditReviews);
 
 module.exports = router;

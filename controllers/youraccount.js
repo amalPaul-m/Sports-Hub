@@ -350,14 +350,16 @@ const cancelorder = async (req, res, next) => {
 
         //amount return to wallet
 
-        if(order.paymentInfo[0].paymentMethod==='online'||order.paymentInfo[0].paymentMethod==='wallet'){
+        if(order.paymentInfo?.[0]?.paymentMethod==='online'||order.paymentInfo?.[0]?.paymentMethod==='wallet'){
 
         const email = req.session.users?.email;
         const usersData = await usersSchema.findOne({ email });
         const totalAmount = item.price*item.quantity;
         let returnAmount = 0;
+        const discountAmount = order.couponInfo?.[0]?.discountAmount;
+        const discountPercentage = order.couponInfo?.[0]?.discountPercentage;
 
-        if(order.couponInfo?.[0]?.discountAmount!==null || order.couponInfo?.[0]?.discountAmount!==0){
+        if(discountAmount!=null && discountAmount!==0){
 
             const discount = order.couponInfo?.[0]?.discountAmount;
             const count = order.productInfo.length;
@@ -365,13 +367,16 @@ const cancelorder = async (req, res, next) => {
             returnAmount = Math.ceil(totalAmount - difference);
 
 
-        }else if(order.couponInfo?.[0]?.discountPercentage!==null || order.couponInfo?.[0]?.discountPercentage!==0){
+        }else if(discountPercentage!=null && discountPercentage!==0){
 
             const discountPer = order.couponInfo?.[0]?.discountPercentage;
             const discount = totalAmount * (discountPer / 100);
             returnAmount = Math.ceil(totalAmount - discount);
+
         }else {
+
             returnAmount = totalAmount;
+
         }
 
 

@@ -4,9 +4,9 @@ const walletControllers = require('../controllers/wallet');
 const userAuthantication = require('../middleware/userAuthantication');
 const checkBlockedUser = require('../middleware/checkBlockedUser');
 
-router.get('/',userAuthantication, walletControllers.getWallet);
-router.patch('/add-amount',userAuthantication, walletControllers.addAmount);
+router.get('/',userAuthantication, checkBlockedUser, walletControllers.getWallet);
+router.patch('/add-amount',userAuthantication, checkBlockedUser, walletControllers.addAmount);
 router.patch('/create-wallet-order', userAuthantication, checkBlockedUser, walletControllers.createWalletOrder);
-router.get('/payment-success', walletControllers.walletPaymentSuccess);
+router.get('/payment-success',checkBlockedUser, walletControllers.walletPaymentSuccess);
 
 module.exports = router;
