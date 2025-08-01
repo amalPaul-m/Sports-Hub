@@ -215,8 +215,20 @@ const getyourorders = async (req, res, next) => {
 
     const userId = user._id;
 
-    // const reviewData = await reviewSchema.find({userId:userId});
-    // const reviewMap = reviewData.map(r => r.productId.toString());
+    const reviewData = await reviewSchema.find({userId:userId});
+    const reviewMap = reviewData.map(r => r.productId.toString());
+
+    const reviewDataMap = {};
+
+    reviewData.forEach(review => {
+    reviewDataMap[review.productId.toString()] = {
+        rating: review.rating,
+        comment: review.comment,
+        imageUrl: review.imageUrl,
+    };
+    });
+
+    console.log(reviewDataMap)
 
     // Pagination for undelivered
     const page = parseInt(req.query.page) || 1;
@@ -275,7 +287,9 @@ const getyourorders = async (req, res, next) => {
       totalPages: Math.ceil(totalOrders / limit),
       orderData1,
       currentPage1: page1,
-      totalPages1: Math.ceil(totalOrders1 / limit1)
+      totalPages1: Math.ceil(totalOrders1 / limit1),
+      reviewMap,
+      reviewDataMap
     });
 
   } catch (error) {
@@ -552,7 +566,7 @@ const postReviews = async (req,res,next) => {
     const userId = user._id;
 
     const reviewData = await reviewSchema.findOne({userId:userId, productId:product});
-    console.log(reviewData)
+
     if(reviewData){
         res.redirect('/youraccount/yourorders?error=2');
     }else {
@@ -579,23 +593,53 @@ const postReviews = async (req,res,next) => {
 
 
 
-// const postEditReviews = async (req,res,next) => {
+const postEditReviews = async (req,res,next) => {
 
-//     try {
+    try {
+        const imageNames = req.files.map(file => file.filename);
+        const { ratingEdit, productEdit, commentEdit, removedImages } = req.body;
+        const removedList = removedImages ? removedImages.split(',') : [];
+        const email = req.session.users?.email;
 
-//         const reviewData = await reviewSchema.find()
+        const user = await usersSchema.findOne({ email });
+        if (!user) return res.redirect('/login');
+        const userId = user._id;
 
-//     }catch (error) {
-//         error.message = 'Error edit review';
-//         console.log(error);
-//         next(error);
-//     }
+        const existingReview = await reviewSchema.findOne({ 
+        userId: userId, 
+        productId: productEdit 
+        });
 
-// };
+        let updatedImages = [
+        ...existingReview.imageUrl.filter(img => !removedImages.includes(img)),
+        ...imageNames
+        ];
+
+        await reviewSchema.findOneAndUpdate(
+        { userId: userId, productId: productEdit },
+        {
+            $set: {
+            rating: ratingEdit,
+            comment: commentEdit,
+            imageUrl: updatedImages
+            }
+        },
+        { new: true }
+        );
+        
+        res.redirect('/youraccount/yourorders?success=1'); 
+
+    }catch (error) {
+        error.message = 'Error edit review';
+        console.log(error);
+        next(error);
+    }
+
+};
 
 module.exports = { 
     getyouraccount, getyourprofile, posteditprofile, 
     getchangepassword, patchchangepassword,getaddress, postaddress, 
     editaddress, deleteaddress, getyourorders, cancelorder, postReturn,
-    getCancelledOrders, postReviews, 
+    getCancelledOrders, postReviews, postEditReviews
  }

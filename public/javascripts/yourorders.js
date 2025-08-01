@@ -48,81 +48,181 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  const stars = document.querySelectorAll('.star');
-  const ratingInput = document.getElementById('ratingInput');
-  let selectedRating = 3; 
+//   document.addEventListener("DOMContentLoaded", () => {
 
-  function updateStars(rating) {
+//     document.querySelectorAll(".modal").forEach(modal => {
+//       const stars = modal.querySelectorAll(".star");
+//       const ratingInput = modal.querySelector(".rating-input");
+//       const ratingValue = modal.querySelector(".rating-value");
+//       let selectedRating = ratingValue?.value ? parseInt(ratingValue.value) : 3;
+
+//       function updateStars(rating) {
+//         stars.forEach(star => {
+//           const value = parseInt(star.getAttribute("data-value"));
+//           if (value <= rating) {
+//             star.classList.add("selected");
+//           } else {
+//             star.classList.remove("selected");
+//           }
+//         });
+//         if (ratingInput) ratingInput.value = rating;
+//       }
+
+//       stars.forEach(star => {
+//         star.addEventListener("click", () => {
+//           selectedRating = parseInt(star.getAttribute("data-value"));
+//           updateStars(selectedRating);
+//         });
+//       });
+
+//       updateStars(selectedRating);
+//     });
+//   });
+
+
+// document.querySelectorAll('.imageUpload').forEach((input, i) => {
+//   const previewContainer = document.querySelectorAll('.previewContainer')[i];
+
+//   input.addEventListener('change', function () {
+//     previewContainer.innerHTML = ''; // Clear previous previews
+
+//     Array.from(this.files).forEach((file, index) => {
+//       const reader = new FileReader();
+
+//       reader.onload = function (e) {
+//         const previewWrapper = document.createElement('div');
+//         previewWrapper.classList.add('position-relative', 'me-2');
+
+//         const img = document.createElement('img');
+//         img.src = e.target.result;
+//         img.classList.add('img-thumbnail');
+//         img.style.maxHeight = '100px';
+
+//         const removeBtn = document.createElement('button');
+//         removeBtn.type = 'button';
+//         removeBtn.innerHTML = '&times;';
+//         removeBtn.classList.add('btn', 'btn-sm', 'btn-outline-dark', 'position-absolute');
+//         removeBtn.style.top = '0';
+//         removeBtn.style.right = '0';
+
+//         removeBtn.addEventListener('click', () => {
+//           previewWrapper.remove();
+//           removeFileFromInput(input, index); // Pass the specific input
+//         });
+
+//         previewWrapper.appendChild(img);
+//         previewWrapper.appendChild(removeBtn);
+//         previewContainer.appendChild(previewWrapper);
+//       };
+
+//       reader.readAsDataURL(file);
+//     });
+//   });
+// });
+
+// // Workaround to remove file from input
+// function removeFileFromInput(inputElement, indexToRemove) {
+//   const dataTransfer = new DataTransfer();
+//   Array.from(inputElement.files).forEach((file, index) => {
+//     if (index !== indexToRemove) {
+//       dataTransfer.items.add(file);
+//     }
+//   });
+//   inputElement.files = dataTransfer.files;
+// }
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".edit-review-form").forEach(form => {
+    const modal = form.closest(".modal");
+
+    // ⭐ Initialize rating stars
+    const stars = modal.querySelectorAll(".star");
+    const ratingInput = modal.querySelector(".rating-input");
+    const ratingValue = modal.querySelector(".rating-value");
+    let selectedRating = ratingValue?.value ? parseInt(ratingValue.value) : 3;
+
+    function updateStars(rating) {
+      stars.forEach(star => {
+        const value = parseInt(star.dataset.value);
+        star.classList.toggle("selected", value <= rating);
+      });
+      ratingInput.value = rating;
+    }
+
     stars.forEach(star => {
-      const value = parseInt(star.getAttribute('data-value'));
-      if (value <= rating) {
-        ratingInput.value = value;
-        star.classList.add('selected');
-      } else {
-        star.classList.remove('selected');
-      }
+      star.addEventListener("click", () => {
+        selectedRating = parseInt(star.dataset.value);
+        updateStars(selectedRating);
+      });
     });
-  }
 
-  stars.forEach(star => {
-    star.addEventListener('click', () => {
-      selectedRating = parseInt(star.getAttribute('data-value'));
-      updateStars(selectedRating);
-    });
-  });
+    updateStars(selectedRating);
 
-  // Initialize default stars
-  updateStars(selectedRating);
+    // 🖼 Handle new file upload preview
+    const imageUpload = modal.querySelector(".imageUpload");
+    const previewContainer = modal.querySelector(".previewContainer");
 
+    if (imageUpload && previewContainer) {
+      imageUpload.addEventListener("change", function () {
+        Array.from(this.files).forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const previewWrapper = document.createElement('div');
+            previewWrapper.classList.add('position-relative');
+            previewWrapper.dataset.index = index;
 
-  const imageUpload = document.getElementById('imageUpload');
-  const previewContainer = document.getElementById('previewContainer');
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.classList.add('img-thumbnail');
+            img.style.maxHeight = '100px';
 
-  imageUpload.addEventListener('change', function () {
-    previewContainer.innerHTML = ''; // Clear previous previews
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.classList.add('btn', 'btn-sm', 'btn-outline-dark', 'position-absolute');
+            removeBtn.style.top = '0';
+            removeBtn.style.right = '0';
 
-    Array.from(this.files).forEach((file, index) => {
-      const reader = new FileReader();
+            removeBtn.addEventListener('click', () => {
+              previewWrapper.remove();
+              removeFileFromInput(imageUpload, index);
+            });
 
-      reader.onload = function (e) {
-        const previewWrapper = document.createElement('div');
-        previewWrapper.classList.add('position-relative');
-
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.classList.add('img-thumbnail');
-        img.style.maxHeight = '100px';
-
-        const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '&times;';
-        removeBtn.classList.add('btn', 'btn-sm', 'btn-outline-dark', 'position-absolute');
-        removeBtn.style.top = '0';
-        removeBtn.style.right = '0';
-
-        removeBtn.addEventListener('click', () => {
-          previewWrapper.remove();
-          removeFileFromInput(index);
+            previewWrapper.appendChild(img);
+            previewWrapper.appendChild(removeBtn);
+            previewContainer.appendChild(previewWrapper);
+          };
+          reader.readAsDataURL(file);
         });
+      });
+    }
 
-        previewWrapper.appendChild(img);
-        previewWrapper.appendChild(removeBtn);
-        previewContainer.appendChild(previewWrapper);
-      };
+    // 🗑 Handle removing existing images
+    const removedImagesInput = modal.querySelector(".removed-images-input");
+    const existingImages = modal.querySelectorAll(".existing-image");
 
-      reader.readAsDataURL(file);
+    existingImages.forEach(wrapper => {
+      const removeBtn = wrapper.querySelector(".remove-existing");
+      removeBtn.addEventListener("click", () => {
+        const filename = wrapper.dataset.filename;
+        wrapper.remove();
+        // Track removed image
+        const removed = removedImagesInput.value ? removedImagesInput.value.split(",") : [];
+        removed.push(filename);
+        removedImagesInput.value = removed.join(",");
+      });
     });
+
+    // Remove file from input
+    function removeFileFromInput(inputElement, indexToRemove) {
+      const dataTransfer = new DataTransfer();
+      Array.from(inputElement.files).forEach((file, index) => {
+        if (index !== indexToRemove) {
+          dataTransfer.items.add(file);
+        }
+      });
+      inputElement.files = dataTransfer.files;
+    }
   });
-
-  // Workaround to remove file from input
-  function removeFileFromInput(indexToRemove) {
-    const dataTransfer = new DataTransfer();
-    const files = Array.from(imageUpload.files);
-
-    files.forEach((file, index) => {
-      if (index !== indexToRemove) {
-        dataTransfer.items.add(file);
-      }
-    });
-
-    imageUpload.files = dataTransfer.files;
-  }
+});

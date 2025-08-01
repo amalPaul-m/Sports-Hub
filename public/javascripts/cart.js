@@ -1,5 +1,5 @@
 
-let stock = 0 ;
+let dataStock = 0 ;
 document.querySelectorAll('.qty-btn').forEach(button => {
   button.addEventListener('click', async () => {
     const productId = button.getAttribute('data-product-id');
@@ -13,7 +13,7 @@ document.querySelectorAll('.qty-btn').forEach(button => {
     const data = await response.json();
 
     if (data.success) {
-      const dataStock = Number(data.stock);
+      dataStock = Number(data.stock);
       // update quantity
       document.querySelector(`#price-total`).textContent = data.grandTotal.toFixed(2);
       document.querySelector(`#cart-total`).textContent = data.netAmount.toFixed(2);
@@ -28,17 +28,17 @@ document.querySelectorAll('.qty-btn').forEach(button => {
       document.getElementById(`cart-item-${productId}`).remove();
     } else if (!data.success) {
       document.querySelector('#error-msg').textContent = data.message;
-      stock = data.stock;
+      dataStock = data.stock;
+      
     }
   });
 });
 
 
-function updateQty(btn, delta, stock) {
+function updateQty(btn, delta) {
   const span = btn.parentElement.querySelector("span.mx-1");
   let qty = parseInt(span.innerText);
-
-  const minquantity = Math.min(3, parseInt(stock));
+  const minquantity = Math.min(3, parseInt(dataStock));
   qty = Math.min(3, Math.max(1, qty + delta));
 
   span.innerText = qty;

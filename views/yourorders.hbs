@@ -53,17 +53,18 @@
   {{#each this.productInfo}}
   {{#if (eq this.status "confirmed")}}
   <div class="border-bottom pb-4 mb-4">
-    <div class="row align-items-center">
+    <div class="row align-items-center mt-5">
       <div class="col-md-2">
         <img src="/images/products/{{firstImage this.productId.imageUrl}}" class="img-fluid" alt="Product Image">
       </div>
       <div class="col-md-5">
         <h6 class=""><a href="#" class="text-decoration-none"  data-bs-toggle="modal" data-bs-target="#orderDetails{{this.productId._id}}">{{this.productId.productName}}</a></h6>
-        <p class="mb-1 text-muted">Brand: {{this.productId.brandName}}</p>
-        <p class="mb-1 text-muted">Color: <button class="btn" style="background-color: {{this.color}};"></button></p>
-        <p class="mb-1 text-muted">Size: {{this.size}} {{this.productId.unitSize}}</p>
-        <p class="mb-1 text-muted">Quantity: {{this.quantity}}</p>
-        <p class="mb-1 text-muted">Order Id: #{{../orderId}}</p>
+        <p class="mb-1 text-muted"><b>Quantity:</b> {{this.quantity}}</p>        
+        <span class="mb-1 text-muted pe-3"><b>Brand:</b> {{this.productId.brandName}}</span>
+        <span class="mb-1 text-muted pe-3"><b>Color:</b> <button class="btn" style="background-color: {{this.color}};"></button></span>
+        <span class="mb-1 text-muted"><b>Size:</b> {{this.size}} {{this.productId.unitSize}}</span>
+
+        <p class="mb-1 text-muted"><b>Order Id:</b> #{{../orderId}}</p>
       </div>
       <div class="col-md-3 text-end">
         <h6 class="fw-bold fs-5">₹ {{this.price}}.00</h6>
@@ -81,7 +82,7 @@
       </div>
     </div>
 
-    <!-- Order Progress Bar -->
+    {{!-- <!-- Order Progress Bar -->
     <div class="order-progress mx-5 mb-5">
       <div class="progress-line">
         <div class="step {{#if (eq ../this.deliveryStatus 'pending')}}completed{{/if}}" data-title="order Placed" data-step="1"></div>
@@ -90,7 +91,7 @@
         <div class="step {{#if (eq ../this.deliveryStatus 'delivered')}}completed{{/if}}" data-title="Delivered" data-step="4"></div>
       </div>
     </div>
-    </div>
+    </div> --}}
 
 
     <!-- Order Details -->
@@ -213,6 +214,16 @@
 
     {{/if}}
   {{/each}}
+  <!-- Order Progress Bar -->
+    <div class="order-progress mx-5 mb-5">
+      <div class="progress-line">
+        <div class="step {{#if (eq this.deliveryStatus 'pending')}}completed{{/if}}" data-title="order Placed" data-step="1"></div>
+        <div class="step {{#if (eq this.deliveryStatus 'shipped')}}completed{{/if}}" data-title="shipped" data-step="2"></div>
+        <div class="step {{#if (eq this.deliveryStatus 'outofdelivery')}}completed{{/if}}" data-title="Out of delivery" data-step="3"></div>
+        <div class="step {{#if (eq this.deliveryStatus 'delivered')}}completed{{/if}}" data-title="Delivered" data-step="4"></div>
+      </div>
+    </div>
+    </div>
 {{/each}}
 
 
@@ -276,7 +287,11 @@
           <i class="bi bi-download pe-2"></i> Invoice
         </a>
 
+        {{#includes ../../reviewMap this.productId._id}}
+        <button class="btn btn-dark btn-md mt-2 px-4" data-bs-toggle="modal" data-bs-target="#editReviewModal{{this._id}}">Edit Review</button>
+        {{else}}
         <button class="btn btn-dark btn-md mt-2 px-4" data-bs-toggle="modal" data-bs-target="#reviewModal{{this._id}}">Add Review</button>
+        {{/includes}}
 
       </div>
     </div>
@@ -324,7 +339,7 @@
         <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
       </div>
 
-      <form action="/youraccount/review" method="POST" enctype="multipart/form-data">
+      <form action="/youraccount/review" method="POST" enctype="multipart/form-data" class="edit-review-form">
 
       <div class="mb-4 text-center">
         <span class="star" data-value="1">&#9733;</span>
@@ -334,16 +349,19 @@
         <span class="star" data-value="5">&#9733;</span>
       </div>
 
-      <input type="hidden" name="rating" id="ratingInput">
+      <input type="hidden" name="rating" class="rating-input">
       <input type="hidden" name="product" value="{{this.productId._id}}">
 
       <div class="mb-3">
       <label class="form-label fw-bold">Show How The Item Looks</label>
-      <input type="file" name="reviewImages" id="imageUpload" class="form-control shadow-none" accept="image/*" multiple>
+      <input type="file" name="reviewImages" class="form-control shadow-none imageUpload" accept="image/*" multiple>
 
-      <div id="previewContainer" class="d-flex flex-wrap gap-2 mt-2"></div>
+      <div class="d-flex flex-wrap gap-2 mt-2 previewContainer">
+         
+        </div>
        </div>
 
+        <input type="hidden" name="removedImages" class="removed-images-input" value="">
 
       <div class="mb-4">
         <label class="form-label fw-bold">Write A Review</label>
@@ -357,6 +375,71 @@
       </div>
       </form>
 
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit Review Modal -->
+
+<div class="modal fade" id="editReviewModal{{this._id}}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      {{#with (lookup ../../reviewDataMap this.productId._id)}}
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="modal-title">
+          <img src="/images/products/{{firstImage ../this.productId.imageUrl}}" class="img-fluid" alt="Product Image" height="70" width="70">
+          </i>Edit your review
+        </h5>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form action="/youraccount/review/edit" method="POST" enctype="multipart/form-data" class="edit-review-form">
+
+      <div class="mb-4 text-center">
+        <span class="star" data-value="1">&#9733;</span>
+        <span class="star" data-value="2">&#9733;</span>
+        <span class="star" data-value="3">&#9733;</span>
+        <span class="star" data-value="4">&#9733;</span>
+        <span class="star" data-value="5">&#9733;</span>
+      </div>
+
+      <input type="hidden" name="ratingEdit" class="rating-input">
+      <input type="hidden" name="productEdit" value="{{../this.productId._id}}">
+      <input type="hidden" class="rating-value" value="{{rating}}">
+
+      <div class="mb-3">
+      <label class="form-label fw-bold">Show How The Item Looks</label>
+      <input type="file" name="reviewImages" class="form-control shadow-none imageUpload" accept="image/*" multiple>
+
+          <div class="d-flex flex-wrap gap-2 mt-2 previewContainer">
+          {{#each imageUrl}}
+            <div class="position-relative existing-image" data-filename="{{this}}">
+              <img src="/images/products/{{this}}" class="img-thumbnail" style="max-height:100px">
+              <button type="button" class="btn btn-sm btn-outline-dark position-absolute remove-existing"
+                      style="top:0; right:0;">&times;</button>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+
+        <input type="hidden" name="removedImages" class="removed-images-input" value="">
+
+      <div class="mb-4">
+        <label class="form-label fw-bold">Write A Review</label>
+        <textarea class="form-control shadow-none" name="commentEdit" rows="4" placeholder="What should other customers know?">{{comment}}</textarea>
+      </div>
+
+
+      <div class="modal-footer justify-content-end">
+        <button type="button" class="btn btn-outline-dark">Edit Review</button>
+        <button type="submit" class="btn btn-dark">Confirm</button>
+      </div>
+      
+      </form>
+  {{/with}}
     </div>
   </div>
 </div>

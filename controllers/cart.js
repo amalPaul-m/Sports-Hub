@@ -217,6 +217,7 @@ const increaseItemCount = async (req, res) => {
 
       return res.json({
         success: false,
+        stock: 0,
         message: "Variant not found for selected size and color."
       });
     }
@@ -228,7 +229,7 @@ const increaseItemCount = async (req, res) => {
       return res.json({
         success: false,
         outOfStock: true,
-        stock: matchedVariant.stockQuantity,
+        stock: Number(matchedVariant.stockQuantity),
         message: `Only ${matchedVariant.stockQuantity} available in stock`
       });
     }
@@ -240,6 +241,7 @@ const increaseItemCount = async (req, res) => {
       return res.json({
         success: false,
         maxReached: true,
+        stock: Number(matchedVariant.stockQuantity),
         message: "Maximum quantity of 3 reached"
       });
     }
@@ -269,7 +271,7 @@ const increaseItemCount = async (req, res) => {
     res.json({
       success: true,
       newQty: item.quantity,
-      stock: matchedVariant.stockQuantity,
+      stock: Number(matchedVariant.stockQuantity),
       updatedPrice,
       cartTotal,
       totalTax,

@@ -1,8 +1,9 @@
-const productsSchema = require('../models/productsSchema')
-const productTypesSchema = require('../models/productTypesSchema')
-const wishlistSchema = require('../models/wishlistSchema')
+const productsSchema = require('../models/productsSchema');
+const productTypesSchema = require('../models/productTypesSchema');
+const wishlistSchema = require('../models/wishlistSchema');
 const usersSchema = require('../models/usersSchema');
 const offersSchema = require('../models/offersSchema');
+const reviewSchema = require('../models/reviewSchema');
 
 const getUserProducts = async function (req, res, next) {
   try {
@@ -98,14 +99,31 @@ const getUserProducts = async function (req, res, next) {
     const productBrand = (await productsSchema.distinct('brandName')).sort();
 
 
+    const reviewSummary = await reviewSchema.aggregate([
+        {
+          $group: {
+            _id: "$productId",
+            avgRating: { $avg: "$rating" }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            productId: { $toString: "$_id" }, 
+            avgRating: { $round: ["$avgRating", 1] }
+          }
+        }
+      ]);
 
-  
+
+
     res.render('allproducts', {
       groupedData: finalData,
       currentPage: page,
       totalPages,
       productMaterial,
-      productBrand
+      productBrand,
+      reviewSummary
     });
 
   } catch (err) {

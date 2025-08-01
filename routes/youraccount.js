@@ -24,6 +24,6 @@ router.post('/return',checkBlockedUser, userAuthantication, accountController.po
 router.get('/cancelledorders',checkBlockedUser, userAuthantication, accountController.getCancelledOrders);
 
 router.post('/review',upload.array('reviewImages', 5), checkBlockedUser, userAuthantication, accountController.postReviews);
-// router.post('/review/edit', userAuthantication, accountController.postEditReviews);
+router.post('/review/edit' ,upload.array('reviewImages', 5) , userAuthantication, accountController.postEditReviews);
 
 module.exports = router;

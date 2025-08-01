@@ -190,12 +190,20 @@ hbs.registerHelper('times', function(n, block) {
 });
 
 
-hbs.registerHelper('includes', function(array, value) {
-  return array && array.includes(value);
+hbs.registerHelper('includes', function (array, value, options) {
+  const id = value.toString();
+  const match = Array.isArray(array) && array.map(v => v.toString()).includes(id);
+  return match ? options.fn(this) : options.inverse(this);
 });
 
 hbs.registerHelper('toString', function(value) {
   return value.toString();
+});
+
+hbs.registerHelper('getAvgRating', function(productId, reviewSummary) {
+  if (!Array.isArray(reviewSummary)) return 0;
+  const found = reviewSummary.find(r => r.productId == productId.toString());
+  return found ? found.avgRating : 0;
 });
 // view engine setup
 
