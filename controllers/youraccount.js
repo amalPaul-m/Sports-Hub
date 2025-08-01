@@ -15,7 +15,10 @@ const getyouraccount = async (req, res, next) => {
         const email = req.session.users?.email;
         const usersData = await usersSchema.findOne({ email });
 
-        res.render('youraccount',{ usersData });
+        res.render('youraccount',{ 
+            usersData,
+            domainLink: process.env.DOMAIN_LINK
+         });
 
     } catch (err) {
 

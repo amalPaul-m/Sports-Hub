@@ -18,3 +18,36 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+
+
+const shareLink = referalLink;
+
+    document.getElementById('shareBtn').addEventListener('click', async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Check this product!',
+                    text: 'I found this product for you:',
+                    url: shareLink
+                });
+                console.log('Shared successfully');
+            } catch (err) {
+                console.error('Share failed:', err.message);
+            }
+        } else {
+            navigator.clipboard.writeText(shareLink);
+            alert('Link copied to clipboard!');
+        }
+    });
+
+
+    const copyBtn = document.getElementById("copyBtn");
+
+    copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(shareLink)
+            .then(() => {
+                copyBtn.innerHTML = `<i class="bi bi-clipboard2-check"></i> Copied!`;
+                setTimeout(() => copyBtn.innerHTML = '<i class="bi bi-clipboard2"></i>', 2000);
+            })
+            .catch(err => console.error("Failed to copy:", err));
+    });

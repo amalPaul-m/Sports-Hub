@@ -33,6 +33,11 @@ function password_show_hide_confirm() {
 }
 
 
+   document.addEventListener("DOMContentLoaded", () => {
+    const toastLiveExample = document.getElementById('liveToast');
+    const toast = new bootstrap.Toast(toastLiveExample, { delay: 10000 }); 
+    toast.show();
+});
 
 
     const nameInput = document.getElementById('floatingText_signup');
@@ -109,3 +114,5 @@ function password_show_hide_confirm() {
       e.preventDefault();
 
     });
+
+

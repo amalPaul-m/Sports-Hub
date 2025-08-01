@@ -2,24 +2,37 @@ const usersSchema = require('../models/usersSchema')
 const generateOtp = require('../authentication/generateotp');
 const sendVerificationEmail = require('../authentication/mailer');
 const bcrypt = require('bcrypt');
+const crypto = require("crypto");
 
 
-const getSignup = function (req, res, next) {
+const getSignup = async (req, res, next) => {
 
-  res.render('signup');
+  const referralCode = req.query.ref;
+  req.session.refferal = referralCode;
+  let refferals;
+  if(referralCode){
+  refferals = await usersSchema.findOne({referal: req.session.refferal});
+  }
+
+  if(req.session.refferal && !refferals) {
+    res.render('signup', {className: "block"});
+  }else {
+    res.render('signup', {className: "none"});
+  }
 
 };
 
 
-
 const postSignup = async (req, res, next) => {
   try {
-    console.log(req.body)
-
     const { name, email, password, phone } = req.body;
 
-    const number = parseInt(await usersSchema.countDocuments({ phone }))
-    console.log('count:',number)
+    const nameTag = name.split(' ').join('').toLowerCase();
+    const code = crypto.randomBytes(3).toString("hex"); 
+    const refferalCode = `${nameTag}${code}`;
+
+    const number = parseInt(await usersSchema.countDocuments({ phone }));
+  
     if(number>3){
       res.render('signup',
         {
@@ -40,7 +53,8 @@ const postSignup = async (req, res, next) => {
         name: name,
         email: email,
         password: hashedPassword,
-        phone: phone
+        phone: phone,
+        referal: refferalCode
       };
 
 

@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['active', 'blocked'],
     default: 'active'
+  },
+  referal: {
+    type: String,
+    unique: true
   }
 }, {
   timestamps: true
