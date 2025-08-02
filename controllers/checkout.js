@@ -206,10 +206,11 @@ const getPayment = async (req,res,next) => {
     if (!usersData) return res.redirect('/login');
 
     const wallet = await walletSchema.findOne({userId:usersData._id});
+    const walletBalance = wallet.balance;
 
     res.render('payment',{
         razorpayKey: process.env.RAZORPAY_API_KEY,
-        wallet
+        walletBalance
     });
 };
 
@@ -561,7 +562,8 @@ const getRazorpaySuccess = async (req, res, next) => {
           }
         });
 
-        await newOrderOnline.save();
+        const savedOrder = await newOrderOnline.save();
+        console.log(savedOrder)
 
         if(req.session.couponCode){
         await couponSchema.findOneAndUpdate({ code: req.session.couponCode },

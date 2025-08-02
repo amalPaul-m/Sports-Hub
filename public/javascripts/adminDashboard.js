@@ -36,6 +36,11 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+  document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelector('input[name="fromDate"]').max = today;
+    document.querySelector('input[name="toDate"]').max = today;
+  });
 
 
 
