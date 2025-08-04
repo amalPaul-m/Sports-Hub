@@ -64,18 +64,6 @@ const getCheckout = async (req,res,next) => {
     console.error(err);
     next(err);
   }
-
-
-    // const email = req.session.users?.email;
-    // const usersData = await usersSchema.findOne({ email });
-    // const user = usersData._id;
-    // const addressData = await addressSchema.find({userId: user});
-    // console.log(addressData);
-
-    // res.render('checkout', {cssFile: '/stylesheets/checkout.css', 
-    //     jsFile: '/javascripts/checkout.js', addressData
-    // });
-
 };
 
 const postCheckout = async (req,res,next) => {
@@ -87,7 +75,7 @@ if (!addressId) {
   }
 
 req.session.selectedAddressId = addressId;
-// res.redirect('/checkout/payment');
+
 res.redirect('/checkout/confirm');
 
 };
@@ -104,14 +92,16 @@ const getConfirm = async (req,res,next) => {
     }
     
     const validAddressId = new mongoose.Types.ObjectId(addressId);
-    // const paymentType = req.session.selectedPaymentType;
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
     const user = usersData._id;
 
+    const[cartItem, orderAddress] = await Promise.all([
 
-    const cartItem = await cartSchema.findOne({userId: user}).populate('items.productId');
-    const orderAddress = await addressSchema.findById(validAddressId); 
+      cartSchema.findOne({userId: user}).populate('items.productId'),
+      addressSchema.findById(validAddressId)
+
+    ]);
 
     if(!cartItem){
         res.redirect('/cart');
@@ -178,16 +168,8 @@ const getConfirm = async (req,res,next) => {
 
 const postConfirm = async (req,res,next) => {
 
-  //  const paymentType = req.body.payment;
-
-  //   if (!paymentType) {
-  //   return res.status(400).send('PaymentType not selected');
-  // }
-
-  //   req.session.selectedPaymentType = paymentType;
     res.redirect('/checkout/payment');
     
-
 };
 
 const removeConfirm = (req,res,next) => {
@@ -653,6 +635,6 @@ const getSuccess =  (req,res,next) => {
   
 }
 
-module.exports = {getCheckout, postCheckout, getPayment, postPayment, 
+module.exports = { getCheckout, postCheckout, getPayment, postPayment, 
   getConfirm, postConfirm, createRazorpayOrder, getRazorpaySuccess, 
-  getRazorpayFailure, postWallet, getSuccess, removeConfirm}
+  getRazorpayFailure, postWallet, getSuccess, removeConfirm }

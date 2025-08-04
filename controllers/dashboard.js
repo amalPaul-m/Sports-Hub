@@ -36,9 +36,11 @@ const getDashboard = async (req, res, next) => {
     totalSale = sum - orders.couponInfo[0]?.discount;
   }
 
-  const orderCount = await ordersSchema.countDocuments(query);
-  const usersCount = await usersSchema.countDocuments(query);
-  const returnCount = await returnSchema.countDocuments(query);
+  const [orderCount, usersCount, returnCount] = await Promise.all([
+    ordersSchema.countDocuments(query),
+    usersSchema.countDocuments(query),
+    returnSchema.countDocuments(query)
+  ]);
 
 
   const matchStage = {
@@ -50,7 +52,9 @@ const getDashboard = async (req, res, next) => {
   }
 
 
-  const topCategories = await ordersSchema.aggregate([{ $unwind: '$productInfo' },
+  const [topCategories, topSellingProducts, topSellingBrands] = await Promise.all([
+    
+  ordersSchema.aggregate([{ $unwind: '$productInfo' },
   { $match: matchStage },
   {
     $lookup: {
@@ -77,10 +81,9 @@ const getDashboard = async (req, res, next) => {
       totalSold: 1
     }
   }
-]);
+]),
 
-
-const topSellingProducts = await ordersSchema.aggregate([
+ordersSchema.aggregate([
   { $unwind: "$productInfo" },
   { $match: matchStage },
   {
@@ -113,10 +116,9 @@ const topSellingProducts = await ordersSchema.aggregate([
   },
   { $sort: { totalSold: -1 } },
   { $limit: 10 }
-]);
+]),
 
-
-const topSellingBrands = await ordersSchema.aggregate([
+ordersSchema.aggregate([
 
   { $unwind: "$productInfo" },
   { $match: matchStage },
@@ -150,8 +152,8 @@ const topSellingBrands = await ordersSchema.aggregate([
       totalSold: 1
     }
   }
+])
 ]);
-
 
 
 

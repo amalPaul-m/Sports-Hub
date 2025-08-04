@@ -65,11 +65,14 @@ const getProductDetails = async function (req, res, next) {
         const totalRating = productReview.reduce((sum, review) => sum + review.rating, 0);
         const averageRating = count ? (totalRating / count).toFixed(1) : 0;
 
-        const review1 = await reviewSchema.countDocuments({productId: id, rating:'1'});
-        const review2 = await reviewSchema.countDocuments({productId: id, rating:'2'});
-        const review3 = await reviewSchema.countDocuments({productId: id, rating:'3'});
-        const review4 = await reviewSchema.countDocuments({productId: id, rating:'4'});
-        const review5 = await reviewSchema.countDocuments({productId: id, rating:'5'});
+        const [review1, review2, review3, review4, review5] = await Promise.all([
+            reviewSchema.countDocuments({productId: id, rating:'1'}),
+            reviewSchema.countDocuments({productId: id, rating:'2'}),
+            reviewSchema.countDocuments({productId: id, rating:'3'}),
+            reviewSchema.countDocuments({productId: id, rating:'4'}),
+            reviewSchema.countDocuments({productId: id, rating:'5'})
+        ]);
+        
         const totalReview = review1+review2+review3+review4+review5;
         const review1Per = Math.ceil((review1/totalReview)*100);
         const review2Per = Math.ceil((review2/totalReview)*100);

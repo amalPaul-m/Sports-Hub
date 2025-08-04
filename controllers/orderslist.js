@@ -11,14 +11,14 @@ const getOrderslist = async (req, res,next) => {
 
         const perPage = 8;
         const page = parseInt(req.query.page) || 1;
-        const totalOrders = await ordersSchema.countDocuments();
-        
-        const orders = await ordersSchema.find()
-        .populate('addressId').populate('productInfo.productId')
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * perPage)
-        .limit(perPage);
-
+        const [totalOrders, orders] = await Promise.all([
+            ordersSchema.countDocuments(),
+            ordersSchema.find()
+            .populate('addressId').populate('productInfo.productId')
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * perPage)
+            .limit(perPage)
+        ]);
 
         const totalPages = Math.ceil(totalOrders / perPage);
         
@@ -149,27 +149,20 @@ const getReturnOrderslist = async (req, res, next) => {
 
         const perPage = 8;
         const page = parseInt(req.query.page) || 1;
-        const totalOrders = await returnsSchema.countDocuments();
-        
-        // const orders = await ordersSchema.find({"productInfo.status": "returned"})
-        // .populate('addressId').populate('productInfo.productId')
-        // .sort({ createdAt: -1 })
-        // .skip((page - 1) * perPage)
-        // .limit(perPage);
-
-        const returns = await returnsSchema.find()
-        .populate({
-        path: 'orderId',
-        populate: {
-            path: 'productInfo.productId'  
-        }
-        })
-        .populate('productId')
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * perPage)
-        .limit(perPage);
-
-        console.log(returns);
+        const [totalOrders, returns] = await Promise.all([
+            returnsSchema.countDocuments(),
+            returnsSchema.find()
+            .populate({
+            path: 'orderId',
+            populate: {
+                path: 'productInfo.productId'  
+            }
+            })
+            .populate('productId')
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * perPage)
+            .limit(perPage)
+        ])
 
         const totalPages = Math.ceil(totalOrders / perPage);
         
@@ -210,15 +203,13 @@ const acceptReturn = async (req, res, next) => {
         if (paymentInfo[0].paymentMethod === 'online'){
 
             
+        const [order, orderData] = await Promise.all([
+            
+            ordersSchema.findOne({ _id: orderId, "productInfo.productId": itemId },
+            { productInfo: { $elemMatch: { productId: itemId } } }),
+            ordersSchema.findOne({_id: orderId})
 
-        const order = await ordersSchema.findOne(
-            { _id: orderId, "productInfo.productId": itemId },
-            { productInfo: { $elemMatch: { productId: itemId } } }
-        );
-
-        const orderData = await ordersSchema.findOne({
-            _id: orderId
-        })
+        ]);
 
         const productInfo = order.productInfo[0];
         totalAmount = productInfo.price*productInfo.quantity;
@@ -277,11 +268,10 @@ const acceptReturn = async (req, res, next) => {
             totalAmount = productInfo.price*productInfo.quantity;
 
             const email = req.session.users?.email;
-            const usersData = await usersSchema.findOne({ email });
-
-            const orderData = await ordersSchema.findOne({_id: orderId});
-
-            
+            const [usersData, orderData] = await Promise.all([
+                usersSchema.findOne({ email }),
+                ordersSchema.findOne({_id: orderId})
+            ]);
 
             let returnAmount = 0;
         
@@ -352,7 +342,6 @@ const acceptReturn = async (req, res, next) => {
         }
 
     }
-
         res.redirect('/orderslist/ordersreturnlist');
 
     } catch (error) {

@@ -12,19 +12,13 @@ const getOffers = async(req,res,next) => {
         const skip = (page - 1) * limit;
         
         const totalOffers = await offersSchema.countDocuments();
-
         const totalPages = Math.ceil(totalOffers / limit);
-
-
-
-        
         const offerType = req.query.offerType;
-
         let offersData;
 
         if(!offerType) {
 
-            offersData = await offersSchema.find()
+        offersData = await offersSchema.find()
         .sort({createdAt: -1})
         .skip(skip).limit(limit);
 
@@ -35,9 +29,6 @@ const getOffers = async(req,res,next) => {
         .skip(skip).limit(limit);
 
         }
-
-                
-       
 
         res.render('offers', { 
 
@@ -58,7 +49,7 @@ const getAddProductOffers = async (req,res,next) => {
 
     try {
 
-        const productsData = await productsSchema.distinct('productName')
+        const productsData = await productsSchema.distinct('productName');
 
         res.render('productoffer', { productsData });
 
@@ -103,7 +94,6 @@ const postAddProductOffers = async (req,res,next) => {
                 { $set: { ...updateOffer }}
             )
         }
-
 
         res.redirect('/offers/add/product-offer?success=1');
     } catch (error) {
@@ -278,8 +268,10 @@ const getEditProductOffers = async (req,res,next) => {
     try {
 
         const offerId = req.params.id;
-        const editData = await offersSchema.findByIdAndUpdate(offerId);
-        const productsData = await productsSchema.distinct('productName');
+        const[editData, productsData] = await Promise.all([
+            offersSchema.findByIdAndUpdate(offerId),
+            productsSchema.distinct('productName')
+        ]);
 
         res.render('editproductoffer', { editData, productsData });
 
@@ -351,8 +343,10 @@ const getEditCategoryOffers = async (req,res,next) => {
     try {
 
         const offerId = req.params.id;
-        const editData = await offersSchema.findByIdAndUpdate(offerId);
-        const productTypesData = await productTypesSchema.distinct('name');
+        const [editData, productTypesData] = await Promise.all([
+            offersSchema.findByIdAndUpdate(offerId),
+            productTypesSchema.distinct('name')
+        ]);
 
         res.render('editcategoryoffer', { editData, productTypesData });
 

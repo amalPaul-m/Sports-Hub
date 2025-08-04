@@ -5,26 +5,19 @@ const getProducts = async function (req, res, next) {
 
   try {
 
-    // pagination=================
-
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const skip = (page - 1) * limit;
 
-    const totalUsers = await productsSchema.countDocuments({ isActive: true });
+    const [totalUsers, productsList, totalUsersUnlist, productsUnList] = await Promise.all([
+        productsSchema.countDocuments({ isActive: true }),
+        productsSchema.find({ isActive: true }).sort({ updatedAt: -1 }).skip(skip).limit(limit),
+        productsSchema.countDocuments({ isActive: true }),
+        productsSchema.find({ isActive: false }).sort({ updatedAt: -1 }).skip(skip).limit(limit)
+    ]);
+
     const totalPages = Math.ceil(totalUsers / limit);
-
-  
-    let productsList = await productsSchema
-    .find({ isActive: true }).sort({ updatedAt: -1 }).skip(skip).limit(limit);
-
-
-    const totalUsersUnlist = await productsSchema.countDocuments({ isActive: true });
     const totalPagesUnlist = Math.ceil(totalUsersUnlist / limit);
-
-
-    let productsUnList = await productsSchema
-    .find({ isActive: false }).sort({ updatedAt: -1 }).skip(skip).limit(limit);
 
     res.render('productslist', {
       productsList, productsUnList,
@@ -147,9 +140,10 @@ const editGetProducts = async function (req, res, next) {
   try {
     const productId = req.params.id;
 
-    const productDetails = await productsSchema.findById(productId);
-    const category = await productTypesSchema.find({ status: "active" }).sort({ _id: 1 });
-    console.log(category)
+    const [productDetails, category] = await Promise.all([
+      productsSchema.findById(productId),
+      productTypesSchema.find({ status: "active" }).sort({ _id: 1 })
+    ]);
 
     res.render('editProducts', {
       productDetails: [productDetails],

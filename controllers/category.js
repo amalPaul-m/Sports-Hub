@@ -25,15 +25,15 @@ const getCategory = async function (req, res, next) {
       : {};
 
     // Query data
-    const totalUsers = await productTypesSchema.countDocuments(filter);
 
-    const categoryList =
-      await productTypesSchema
+    const[totalUsers, categoryList] = await Promise.all([
+      productTypesSchema.countDocuments(filter),
+      productTypesSchema
         .find()
         .sort({ updatedAt: -1 })
         .skip(skip)
         .limit(limit)
-
+    ]);
 
     const totalPages = Math.ceil(totalUsers / limit);
 
@@ -88,14 +88,13 @@ const unblockCategory = async function (req, res, next) {
     const categoryId = req.params.id;
     const categoryName = req.params.name;
 
-    console.log(categoryId, categoryName)
-
     // status set to active
-    await productTypesSchema.findByIdAndUpdate(categoryId, { status: 'active' });
 
-    await productsSchema.updateMany({ category: categoryName }, {$set: { isActive: true}})
-
-    // Redirect back to the customers page
+    Promise.all([
+      productTypesSchema.findByIdAndUpdate(categoryId, { status: 'active' }),
+      productsSchema.updateMany({ category: categoryName }, {$set: { isActive: true}})
+    ]);
+  
     res.redirect('/category');
   } catch (err) {
     err.message = 'Error unblock category';
@@ -110,32 +109,13 @@ const blockCategory = async function (req, res, next) {
   try {
     const categoryId = req.params.id;
     const categoryName = req.params.name;
-    console.log(categoryName)
 
     // status set to blocked
-    await productTypesSchema.findByIdAndUpdate(categoryId, { status: 'blocked' });
 
-    await productsSchema.updateMany({ category: categoryName }, {$set: { isActive: false}})
-
-
-
-
-    // const productOffer = await productsSchema.find({ category: categoryName});
-
-    // let totalStock=0;
-    // productOffer.forEach( async product => {
-    // totalStock += product.variants.reduce((sum, items)=>{
-    //     return sum + items.stockQuantity;
-      
-    // },0);
-
-    // if(totalStock<5 && product.discountPercentage<1){
-    //   await productsSchema.findByIdAndDelete(product._id);
-    // }
-    
-    // });
-
-
+    await Promise.all([
+      productTypesSchema.findByIdAndUpdate(categoryId, { status: 'blocked' }),
+      productsSchema.updateMany({ category: categoryName }, {$set: { isActive: false}})
+    ])
 
     // Redirect back to the customers page
     res.redirect('/category');

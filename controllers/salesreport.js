@@ -22,14 +22,14 @@ const getSalesReport = async (req, res, next) => {
             query.createdAt = { $gte: fromDate, $lte: toDate };
         }
 
-        
-        const totalCoupons = await ordersSchema.countDocuments(query);
+        const [totalCoupons, ordersData] = await Promise.all([
+            ordersSchema.countDocuments(query),
+            ordersSchema.find(query).sort({createdAt: -1})
+            .skip(skip).limit(limit)                   
+            .populate('userId')
+        ]);
+
         const totalPages = Math.ceil(totalCoupons / limit);
-
-        const ordersData = await ordersSchema.find(query).sort({createdAt: -1})
-                        .skip(skip).limit(limit)                   
-                        .populate('userId');
-
 
         let grandTotalRegularPrice = 0;
         ordersData.forEach(order => {

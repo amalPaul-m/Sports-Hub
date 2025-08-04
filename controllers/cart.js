@@ -20,8 +20,11 @@ const getCart = async (req,res,next) => {
 
     //Active offers Checking
     
-        const productsList = await productsSchema.find();
-        const cartList = await cartSchema.find({ userId: user._id });
+        const[productsList, cartList] = await Promise.all([
+            productsSchema.find(),
+            cartSchema.find({ userId: user._id })
+        ]);
+        
         const cartProductIds = cartList.flatMap(cart =>
             cart.items.map(item => item.productId.toString())
         );
@@ -105,9 +108,11 @@ const productDetailAddCart = async (req,res,next) => {
 
         const { productId, selectedColor, selectedSize, action } = req.body;
         const email = req.session.users?.email;
-        const usersData = await usersSchema.findOne({ email });
-        const currproduct = await productsSchema.findById(productId);
-        console.log(currproduct.salePrice)
+
+        const[usersData,currproduct] = await Promise.all([
+          usersSchema.findOne({ email }),
+          productsSchema.findById(productId)
+        ]);
 
         const cart = await cartSchema.findOne({userId: usersData._id});
 
@@ -141,15 +146,13 @@ const productDetailAddCart = async (req,res,next) => {
                 size: selectedSize
             }
 
-        await cartSchema.findOneAndUpdate(
-            { _id: cart._id },
-            { $push: { items: addData } }
-            );
+        await Promise.all([
+          cartSchema.findOneAndUpdate(
+            { _id: cart._id }, { $push: { items: addData } }),
 
-        await wishlistSchema.findOneAndUpdate(
-            { userId: usersData._id },
-            { $pull: { productId: productId } }
-        );
+          wishlistSchema.findOneAndUpdate(
+            { userId: usersData._id },{ $pull: { productId: productId } })
+        ]);
 
         couponSessionClr(req);
 

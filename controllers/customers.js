@@ -23,8 +23,8 @@ const getCustomers = async (req, res, next) => {
 
     // Query data
       const [totalUsers, users] = await Promise.all([
-        await usersSchema.countDocuments(filter),
-        await usersSchema
+        usersSchema.countDocuments(filter),
+        usersSchema
         .find(filter)
         .sort({ _id: -1 }) 
         .skip(skip)
