@@ -37,7 +37,11 @@
                 <td>{{this.orderId}}</td>
                 <td>{{this.userId.name}}</td>
                 <td>{{calcTotalRegularPrice this.productInfo}}</td>
-                <td>{{subtract (calcTotalRegularPrice this.productInfo) this.paymentInfo.[0].totalAmount}}</td>
+                <td>{{#if (gt (calcTotalRegularPrice this.productInfo) 1000)}}
+                    {{subtract (calcTotalRegularPrice this.productInfo) this.paymentInfo.[0].totalAmount}}
+                    {{else}}
+                    {{subtract (calcTotalRegularPrice this.productInfo) (subtract this.paymentInfo.[0].totalAmount ../shippingCharge)}}
+                    {{/if}}</td>
                 <td>{{this.paymentInfo.[0].paymentMethod}}</td>
                 <td>{{this.deliveryStatus}}</td>
                 <td>{{formatDateFull this.createdAt}}</td>

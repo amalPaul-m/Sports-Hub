@@ -79,7 +79,7 @@ const getCart = async (req,res,next) => {
     const net= Math.round(totalAmount/1.18);
 
     const shippingCharge = 40;
-    if(totalAmount<1000){
+    if(totalAmount<=1000){
       totalAmount= totalAmount + shippingCharge;
     }
 

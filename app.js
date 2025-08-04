@@ -226,7 +226,7 @@ hbs.registerHelper('calcTotalRegularPrice', function (productInfo) {
     let total = 0;
     productInfo.forEach(item => {
         if (!isNaN(item.regularPrice)) {
-            total += Number(item.regularPrice);
+            total += Number(item.regularPrice*item.quantity);
         }
     });
     return total;

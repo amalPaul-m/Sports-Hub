@@ -3,6 +3,7 @@ const ExcelJS = require('exceljs');
 const puppeteer = require('puppeteer');
 const hbs = require('handlebars');
 
+const SHIPPING_CHARGE = Number(process.env.SHIPPING_CHARGE) || 0;
 
 const getSalesReport = async (req, res, next) => {
 
@@ -34,8 +35,8 @@ const getSalesReport = async (req, res, next) => {
         let grandTotalRegularPrice = 0;
         ordersData.forEach(order => {
             order.productInfo.forEach(item => {
-                if (item.status === 'confirmed' && !isNaN(item.regularPrice)) {
-                    grandTotalRegularPrice += Number(item.regularPrice);
+                if (!isNaN(item.regularPrice)) {
+                    grandTotalRegularPrice += Number(item.regularPrice * item.quantity);
                 }
             });
         });
@@ -46,12 +47,14 @@ const getSalesReport = async (req, res, next) => {
             let regularTotal = 0;
             order.productInfo.forEach(item => {
                 if (!isNaN(item.regularPrice)) {
-                    regularTotal += Number(item.regularPrice);
+                    regularTotal += Number(item.regularPrice * item.quantity);
                 }
             });
             const discount = regularTotal - order.paymentInfo[0]?.totalAmount;
-            if (!isNaN(discount)) {
+            if (!isNaN(discount) && regularTotal>1000) {
                 totalDiscountSum += discount;
+            }else {
+                totalDiscountSum += Number(discount + SHIPPING_CHARGE);
             }
         });
 
@@ -68,6 +71,7 @@ const getSalesReport = async (req, res, next) => {
             totalCoupons,
             grandTotalRegularPrice,
             totalDiscountSum,
+            shippingCharge: SHIPPING_CHARGE,
             fromDate: req.query.fromDate || '',
             toDate: req.query.toDate || ''
         })
@@ -99,26 +103,41 @@ const exportExcelSalesReport = async (req, res, next) => {
             { header: 'Discount ₹', key: 'discount', width: 15 },
             { header: 'Payment', key: 'payment', width: 15 },
             { header: 'Status', key: 'status', width: 15 },
-            { header: 'Date', key: 'date', width: 20 },
+            { header: 'Date', key: 'date', width: 25 },
         ];
 
         let slNo = 1;
         ordersData.forEach(order => {
-            const totalRegularPrice = order.productInfo.reduce((sum, item) => sum + (item.regularPrice || 0), 0);
-            const discount = totalRegularPrice - order.paymentInfo[0].totalAmount;
+            const totalRegularPrice = order.productInfo.reduce(
+                (sum, item) => sum + (item.regularPrice * item.quantity || 0), 
+                0
+            );
+
+            const payment = order.paymentInfo?.[0] || {};
+            const totalAmount = payment.totalAmount || 0;
+            const paymentMethod = payment.paymentMethod || "N/A";
+
+            const discount = totalRegularPrice > 1000
+                ? totalRegularPrice - totalAmount
+                : totalRegularPrice - (totalAmount - SHIPPING_CHARGE);
 
             worksheet.addRow({
                 slno: slNo++,
-                orderId: order.orderId,
-                customer: order.userId.name,
+                orderId: order.orderId || "N/A",
+                customer: order.userId?.name || 'Guest',
                 total: totalRegularPrice,
                 discount: discount,
-                payment: order.paymentInfo[0].paymentMethod,
-                status: order.deliveryStatus,
-                date: order.createdAt.toLocaleDateString()
+                payment: paymentMethod,
+                status: order.deliveryStatus || 'N/A',
+                date: order.createdAt.toLocaleString('en-IN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
             });
         });
-        
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx');
@@ -126,11 +145,12 @@ const exportExcelSalesReport = async (req, res, next) => {
         await workbook.xlsx.write(res);
         res.end();
     } catch (error) {
+        console.error("Excel Export Error:", error);
         error.message = 'Error export excel';
-        console.log('error');
         next(error);
     }
 };
+
 
 
 
@@ -144,7 +164,8 @@ const getSalesReportExport =  async (req, res, next) => {
 
         res.render('salesreport-export', {
             layout: false,
-            ordersData
+            ordersData,
+            shippingCharge: SHIPPING_CHARGE
         });
 
     } catch (error) {
@@ -161,7 +182,7 @@ const exportPdfSalesReport = async (req, res, next) => {
          const saleCount = req.session.salescount;
          const totalOrderAmount = req.session.totalOrderAmount;
          const totalDiscount = req.session.totaldiscount;
-        const html = await new Promise((resolve, reject) => {
+         const html = await new Promise((resolve, reject) => {
             res.render('salesreport-export', { layout: false, ordersData, saleCount, totalOrderAmount, totalDiscount  }, (err, html) => {
                 if (err) reject(err);
                 else resolve(html);
