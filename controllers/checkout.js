@@ -188,7 +188,7 @@ const getPayment = async (req,res,next) => {
     if (!usersData) return res.redirect('/login');
 
     const wallet = await walletSchema.findOne({userId:usersData._id});
-    const walletBalance = wallet.balance;
+    const walletBalance = wallet ? wallet.balance : 0;
 
     res.render('payment',{
         razorpayKey: process.env.RAZORPAY_API_KEY,

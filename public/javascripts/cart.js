@@ -46,7 +46,7 @@ function updateQty(btn, delta) {
   const incrementBtn = btn.parentElement.querySelector(".increment");
   const decrementBtn = btn.parentElement.querySelector(".decrement");
 
-  if (incrementBtn) incrementBtn.disabled = qty >= minquantity;
+  if (incrementBtn) incrementBtn.disabled = qty >= 3;
   if (decrementBtn) decrementBtn.disabled = qty <= 1;
 }
 
