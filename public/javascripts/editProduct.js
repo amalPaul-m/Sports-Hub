@@ -1,4 +1,25 @@
 
+window.addEventListener('DOMContentLoaded', () => {
+  const productId = document.getElementById('productId').value;
+  const params = new URLSearchParams(window.location.search);
+  const error = params.get('error');
+  if (error  === '1') {
+    Swal.fire({
+      title: error === '1' ? 'Minimum 4 image is needed!' : 'Product Updated!',
+      text: 'Redirecting to product list...',
+      icon: 'error ',
+      showConfirmButton: false,
+      timer: 2000,
+      customClass: {
+        popup: 'swal-popup',
+        title: 'swal-title',
+        icon: 'swal-icon',
+        confirmButton: 'swal-button'
+      }
+    }).then(() => window.location.href = `/products/update/${productId}`);
+  }
+});
+
 
 const imageInput = document.getElementById("imageUpload");
 const thumbnailsContainer = document.getElementById("thumbnailsContainer");

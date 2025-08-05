@@ -1,3 +1,51 @@
+document.addEventListener('DOMContentLoaded', function () {
+  const char = document.getElementById('salesChart');
+  if (char) {
+    const ctx = char.getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['JAN','FEB','MAR','APR','MAY','JUN','JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+        datasets: [{
+          label: 'Sales',
+          data: monthlySales,
+          borderColor: '#000000',
+          backgroundColor: 'rgba(0,0,0,0.1)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: '#000',
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: function(value) {
+                return '₹' + value;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+});
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelector('input[name="fromDate"]').max = today;
+    document.querySelector('input[name="toDate"]').max = today;
+  });
+
+
+
+
+
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('collapsed');
     document.getElementById('topbar').classList.toggle('collapsed');

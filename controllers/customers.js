@@ -1,11 +1,12 @@
-const usersSchema = require('../models/usersSchema')
+const usersSchema = require('../models/usersSchema');
+const ordersSchema = require('../models/ordersSchema');
 
 
 const getCustomers = async (req, res, next) => {
 
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 5; // Change limit here for more users per page
+    const limit = 5;
     const skip = (page - 1) * limit;
     const query = req.query.q ? req.query.q.trim() : '';
 
@@ -21,13 +22,14 @@ const getCustomers = async (req, res, next) => {
       : {};
 
     // Query data
-    const totalUsers = await usersSchema.countDocuments(filter);
-    const users = await usersSchema
-      .find(filter)
-      .sort({ _id: -1 }) // latest first
-      .skip(skip)
-      .limit(limit);
-
+      const [totalUsers, users] = await Promise.all([
+        usersSchema.countDocuments(filter),
+        usersSchema
+        .find(filter)
+        .sort({ _id: -1 }) 
+        .skip(skip)
+        .limit(limit)
+      ]);
 
     const totalPages = Math.ceil(totalUsers / limit);
 
@@ -35,9 +37,7 @@ const getCustomers = async (req, res, next) => {
       users,
       currentPage: page,
       totalPages,
-      query,
-      cssFile: '/stylesheets/customers.css',
-      jsFile: '/javascripts/customers.js',
+      query
     });
   } catch (err) {
     err.message = 'Error fetching customers';
@@ -111,10 +111,9 @@ const searchCustomers = async (req, res, next) => {
       users,
       query,
       currentPage: page,
-      totalPages,
-      cssFile: '/stylesheets/customers.css',
-      jsFile: '/javascripts/customers.js'
+      totalPages
     });
+    
   } catch (err) {
     err.message = 'Error searching customers';
     next(err);

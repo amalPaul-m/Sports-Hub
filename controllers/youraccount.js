@@ -3,7 +3,8 @@ const addressSchema = require('../models/addressSchema');
 const ordersSchema = require('../models/ordersSchema');
 const productsSchema = require('../models/productsSchema');
 const returnSchema = require('../models/returnSchema');
-const walletSchema = require('../models/walletSchema')
+const walletSchema = require('../models/walletSchema');
+const reviewSchema = require('../models/reviewSchema');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
@@ -14,8 +15,10 @@ const getyouraccount = async (req, res, next) => {
         const email = req.session.users?.email;
         const usersData = await usersSchema.findOne({ email });
 
-        res.render('youraccount',
-        { usersData, cssFile: '/stylesheets/yourAccount.css', jsFile: '/javascripts/yourAccount.js' });
+        res.render('youraccount',{ 
+            usersData,
+            domainLink: process.env.DOMAIN_LINK
+         });
 
     } catch (err) {
 
@@ -31,8 +34,7 @@ const getyourprofile = async (req,res,next) => {
     try{
         const email = req.session.users?.email;
         const usersDetails = await usersSchema.findOne({ email });
-        res.render('yourprofile', { usersDetails, cssFile: '/stylesheets/yourprofile.css', 
-        jsFile: '/javascripts/yourprofile.js' })
+        res.render('yourprofile', { usersDetails });
 
     } catch(err) {
         err.message = 'Error get youraccount';
@@ -55,8 +57,7 @@ const posteditprofile = async (req,res,next) => {
 
         const usersDetails = await usersSchema.findOne({ email });
 
-        res.render('yourprofile', { usersDetails, cssFile: '/stylesheets/yourprofile.css', 
-        jsFile: '/javascripts/yourprofile.js' })
+        res.render('yourprofile', { usersDetails });
 
 
     } catch(err) {
@@ -70,8 +71,7 @@ const posteditprofile = async (req,res,next) => {
 
 const getchangepassword = async (req,res,next) => {
 
-    res.render('changepassword', { cssFile: '/stylesheets/changepassword.css', 
-        jsFile: '/javascripts/changepassword.js' })
+    res.render('changepassword');
 
 }
 
@@ -88,8 +88,7 @@ const patchchangepassword = async (req,res,next) => {
     const hashedPassword = await bcrypt.hash(newpassword, 10);
 
     if(!match) {
-        res.render('changepassword', { content: 'Invalid old passowrd', cssFile: '/stylesheets/changepassword.css', 
-        jsFile: '/javascripts/changepassword.js' })
+        res.render('changepassword', { content: 'Invalid old passowrd' });
     }else {
 
     await usersSchema.findOneAndUpdate(
@@ -120,8 +119,7 @@ const getaddress = async (req, res, next) => {
         const addressData = await addressSchema.find({userId});
         console.log(addressData)
 
-        res.render('address',
-        { addressData, cssFile: '/stylesheets/address.css', jsFile: '/javascripts/address.js' });
+        res.render('address',{ addressData });
 
     } catch (err) {
 
@@ -220,6 +218,21 @@ const getyourorders = async (req, res, next) => {
 
     const userId = user._id;
 
+    const reviewData = await reviewSchema.find({userId:userId});
+    const reviewMap = reviewData.map(r => r.productId.toString());
+
+    const reviewDataMap = {};
+
+    reviewData.forEach(review => {
+    reviewDataMap[review.productId.toString()] = {
+        rating: review.rating,
+        comment: review.comment,
+        imageUrl: review.imageUrl,
+    };
+    });
+
+    console.log(reviewDataMap)
+
     // Pagination for undelivered
     const page = parseInt(req.query.page) || 1;
     const limit = 2;
@@ -238,6 +251,7 @@ const getyourorders = async (req, res, next) => {
         "productInfo.status": "confirmed"
       })
         .populate('productInfo.productId')
+        .populate('addressId')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -271,14 +285,14 @@ const getyourorders = async (req, res, next) => {
 
     // Render only once
     res.render('yourorders', {
-      cssFile: '/stylesheets/yourorders.css',
-      jsFile: '/javascripts/yourorders.js',
       orderData,
       currentPage: page,
       totalPages: Math.ceil(totalOrders / limit),
       orderData1,
       currentPage1: page1,
-      totalPages1: Math.ceil(totalOrders1 / limit1)
+      totalPages1: Math.ceil(totalOrders1 / limit1),
+      reviewMap,
+      reviewDataMap
     });
 
   } catch (error) {
@@ -295,12 +309,13 @@ const cancelorder = async (req, res, next) => {
     try {
         const orderId = String(req.params.orderId); 
         const productId = new mongoose.Types.ObjectId(req.params.productId);
+        const reason = req.body.reason;
         const order = await ordersSchema.findOneAndUpdate(
         { orderId: orderId, "productInfo.productId": productId },
-        { $set: { "productInfo.$.status": "cancelled" } },
+        { $set: { "productInfo.$.status": "cancelled", 
+            "productInfo.$.cancelReason": reason } },
         { new: true, runValidators: true }
         );
-
        
 
         if (!order) {
@@ -352,11 +367,35 @@ const cancelorder = async (req, res, next) => {
 
         //amount return to wallet
 
-        if(order.paymentInfo[0].paymentMethod==='online'||order.paymentInfo[0].paymentMethod==='wallet'){
+        if(order.paymentInfo?.[0]?.paymentMethod==='online'||order.paymentInfo?.[0]?.paymentMethod==='wallet'){
 
         const email = req.session.users?.email;
         const usersData = await usersSchema.findOne({ email });
         const totalAmount = item.price*item.quantity;
+        let returnAmount = 0;
+        const discountAmount = order.couponInfo?.[0]?.discountAmount;
+        const discountPercentage = order.couponInfo?.[0]?.discountPercentage;
+
+        if(discountAmount!=null && discountAmount!==0){
+
+            const discount = order.couponInfo?.[0]?.discountAmount;
+            const count = order.productInfo.length;
+            const difference = discount / count;
+            returnAmount = Math.ceil(totalAmount - difference);
+
+
+        }else if(discountPercentage!=null && discountPercentage!==0){
+
+            const discountPer = order.couponInfo?.[0]?.discountPercentage;
+            const discount = totalAmount * (discountPer / 100);
+            returnAmount = Math.ceil(totalAmount - discount);
+
+        }else {
+
+            returnAmount = totalAmount;
+
+        }
+
 
         const existingWallet = await walletSchema.findOne({ userId: usersData._id });
 
@@ -364,11 +403,11 @@ const cancelorder = async (req, res, next) => {
             await walletSchema.updateOne(
                 { userId: usersData._id },
                 {
-                    $inc: { balance: totalAmount },
+                    $inc: { balance: returnAmount },
                     $push: {
                         transaction: {
                             type: 'add',
-                            amount: totalAmount,
+                            amount: returnAmount,
                             description: 'Refund for cancelled order',
                         }
                     }
@@ -377,10 +416,10 @@ const cancelorder = async (req, res, next) => {
         } else {
             const walletData = new walletSchema({
                 userId: usersData._id,
-                balance: totalAmount,
+                balance: returnAmount,
                 transaction: [{
                     type: 'add',
-                    amount: totalAmount,
+                    amount: returnAmount,
                     description: 'Refund for cancelled order',
                 }]
             });
@@ -497,8 +536,6 @@ const getCancelledOrders = async (req, res, next) => {
 
 
         res.render('cancelledorders', {
-            cssFile: '/stylesheets/yourorders.css',
-            jsFile: '/javascripts/yourorders.js',
             orderData: cancelledOrders,
             returnData: returnedOrders,
             currentPage: page,
@@ -518,9 +555,94 @@ const getCancelledOrders = async (req, res, next) => {
 
 
 
+const postReviews = async (req,res,next) => {
+
+    try {
+    const imageNames = req.files.map(file => file.filename);
+
+    const { rating, product, comment } = req.body;
+
+    const email = req.session.users?.email;
+
+    const user = await usersSchema.findOne({ email });
+    if (!user) return res.redirect('/login');
+    const userId = user._id;
+
+    const reviewData = await reviewSchema.findOne({userId:userId, productId:product});
+
+    if(reviewData){
+        res.redirect('/youraccount/yourorders?error=2');
+    }else {
+
+    const newReview = new reviewSchema({
+      userId: userId,
+      productId: product,
+      rating: rating,
+      comment: comment,
+      imageUrl: imageNames
+    });
+
+    await newReview.save();
+
+    res.redirect('/youraccount/yourorders?success=1'); 
+    }
+  } catch (error) {
+    error.message = 'Error post review';
+    console.log(error);
+    next(error);
+  }
+
+};
+
+
+
+const postEditReviews = async (req,res,next) => {
+
+    try {
+        const imageNames = req.files.map(file => file.filename);
+        const { ratingEdit, productEdit, commentEdit, removedImages } = req.body;
+        const removedList = removedImages ? removedImages.split(',') : [];
+        const email = req.session.users?.email;
+
+        const user = await usersSchema.findOne({ email });
+        if (!user) return res.redirect('/login');
+        const userId = user._id;
+
+        const existingReview = await reviewSchema.findOne({ 
+        userId: userId, 
+        productId: productEdit 
+        });
+
+        let updatedImages = [
+        ...existingReview.imageUrl.filter(img => !removedImages.includes(img)),
+        ...imageNames
+        ];
+
+        await reviewSchema.findOneAndUpdate(
+        { userId: userId, productId: productEdit },
+        {
+            $set: {
+            rating: ratingEdit,
+            comment: commentEdit,
+            imageUrl: updatedImages
+            }
+        },
+        { new: true }
+        );
+        
+        res.redirect('/youraccount/yourorders?success=1'); 
+
+    }catch (error) {
+        error.message = 'Error edit review';
+        console.log(error);
+        next(error);
+    }
+
+};
+
 module.exports = { 
     getyouraccount, getyourprofile, posteditprofile, 
     getchangepassword, patchchangepassword,getaddress, postaddress, 
     editaddress, deleteaddress, getyourorders, cancelorder, postReturn,
-    getCancelledOrders
+    getCancelledOrders, postReviews, postEditReviews
  }

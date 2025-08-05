@@ -10,13 +10,8 @@ const getWishlist = async (req, res, next) => {
     const wishlist = await wishlistSchema.findOne({ userId: usersData._id })
         .populate('productId').sort({ createdAt: -1 });
 
-    console.log('Wishlist:', wishlist);
 
-    res.render('wishlist', {
-        cssFile: '/stylesheets/wishlist.css',
-        jsFile: '/javascripts/wishlist.js',
-        wishlist
-    });
+    res.render('wishlist', { wishlist });
 };
 
 const toggleWishlist = async (req, res) => {

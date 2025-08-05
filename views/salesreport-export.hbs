@@ -1,0 +1,53 @@
+
+
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #999; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+    </style>
+
+
+
+    <h1>Sports hub</h1>
+    <h2>Sales Report</h2>
+
+    <h4><span>Total Order Count : <b>{{saleCount}}</b></span>
+     <span class="ms-3">Total Order Amount : <b>{{totalOrderAmount}}</b></span>
+     <span class="ms-3">Total Discount : <b>{{totalDiscount}}</b></span></h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Sl. No</th>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Total ₹</th>
+                <th>Discount ₹</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each ordersData}}
+            <tr>
+                <td>{{addOne @index}}</td>
+                <td>{{this.orderId}}</td>
+                <td>{{this.userId.name}}</td>
+                <td>{{calcTotalRegularPrice this.productInfo}}</td>
+                <td>{{#if (gt (calcTotalRegularPrice this.productInfo) 1000)}}
+                    {{subtract (calcTotalRegularPrice this.productInfo) this.paymentInfo.[0].totalAmount}}
+                    {{else}}
+                    {{subtract (calcTotalRegularPrice this.productInfo) (subtract this.paymentInfo.[0].totalAmount ../shippingCharge)}}
+                    {{/if}}</td>
+                <td>{{this.paymentInfo.[0].paymentMethod}}</td>
+                <td>{{this.deliveryStatus}}</td>
+                <td>{{formatDateFull this.createdAt}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+

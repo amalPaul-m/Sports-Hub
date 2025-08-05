@@ -4,10 +4,9 @@ const sendVerificationEmail = require('../authentication/mailer');
 
 
 const getForgot = (req, res) => {
-  res.render('forgot', {
-    cssFile: '/stylesheets/forgot.css',
-    jsFile: '/javascripts/forgot.js'
-  });
+
+  res.render('forgot');
+
 };
 
 
@@ -17,12 +16,9 @@ const postForgot = async (req, res) => {
 
 
   const user = await usersSchema.findOne({ email });
+
   if (!user) {
-    return res.render('forgot', 
-    { content: 'Email not found', 
-        cssFile: '/stylesheets/forgot.css', 
-        jsFile: '/javascripts/forgot.js' 
-    });
+    return res.render('forgot', { content: 'Email not found' });
   }
 
   const otp = generateOtp();
@@ -46,8 +42,6 @@ const getVerifyOtp = (req, res) => {
   if (!req.session.resetEmail) return res.redirect('/forgot');
 
   res.render('verifyOtp', {
-    cssFile: '/stylesheets/verifyOtp.css',
-    jsFile: '/javascripts/verifyOtp.js',
     content: `OTP sent to ${req.session.resetEmail}`,
     alert: 'mt-5 pt-4'
   });
@@ -91,4 +85,4 @@ const postResendOtp = async (req, res) => {
 };
 
 
-module.exports = {getForgot, postForgot, getVerifyOtp, postVerifyOtp, postResendOtp}
+module.exports = { getForgot, postForgot, getVerifyOtp, postVerifyOtp, postResendOtp }

@@ -1,3 +1,9 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/orderslist.css">
+{{/section}}
+
+
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="px-4 mb-3">
@@ -8,10 +14,10 @@
   <a class="nav-link" href="/dashboard"><i class="bi bi-house-door"></i> Dashboard</a>
   <a class="nav-link active" href="#"><i class="bi bi-file-earmark"></i> Order List</a>
   <a class="nav-link" href="/products"><i class="bi bi-inboxes"></i> All Products</a>
-  <a class="nav-link" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
+  <a class="nav-link" href="/salesreport"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
   <a class="nav-link" href="/customers"><i class="bi bi-people"></i> Customers</a>
-  <a class="nav-link" href="#"><i class="bi bi-ticket-detailed"></i> Coupon</a>
-  <a class="nav-link" href="#"><i class="bi bi-funnel"></i> Filter</a>
+  <a class="nav-link" href="/coupon"><i class="bi bi-ticket-detailed"></i> Coupon</a>
+  <a class="nav-link" href="/offers"><i class="bi bi-funnel"></i> Offers</a>
   <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
   <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
   <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
@@ -220,20 +226,29 @@
                               <div class="mb-4">
                                   <div class="d-flex justify-content-between">
                                       <span class="info-label">Net Amount</span>
-                                      <span>₹{{netAmount this.totalAmount}}</span>
+                                      <span>₹{{netAmount (add this.totalAmount ../couponInfo.[0].discount)}}</span>
                                   </div>
                                   <div class="d-flex justify-content-between">
                                       <span class="info-label">GST</span>
-                                      <span>₹{{gst this.totalAmount}}</span>
+                                      <span>₹{{gst (add this.totalAmount ../couponInfo.[0].discount)}}</span>
                                   </div>
                                   <div class="d-flex justify-content-between">
                                       <span class="info-label">Shipping & Handling Fee</span>
                                       <span>₹0.00</span>
                                   </div>
+                                  <div class="d-flex justify-content-between mt-4">
+                                      <span class="fw-bold fs-5">Total Amount</span>
+                                      <span class="fw-bold fs-5">₹{{add this.totalAmount ../couponInfo.[0].discount}}</span>
+                                  </div>
+                              </div>
+
+                              <div class="d-flex justify-content-between">
+                                  <span class="info-label">Discount Amount</span>
+                                  <span>- ₹{{../couponInfo.[0].discount}}.00</span>
                               </div>
           
                               <div class="d-flex justify-content-between border-top pt-3">
-                                  <h5 class="fw-bold">Total Amount</h5>
+                                  <h5 class="fw-bold">Payable Amount</h5>
                                   <h5 class="fw-bold">₹{{this.totalAmount}}.00</h5>
                                   {{/each}}
                               </div>
@@ -396,5 +411,7 @@
 
 
 
-
+{{#section 'scripts'}}
+<script src="/javascripts/orderslist.js"></script>
+{{/section}}
 

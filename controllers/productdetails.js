@@ -2,6 +2,7 @@ const productsSchema = require('../models/productsSchema');
 const cartSchema = require('../models/cartSchema');
 const usersSchema = require('../models/usersSchema');
 const wishlistSchema = require('../models/wishlistSchema');
+const reviewSchema = require('../models/reviewSchema');
 
 
 const getProductDetails = async function (req, res, next) {
@@ -59,6 +60,31 @@ const getProductDetails = async function (req, res, next) {
             message = 'out of Stock'
         }
 
+        const productReview = await reviewSchema.find({ productId: id }).populate('userId')
+        const count = productReview.length;
+        const totalRating = productReview.reduce((sum, review) => sum + review.rating, 0);
+        const averageRating = count ? (totalRating / count).toFixed(1) : 0;
+
+        const [review1, review2, review3, review4, review5] = await Promise.all([
+            reviewSchema.countDocuments({productId: id, rating:'1'}),
+            reviewSchema.countDocuments({productId: id, rating:'2'}),
+            reviewSchema.countDocuments({productId: id, rating:'3'}),
+            reviewSchema.countDocuments({productId: id, rating:'4'}),
+            reviewSchema.countDocuments({productId: id, rating:'5'})
+        ]);
+        
+        const totalReview = review1+review2+review3+review4+review5;
+        const review1Per = Math.ceil((review1/totalReview)*100);
+        const review2Per = Math.ceil((review2/totalReview)*100);
+        const review3Per = Math.ceil((review3/totalReview)*100);
+        const review4Per = Math.ceil((review4/totalReview)*100);
+        const review5Per = Math.ceil((review5/totalReview)*100);
+
+        const review = {
+            review1Per, review2Per, review3Per, review4Per, review5Per,
+            review1, review2, review3, review4, review5
+        }
+        
         const wishlistProductIds = await wishlistSchema.find({ userId:userId }).distinct('productId');
         productDetails.isWishlisted = wishlistProductIds
         .map(id => id.toString())
@@ -68,8 +94,9 @@ const getProductDetails = async function (req, res, next) {
 
             res.render('productdetails',
                 {
-                    cssFile: '/stylesheets/productdetails.css',
-                    jsFile: '/javascripts/productDetails.js', productDetails, 
+                    productDetails, 
+                    productReview,
+                    averageRating, count, review,
                     relatedProducts,uniqueVariants, 
                     totalStock, hide, btnvalue, buttonVal, message
                 })
@@ -85,4 +112,4 @@ const getProductDetails = async function (req, res, next) {
     }
 };
 
-module.exports = {getProductDetails}
+module.exports = { getProductDetails }

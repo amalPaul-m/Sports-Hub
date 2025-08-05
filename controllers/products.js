@@ -5,30 +5,22 @@ const getProducts = async function (req, res, next) {
 
   try {
 
-    // pagination=================
-
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const skip = (page - 1) * limit;
 
-    const totalUsers = await productsSchema.countDocuments({ isActive: true });
+    const [totalUsers, productsList, totalUsersUnlist, productsUnList] = await Promise.all([
+        productsSchema.countDocuments({ isActive: true }),
+        productsSchema.find({ isActive: true }).sort({ updatedAt: -1 }).skip(skip).limit(limit),
+        productsSchema.countDocuments({ isActive: true }),
+        productsSchema.find({ isActive: false }).sort({ updatedAt: -1 }).skip(skip).limit(limit)
+    ]);
+
     const totalPages = Math.ceil(totalUsers / limit);
-
-  
-    let productsList = await productsSchema
-    .find({ isActive: true }).sort({ updatedAt: -1 }).skip(skip).limit(limit);
-
-
-    const totalUsersUnlist = await productsSchema.countDocuments({ isActive: true });
     const totalPagesUnlist = Math.ceil(totalUsersUnlist / limit);
 
-
-    let productsUnList = await productsSchema
-    .find({ isActive: false }).sort({ updatedAt: -1 }).skip(skip).limit(limit);
-
     res.render('productslist', {
-      cssFile: '/stylesheets/adminProduct.css',
-      jsFile: '/javascripts/adminProduct.js', productsList, productsUnList,
+      productsList, productsUnList,
       currentPage: page,
       totalPages,currentPageUnlist: page,
       totalPagesUnlist
@@ -47,10 +39,7 @@ const getAddProducts = async function (req, res, next) {
   try {
     const category = await productTypesSchema.find({ status: "active" }).sort({ _id: 1 });
 
-    res.render('addProducts', {
-      cssFile: '/stylesheets/addProduct.css',
-      jsFile: '/javascripts/addProduct.js', category
-    });
+    res.render('addProducts', { category });
 
   } catch (err) {
     err.message = 'not get products data';
@@ -151,15 +140,14 @@ const editGetProducts = async function (req, res, next) {
   try {
     const productId = req.params.id;
 
-    const productDetails = await productsSchema.findById(productId);
-    const category = await productTypesSchema.find({ status: "active" }).sort({ _id: 1 });
-    console.log(category)
+    const [productDetails, category] = await Promise.all([
+      productsSchema.findById(productId),
+      productTypesSchema.find({ status: "active" }).sort({ _id: 1 })
+    ]);
 
     res.render('editProducts', {
       productDetails: [productDetails],
-      category,
-      cssFile: '/stylesheets/editProduct.css',
-      jsFile: '/javascripts/editProduct.js'
+      category
     });
 
   } catch (err) {
@@ -193,6 +181,16 @@ const updatePostProducts = async function (req, res, next) {
     console.log(req.body);
     const imageNames = req.files.map(file => file.filename);
     const referId = req.body.id;
+
+    const productData = await productsSchema.findById(referId);
+    const imgLength = productData.imageUrl.length;
+    const newImg = imageNames.length;
+    const totalImagesAfterUpload = imgLength + newImg;
+    if(totalImagesAfterUpload< 4){
+
+      res.redirect('/products/update?error=1');
+
+    }
 
     // Update Product Fields
     const product = {
@@ -269,8 +267,6 @@ const updatePostProducts = async function (req, res, next) {
 
 
 
-
-
 const searchProducts = async (req, res, next) => {
   try {
     const query = req.query.searchItem || '';
@@ -308,9 +304,7 @@ const searchProducts = async (req, res, next) => {
       productsUnList,
       query,
       currentPage: page,
-      totalPages,
-      cssFile: '/stylesheets/adminProduct.css',
-      jsFile: '/javascripts/adminProduct.js',
+      totalPages
     });
 
   } catch (err) {
@@ -321,4 +315,6 @@ const searchProducts = async (req, res, next) => {
 
 
 
-module.exports = {getProducts,getAddProducts, postAddProducts, listGetProducts, unlistGetProducts, editGetProducts,editThumbGetProducts, updatePostProducts, searchProducts}
+module.exports = { getProducts,getAddProducts, postAddProducts, 
+  listGetProducts, unlistGetProducts, editGetProducts,editThumbGetProducts, 
+  updatePostProducts, searchProducts }

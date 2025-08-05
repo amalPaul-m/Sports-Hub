@@ -1,3 +1,50 @@
+document.getElementById('addToCartForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  const submitBtn = form.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;                   
+  submitBtn.textContent = 'In Cart';         
+
+  const data = {
+    productId: formData.get('productId'),
+    selectedColor: formData.get('selectedColor'),
+    selectedSize: formData.get('selectedVariant'),
+    action: formData.get('action')
+  };
+
+  try {
+    const res = await fetch('/cart/add-buy-cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      window.location.href = '/cart';
+    } else {
+
+      showToast('Failed to add to cart.', true);
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Add to Cart';
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast('Error occurred', true);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Add to Cart';
+  }
+});
+
+
+
 //product zooming
 
 const zoom = document.getElementById("mainImage");
@@ -101,47 +148,3 @@ const cartButtons = document.querySelectorAll('.btn-addCart');
 
 
 
-document.getElementById('addToCartForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const form = e.target;
-  const formData = new FormData(form);
-
-  const submitBtn = form.querySelector('button[type="submit"]');
-  submitBtn.disabled = true;                   
-  submitBtn.textContent = 'In Cart';         
-
-  const data = {
-    productId: formData.get('productId'),
-    selectedColor: formData.get('selectedColor'),
-    selectedSize: formData.get('selectedVariant'),
-    action: formData.get('action')
-  };
-
-  try {
-    const res = await fetch('/cart/add-buy-cart', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-
-    const result = await res.json();
-
-    if (result.success) {
-      window.location.href = '/cart';
-    } else {
-
-      showToast('Failed to add to cart.', true);
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Add to Cart';
-    }
-
-  } catch (err) {
-    console.error(err);
-    showToast('Error occurred', true);
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Add to Cart';
-  }
-});

@@ -5,20 +5,19 @@ const getIndex = async function (req, res, next) {
 
   try {
 
-    const category = await productTypesSchema.find({ status: "active" }).sort({ _id: 1 });
-    const products = await productsSchema.find({ isActive: true }).sort({ updatedAt: -1 }).limit(4);
-
-    const discountProducts = await productsSchema.find({
+    const [category, products, discountProducts] = await Promise.all([
+      productTypesSchema.find({ status: "active" }).sort({ _id: 1 }),
+      productsSchema.find({ isActive: true }).sort({ updatedAt: -1 }).limit(4),
+      productsSchema.find({
       isActive: true, $expr: {
         $lte: ["$salePrice",
           { $multiply: ["$regularPrice", 0.5] }]
       }
-    }).limit(4);
+    }).limit(4)
+    ]);
 
     res.render('index',
       {
-        cssFile: '/stylesheets/home.css',
-        jsFile: '/javascripts/homeBefore.js',
         category,
         products,
         discountProducts
@@ -32,4 +31,4 @@ const getIndex = async function (req, res, next) {
   }
 };
 
-module.exports = {getIndex}
+module.exports = { getIndex }

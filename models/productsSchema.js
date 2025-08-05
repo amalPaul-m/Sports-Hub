@@ -69,7 +69,21 @@ const ProductsSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  variants: [VariantSchema]
+  variants: [VariantSchema],
+  discountPercentage: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: 0
+    },
+    startDate: {
+        type: Date,
+        default: null
+    },
+    endDate: {
+        type: Date,
+        default: null
+    },
 }, {
   timestamps: true
 });

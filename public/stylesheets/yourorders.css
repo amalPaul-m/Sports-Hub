@@ -245,3 +245,39 @@
     background-color: #000000;
     border-color: #000000;
 }
+
+/* review */
+
+
+.star {
+      font-size: 2rem;
+      color: #ddd;
+      cursor: pointer;
+    }
+    .star.selected {
+      color: gold;
+    }
+    .modal-content {
+      padding: 2rem;
+    }
+    .camera-icon {
+      background-color: #f0f0f0;
+      border: none;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .form-control::placeholder {
+      color: #999;
+    }
+    .modal-footer button {
+      width: 120px;
+    }
+
+
+
+    .img-fluid {
+      width: 100px;
+    }

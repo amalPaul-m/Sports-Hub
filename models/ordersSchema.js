@@ -46,7 +46,12 @@ const ordersSchema = new mongoose.Schema({
         enum: ['confirmed', 'cancelled','returned'],
         default: 'confirmed'
       },
+      cancelStatus: String,
       price: {
+        type: Number,
+        required: true
+      },
+      regularPrice: {
         type: Number,
         required: true
       },
@@ -81,15 +86,26 @@ const ordersSchema = new mongoose.Schema({
         default: null
       }
     }
-  ]
-//   ,
+  ],
+  couponInfo: [{
 
-//   couponInfo: [
-//     {
-//       couponCode: String,
-//       discount: Number
-//     }
-//   ]
+      couponCode: {
+        type: String,
+        default: null
+      },
+      discount: {
+        type: Number,
+        default: 0
+      },
+    discountAmount: {
+        type: Number,
+        default: 0
+    },
+    discountPercentage: {
+        type: Number,
+        default: null
+    }
+  }]
 
 }, { timestamps: true });
 

@@ -8,6 +8,7 @@ const productsSchema = require('../models/productsSchema');
 const generateOrderId = require('../helpers/generateOrderId');
 const razorpayInstance = require('../configuration/razorpay');
 const transactionSchema = require('../models/transactionSchema');
+const couponSchema = require('../models/couponSchema');
 
 const getCheckout = async (req,res,next) => {
   
@@ -52,31 +53,17 @@ const getCheckout = async (req,res,next) => {
       return res.redirect('/cart?error=out_of_stock');
     }
 
+
+
     const addressData = await addressSchema.find({ userId: user });
 
-    res.render('checkout', {
-      cssFile: '/stylesheets/checkout.css',
-      jsFile: '/javascripts/checkout.js',
-      addressData
-    });
+    res.render('checkout', { addressData });
 
   } catch (err) {
     err.message = 'Failed to load checkout page';
     console.error(err);
     next(err);
   }
-
-
-    // const email = req.session.users?.email;
-    // const usersData = await usersSchema.findOne({ email });
-    // const user = usersData._id;
-    // const addressData = await addressSchema.find({userId: user});
-    // console.log(addressData);
-
-    // res.render('checkout', {cssFile: '/stylesheets/checkout.css', 
-    //     jsFile: '/javascripts/checkout.js', addressData
-    // });
-
 };
 
 const postCheckout = async (req,res,next) => {
@@ -88,7 +75,7 @@ if (!addressId) {
   }
 
 req.session.selectedAddressId = addressId;
-// res.redirect('/checkout/payment');
+
 res.redirect('/checkout/confirm');
 
 };
@@ -105,28 +92,71 @@ const getConfirm = async (req,res,next) => {
     }
     
     const validAddressId = new mongoose.Types.ObjectId(addressId);
-    // const paymentType = req.session.selectedPaymentType;
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
     const user = usersData._id;
 
+    const[cartItem, orderAddress] = await Promise.all([
 
-    const cartItem = await cartSchema.findOne({userId: user}).populate('items.productId');
-    const orderAddress = await addressSchema.findById(validAddressId); 
+      cartSchema.findOne({userId: user}).populate('items.productId'),
+      addressSchema.findById(validAddressId)
+
+    ]);
 
     if(!cartItem){
         res.redirect('/cart');
     }
 
-    const totalAmount = cartItem.items.reduce((sum, item) => {
+    let totalAmount = cartItem.items.reduce((sum, item) => {
         return sum + item.price * item.quantity;
         }, 0);
 
     const tax = Math.round(totalAmount-(totalAmount/1.18)); 
     const net = parseFloat(Math.round(totalAmount/1.18));
 
-    res.render('confirm', {cssFile: '/stylesheets/confirm.css', cartItem, orderAddress, 
-        totalAmount, tax, net});
+    
+    // COUPON HANDLING
+
+    const code = req.session.couponCode;
+       
+    let payableAmount=0;
+    let discountAmount=0;
+
+ 
+    if(code){
+
+    const couponData = await couponSchema.findOne({ code: code });
+    
+    if(couponData.discountAmount !== null) {
+
+       payableAmount = totalAmount-couponData.discountAmount;
+       discountAmount = couponData.discountAmount;
+
+    } else if(couponData.discountPercentage !==null) {
+
+      discountAmount = Math.floor((couponData.discountPercentage / 100) * totalAmount);
+      payableAmount = Math.floor(totalAmount - discountAmount);
+    }
+
+  }else {
+    payableAmount = totalAmount;
+    discountAmount = 0;
+  }
+    
+  let shipping;
+    if(payableAmount<1000){
+
+    shipping = req.session.shippingCharge;
+    payableAmount = payableAmount + shipping;
+    totalAmount = totalAmount + shipping;
+
+    }else {
+      shipping = '0.00';
+    }
+    req.session.payableAmount=payableAmount;
+
+    res.render('confirm', { cartItem, orderAddress, 
+       totalAmount, tax, net, payableAmount, discountAmount, code, shipping });
 
   } catch(err) {
         err.message = 'not get data';  
@@ -138,15 +168,14 @@ const getConfirm = async (req,res,next) => {
 
 const postConfirm = async (req,res,next) => {
 
-  //  const paymentType = req.body.payment;
-
-  //   if (!paymentType) {
-  //   return res.status(400).send('PaymentType not selected');
-  // }
-
-  //   req.session.selectedPaymentType = paymentType;
     res.redirect('/checkout/payment');
     
+};
+
+const removeConfirm = (req,res,next) => {
+
+  delete req.session.couponCode;
+  res.redirect('/checkout/confirm');
 
 };
 
@@ -159,17 +188,24 @@ const getPayment = async (req,res,next) => {
     if (!usersData) return res.redirect('/login');
 
     const wallet = await walletSchema.findOne({userId:usersData._id});
+    const walletBalance = wallet.balance;
 
-    res.render('payment',{cssFile: '/stylesheets/payment.css', 
-        jsFile: '/javascripts/payment.js',
+    res.render('payment',{
         razorpayKey: process.env.RAZORPAY_API_KEY,
-        wallet
+        walletBalance
     });
 };
 
 const postPayment = async (req,res,next) => {
 
   try {
+
+    
+    if(req.session.payableAmount > 1000){
+
+      return res.render('payment',{message: 'Cash on Delivery not applicable for order value greater than ₹1000'});
+      
+    }
 
     const rawAddress = req.session.selectedAddressId;
     const addressId = typeof rawAddress === 'object' ? rawAddress.addressId : rawAddress;
@@ -178,8 +214,6 @@ const postPayment = async (req,res,next) => {
       res.redirect('/login')
     }
 
-    // const lastOrder = await ordersSchema.findOne().sort({ orderId: -1 }).select('orderId');
-    // const newOrderId = lastOrder ? lastOrder.orderId + 1 : 11111111;
     const orderId = await generateOrderId();
 
     const validAddressId = new mongoose.Types.ObjectId(addressId);
@@ -193,7 +227,9 @@ const postPayment = async (req,res,next) => {
         return sum + item.price * item.quantity;
         }, 0);
 
+    const discount = Math.floor(totalAmount-req.session.payableAmount);
 
+    const couponData = await couponSchema.findOne({code: req.session.couponCode});
 
     const newOrder = new ordersSchema({
       orderId,
@@ -203,19 +239,36 @@ const postPayment = async (req,res,next) => {
         productId: item.productId._id,
         quantity: item.quantity,
         price : item.price,
+        regularPrice: item.regularPrice,
         color: item.color,
         size: item.size,
       })),
       addressId: validAddressId,
       paymentInfo: {
-        totalAmount: totalAmount,
+        totalAmount: req.session.payableAmount,
         paymentMethod: paymentType,
         paymentStatus: paymentType === 'COD' ? 'unpaid' : 'paid',
         // transactionId: paymentType === 'Razorpay' ? req.session.razorpayPaymentId  : null
+      },
+      couponInfo: {
+      couponCode: req.session.couponCode || null,
+      discount: discount || 0,
+      discountAmount: couponData ? couponData.discountAmount : 0,
+      discountPercentage: couponData ? couponData.discountPercentage : 0
       }
     });
 
     await newOrder.save();
+
+    if(req.session.couponCode) {
+    await couponSchema.findOneAndUpdate({ code: req.session.couponCode },
+      { $inc: { balance: -1 }}
+    );
+  }
+
+    delete req.session.payableAmount;
+    delete req.session.couponCode;
+    delete req.session.shippingCharge;
 
     //update quantity
 
@@ -243,6 +296,7 @@ const postPayment = async (req,res,next) => {
     await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
     delete req.session.selectedAddressId;
     delete req.session.selectedPaymentType;
+    delete req.session.shippingCharge;
     
 
     res.render('ordersuccess');
@@ -283,6 +337,8 @@ const postWallet = async (req,res,next) => {
                 return sum + item.price * item.quantity;
                 }, 0);
 
+            const discount = Math.floor(totalAmount - req.session.payableAmount);
+
 
                 if (!wallet || wallet.balance < totalAmount) {
                     return res.json({ success: false, message: 'Sorry! Insufficient Wallet Balance' });
@@ -292,14 +348,15 @@ const postWallet = async (req,res,next) => {
                  await walletSchema.updateOne(
                  { userId: user._id },
                  {
-                  $inc: { balance: -totalAmount },
+                  $inc: { balance: -req.session.payableAmount },
                   $push: {
                   transaction: {
                   type: 'deduct',
-                  amount: totalAmount,
+                  amount: req.session.payableAmount,
                   description: 'Deduction for purchase'
                   }}});
-                       
+             
+            const couponData = await couponSchema.findOne({code: req.session.couponCode});
                                            
             const newOrder = new ordersSchema({
               orderId,
@@ -309,18 +366,35 @@ const postWallet = async (req,res,next) => {
                 productId: item.productId._id,
                 quantity: item.quantity,
                 price : item.price,
+                regularPrice: item.regularPrice,
                 color: item.color,
                 size: item.size,
               })),
               addressId: validAddressId,
               paymentInfo: {
-                totalAmount: totalAmount,
+                totalAmount: req.session.payableAmount,
                 paymentMethod: paymentType,
                 paymentStatus: 'paid'
+              },
+              couponInfo: {
+              couponCode: req.session.couponCode || null,
+              discount: discount ||0,
+              discountAmount: couponData?.discountAmount || 0,
+              discountPercentage: couponData?.discountPercentage || 0
               }
             });
 
             await newOrder.save();
+
+            if(req.session.couponCode) {
+            await couponSchema.findOneAndUpdate({ code: req.session.couponCode },
+              { $inc: { balance: -1 }}
+            );
+          }
+
+            delete req.session.payableAmount;
+            delete req.session.couponCode;
+            delete req.session.shippingCharge;
 
             //update quantity
 
@@ -350,6 +424,7 @@ const postWallet = async (req,res,next) => {
                 await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
                 delete req.session.selectedAddressId;
                 delete req.session.selectedPaymentType;
+                delete req.session.shippingCharge;
 
                
 
@@ -386,7 +461,7 @@ const createRazorpayOrder = async (req, res, next) => {
         }, 0);
 
         const options = {
-            amount: totalAmount * 100, // in paisa
+            amount: req.session.payableAmount * 100, // in paisa
             currency: "INR",
             receipt: `order_rcptid_${Date.now()}`
         };
@@ -438,6 +513,9 @@ const getRazorpaySuccess = async (req, res, next) => {
             return sum + item.price * item.quantity;
             }, 0);
 
+        const discount = Math.floor(totalAmount-req.session.payableAmount);
+
+        const couponData = await couponSchema.findOne({code: req.session.couponCode});
 
         const newOrderOnline = new ordersSchema({
           orderId,
@@ -447,19 +525,37 @@ const getRazorpaySuccess = async (req, res, next) => {
             productId: item.productId._id,
             quantity: item.quantity,
             price : item.price,
+            regularPrice: item.regularPrice,
             color: item.color,
             size: item.size,
           })),
           addressId: validAddressId,
           paymentInfo: {
-            totalAmount: totalAmount,
+            totalAmount: req.session.payableAmount,
             paymentMethod: req.session.selectedPaymentType,
             paymentStatus: req.session.selectedPaymentType === 'COD' ? 'unpaid' : 'paid',
             transactionId: req.session.selectedPaymentType === 'online' ? req.session.razorpayPaymentId  : null
+          },
+          couponInfo: {
+            couponCode: req.session.couponCode || null,
+            discount: discount || 0,
+            discountAmount: couponData?.discountAmount || 0,
+            discountPercentage: couponData?.discountPercentage || 0
           }
         });
 
-        await newOrderOnline.save();
+        const savedOrder = await newOrderOnline.save();
+        console.log(savedOrder)
+
+        if(req.session.couponCode){
+        await couponSchema.findOneAndUpdate({ code: req.session.couponCode },
+          { $inc: { balance: -1 }}
+        );
+      }
+
+        delete req.session.payableAmount;
+        delete req.session.couponCode;
+        delete req.session.shippingCharge;
 
         //update quantity
 
@@ -497,11 +593,9 @@ const getRazorpaySuccess = async (req, res, next) => {
         await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
         delete req.session.selectedAddressId;
         delete req.session.selectedPaymentType;
+        delete req.session.shippingCharge;
 
-        res.render('ordersuccess', {
-            cssFile: '/stylesheets/ordersuccess.css',
-            jsFile: '/javascripts/ordersuccess.js'
-          });
+        res.render('ordersuccess');
 
 
         }else {
@@ -516,10 +610,7 @@ const getRazorpaySuccess = async (req, res, next) => {
             status: 'failed'
         });
 
-            res.render('orderfailed', {
-            cssFile: '/stylesheets/paymentcancelled.css',
-            jsFile: '/javascripts/paymentcancelled.js'
-            });
+            res.render('orderfailed');
         }
 
         
@@ -531,10 +622,9 @@ const getRazorpaySuccess = async (req, res, next) => {
 
 
 const getRazorpayFailure = (req, res, next) => {
-    res.render('orderfailed', {
-        cssFile: '/stylesheets/paymentcancelled.css',
-        jsFile: '/javascripts/paymentcancelled.js'
-    });
+
+    res.render('orderfailed');
+    
 };
 
 
@@ -545,6 +635,6 @@ const getSuccess =  (req,res,next) => {
   
 }
 
-module.exports = {getCheckout, postCheckout, getPayment, postPayment, 
+module.exports = { getCheckout, postCheckout, getPayment, postPayment, 
   getConfirm, postConfirm, createRazorpayOrder, getRazorpaySuccess, 
-  getRazorpayFailure, postWallet, getSuccess}
+  getRazorpayFailure, postWallet, getSuccess, removeConfirm }

@@ -8,10 +8,7 @@ const getLogin = function (req, res, next) {
     // Already logged in: prevent returning to login page
     return res.redirect('/home');
   }
-  res.render('login', 
-  { cssFile: '/stylesheets/userlogin.css', 
-    jsFile: '/javascripts/userlogin.js' 
-  });
+  res.render('login');
 };
 
 
@@ -24,28 +21,19 @@ const postLogin = async (req, res) => {
 
     if (!user) {
       return res.render('login', 
-      { message: 'Invalid email or password', 
-        cssFile: '/stylesheets/userlogin.css', 
-        jsFile: '/javascripts/userlogin.js' 
-      });
+      { message: 'Invalid email or password' });
     }
 
     if (user.status !== status) {
       return res.render('login', 
-      { message: 'Admin Blocked your profile, please connect to customer service', 
-        cssFile: '/stylesheets/userlogin.css', 
-        jsFile: '/javascripts/userlogin.js' 
-      });
+      { message: 'Admin Blocked your profile, please connect to customer service' });
     }
 
   const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
       return res.render('login', 
-      { message: 'Invalid email or password', 
-        cssFile: '/stylesheets/userlogin.css', 
-        jsFile: '/javascripts/userlogin.js' 
-      });
+      { message: 'Invalid email or password' });
     }
     // Login success
 
@@ -68,4 +56,4 @@ const postLogin = async (req, res) => {
 };
 
 
-module.exports = {getLogin, postLogin}
+module.exports = { getLogin, postLogin }

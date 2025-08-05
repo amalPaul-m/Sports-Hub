@@ -1,17 +1,64 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/signup.css">
+{{/section}}
+
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+            aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <a class="navbar-brand pe-5" href="/"><img src="images/logo.png" alt="logo"></a>
+
+            <form class="d-flex" role="search">
+                <input class="form-control shadow-none me-5 pe-5 py-2 icon-style border-0 bg-search" type="search"
+                    placeholder="" aria-label="Search" />
+            </form>
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active pe-5" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2" href="#product_selection">New Arraival</a>
+                </li>
+            </ul>
+
+            <a href="/login" type="button" class="btn btn-dark rounded-pill px-5"> LOG IN </a>
+
+        </div>
+    </div>
+</nav>
+
+{{!-- Tosters --}}
+
+<div class="toast-container position-fixed bottom-0 start-0 p-3 d-{{className}}">
+  <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <img src="/images/link.webp" class="rounded me-2" alt="..." height="30">
+      <strong class="me-auto text-danger">Invalid refferal link</strong>
+      <small>Just Now</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Sorry! this is invalid refferal link. Continue with normal signup.
+    </div>
+  </div>
+</div>
+
 <!--User Signup-->
 
 <div class="">
-    <div class="container py-5">
+    <div class="container py-4">
         <div class="row">
-            <div class="col-md-12 text-center">
-                <h1>Welcome Back</h1>
+            <div class="col-md-5 text-center mt-5">
+                <h1 class="mt-5 pt-5">SignUp Now!</h1>
                 <a href="/auth/google" type="button" class="btn btn-light mt-4 mb-4"><img src="/images/google.png"
                         alt="google" class="pe-3">Login With google</a>
-
-                <div class="border-top border-1 border-dark py-3 align">
-                    <span>OR</span>
-
-
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-6">
                     <form method="post" action="/signup">
                         <div id="registerForm">
                             <span id="error_msg" class="text-danger">{{content}}</span>
@@ -48,7 +95,7 @@
                                         class="float-start mt-1 mb-1 phone_validate"></span>
                             </div>
 
-                            <div class="form-floating mb-3 mt-3">
+                            <div class="form-floating mt-3">
                                 <input type="password" class="form-control shadow-none border"
                                     id="floatingPasswordConfirm_signup" placeholder="Password">
                                 <label for="floatingPasswordConfirm_signup">Confirm Password</label>
@@ -70,3 +117,57 @@
         </div>
     </div>
 </div>
+
+
+<!--Footer-->
+
+<div class="bg-black text-white mt-2">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-6 pe-4">
+                <img src="images/Logo-dark.png" alt="logo">
+                <p class="hf-p">We are a wolesale sports materials selling firm located in <br>ernakulam. Our shops
+                    offers more than</p>
+
+                <a class="text-decoration-none pe-4" href="#"><img src="images/Twitter.png" alt="Twitter"></a>
+                <a class="text-decoration-none pe-4" href="#"><img src="images/Facebook.png" alt="Facebook"></a>
+                <a class="text-decoration-none pe-4" href="#"><img src="images/Instagram.png" alt="Instagram"></a>
+            </div>
+            <div class="col-md-3">
+                <h5 class="hf-h5">Info</h5>
+                <a class="text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <p class="hf-p text-white">Contact Us</p>
+                </a>
+                <a class="text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <p class="hf-p text-white">About Us</p>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <h5 class="hf-h5">Assistance to the buyer</h5>
+                <a class="text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <p class="hf-p text-white">Find an order</p>
+                </a>
+                <a class="text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <p class="hf-p text-white">Terms and conditions</p>
+                </a>
+                <a class="text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <p class="hf-p text-white">Exchange and return of goods</p>
+                </a>
+                <a class="text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <p class="hf-p text-white">Cookie policy</p>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 pt-5">
+                <h5 class="text-center">© 2025 | SPORTS HUB | All Rights Reserved.</h5>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{{#section 'scripts'}}
+<script src="/javascripts/signup.js"></script>
+{{/section}}

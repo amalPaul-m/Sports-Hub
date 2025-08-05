@@ -21,6 +21,7 @@ require('./auth/google'); // passport strategy
 
 
 
+
 const indexRouter = require('./routes/index');
 const homeRouter = require('./routes/home');
 const loginRouter = require('./routes/login')
@@ -44,7 +45,10 @@ const invoiceRouter = require('./routes/invoice');
 const orderslistRouter = require('./routes/orderslist');
 const returnsRouter = require('./routes/return');
 const wishlistRouter = require('./routes/wishlist');
-const walletRouter = require('./routes/wallet')
+const walletRouter = require('./routes/wallet');
+const couponRouter = require('./routes/coupon');
+const offersRouter = require('./routes/offers');
+const salesreportRouter = require('./routes/salesreport');
 
 const app = express();
 
@@ -97,6 +101,7 @@ hbs.registerHelper('last8', function (objectId) {
 });
 
 hbs.registerHelper('add', (a, b) => a + b);
+hbs.registerHelper('mul', (a, b) => a * b);
 hbs.registerHelper('subtract', (a, b) => a - b);
 hbs.registerHelper('eq', (a, b) => a === b);
 hbs.registerHelper('gt', (a, b) => a > b);
@@ -167,6 +172,39 @@ hbs.handlebars.registerHelper('includes', function (array, value) {
     return array.includes(value.toString());
 });
 
+hbs.registerHelper('formatDate', function(dateString) {
+    if (!dateString) return '';
+    return dateString.toISOString().slice(0, 10);
+});
+
+hbs.registerHelper('json', function(context) {
+  return JSON.stringify(context);
+});
+
+hbs.registerHelper('times', function(n, block) {
+  let accum = '';
+  for (let i = 0; i < n; ++i) {
+    accum += block.fn(i);
+  }
+  return accum;
+});
+
+
+hbs.registerHelper('includes', function (array, value, options) {
+  const id = value.toString();
+  const match = Array.isArray(array) && array.map(v => v.toString()).includes(id);
+  return match ? options.fn(this) : options.inverse(this);
+});
+
+hbs.registerHelper('toString', function(value) {
+  return value.toString();
+});
+
+hbs.registerHelper('getAvgRating', function(productId, reviewSummary) {
+  if (!Array.isArray(reviewSummary)) return 0;
+  const found = reviewSummary.find(r => r.productId == productId.toString());
+  return found ? found.avgRating : 0;
+});
 // view engine setup
 
 app.set('views', path.join(__dirname, 'views'));
@@ -174,11 +212,44 @@ app.set('view engine', 'hbs');
 
 hbs.registerPartials(path.join(__dirname, 'views/partials'));
 
+hbs.registerHelper('section', function (name, options) {
+    if (!this._sections) this._sections = {};
+    this._sections[name] = options.fn(this);
+    return null;
+});
+
 hbs.registerHelper('or', function (a, b, options) {
     return a || b ? options.fn(this) : options.inverse(this);
 });
 
+hbs.registerHelper('calcTotalRegularPrice', function (productInfo) {
+    let total = 0;
+    productInfo.forEach(item => {
+        if (!isNaN(item.regularPrice)) {
+            total += Number(item.regularPrice*item.quantity);
+        }
+    });
+    return total;
+});
 
+hbs.registerHelper('length', function (value) {
+  if (Array.isArray(value) || typeof value === 'string') {
+    return value.length;
+  }
+  return 0;
+});
+
+hbs.registerHelper('for', function(from, to, step, block) {
+  let accum = '';
+  for (let i = from; i < to; i += step) {
+    accum += block.fn(i);
+  }
+  return accum;
+});
+
+hbs.registerHelper('getItem', function (array, index) {
+  return array?.[index];
+});
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -215,6 +286,9 @@ app.use('/orderslist', orderslistRouter);
 app.use('/return', returnsRouter);
 app.use('/wishlist', wishlistRouter);
 app.use('/wallet', walletRouter);
+app.use('/coupon', couponRouter);
+app.use('/offers', offersRouter);
+app.use('/salesreport',salesreportRouter);
 
 app.use(errorHandler);
 
