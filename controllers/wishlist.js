@@ -29,7 +29,6 @@ const getWishlist = async (req, res, next) => {
           ])
         ]);
 
-
     res.render('wishlist', { wishlist, reviewSummary });
 };
 

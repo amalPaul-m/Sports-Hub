@@ -140,6 +140,14 @@ hbs.registerHelper('percentage', function (a, b) {
   return per;
 });
 
+hbs.registerHelper('StockCount', function (variants) {
+  let totalStock = 0;
+        for(const variant of variants) {
+            totalStock+=variant.stockQuantity;
+    }
+    return totalStock;
+});
+
 hbs.registerHelper('firstImage', function (imagesArray) {
   return imagesArray?.[0]; 
 });

@@ -1,7 +1,8 @@
 const productsSchema = require('../models/productsSchema')
 const productTypesSchema = require('../models/productTypesSchema')
-// const cartSchema = require('../models/cartSchema');
-// const usersSchema = require('../models/usersSchema');
+const cartSchema = require('../models/cartSchema');
+const usersSchema = require('../models/usersSchema');
+const wishlistSchema = require('../models/wishlistSchema');
 
 
 const getHome = async function (req, res, next) {
@@ -24,22 +25,12 @@ const getHome = async function (req, res, next) {
     ]);
 
 
-    
-      // const email = req.session.email;
-      // const userId = await usersSchema.findOne({email: email});
-      // const id = userId._id;
-      // const cartItemCount = await cartSchema.findOne({userId: id});
-      // const total = cartItemCount.items;
-      // const itemLength = total.length;
-      // console.log('Total Count :', itemLength);
-
     res.render('home',
       {
         products,
         category,
         discountProducts
       });
-
 
 
   } catch (err) {
@@ -51,7 +42,34 @@ const getHome = async function (req, res, next) {
 };
 
 
+const getHomeBadge = async (req,res,next) => {
+
+try {
+
+  const email = req.session.users?.email;
+  const userData = await usersSchema.findOne({email: email});
+  const userId = userData._id;
+  if (!userId) return res.json({ wishlistCount: 0, cartCount: 0 });
+
+  const [cart, wishlist] = await Promise.all([
+    cartSchema.findOne({ userId }),
+    wishlistSchema.findOne({ userId })
+  ]);
+
+    const cartCount = cart?.items?.length || 0;
+    const wishlistCount = wishlist?.productId?.length || 0;
+
+  res.json({'wishlistCount': wishlistCount,'cartCount': cartCount});
+
+}catch (err) {
+  err.message = 'Cant access Home page';
+  console.log(err)
+  next(err);
+
+}
+  
+};
 
 
 
-module.exports = { getHome }
+module.exports = { getHome, getHomeBadge }
