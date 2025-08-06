@@ -288,4 +288,13 @@ h5 {
 }
 
 
+.offer-box {
+  border: 0px solid green;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 2px;
+  padding-right: 2px;
+  background-color: #ca9400;
+  color: #fff;
+}
 

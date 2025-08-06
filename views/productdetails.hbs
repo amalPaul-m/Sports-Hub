@@ -108,8 +108,13 @@
               </svg>
             </button>
           </div>
+          {{#if (ne productDetails.salePrice productDetails.regularPrice)}}
+          <span class="offer-box ms-2">
+          <span class="">{{percentage productDetails.regularPrice productDetails.salePrice}}% OFF</span>
+          </span>
+          {{/if}}
         </div>
-
+          
 
           <span class="product-price">₹{{productDetails.salePrice}}</span><span
             class="text-decoration-line-through product-mrp">₹{{productDetails.regularPrice}}</span><br>

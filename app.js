@@ -104,6 +104,7 @@ hbs.registerHelper('add', (a, b) => a + b);
 hbs.registerHelper('mul', (a, b) => a * b);
 hbs.registerHelper('subtract', (a, b) => a - b);
 hbs.registerHelper('eq', (a, b) => a === b);
+hbs.registerHelper('ne', (a, b) => a !== b);
 hbs.registerHelper('gt', (a, b) => a > b);
 hbs.registerHelper('lt', (a, b) => a < b);
 hbs.registerHelper('or', function (a, b, options) {
@@ -132,6 +133,11 @@ hbs.registerHelper('pagination', (totalPages) => {
 
 hbs.registerHelper('gte', function (a, b) {
   return a >= b;
+});
+
+hbs.registerHelper('percentage', function (a, b) {
+  const per = Math.ceil(((a-b)/a)*100);
+  return per;
 });
 
 hbs.registerHelper('firstImage', function (imagesArray) {

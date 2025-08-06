@@ -1,5 +1,7 @@
 const productsSchema = require('../models/productsSchema')
 const productTypesSchema = require('../models/productTypesSchema')
+// const cartSchema = require('../models/cartSchema');
+// const usersSchema = require('../models/usersSchema');
 
 
 const getHome = async function (req, res, next) {
@@ -21,12 +23,24 @@ const getHome = async function (req, res, next) {
     }).limit(4)
     ]);
 
+
+    
+      // const email = req.session.email;
+      // const userId = await usersSchema.findOne({email: email});
+      // const id = userId._id;
+      // const cartItemCount = await cartSchema.findOne({userId: id});
+      // const total = cartItemCount.items;
+      // const itemLength = total.length;
+      // console.log('Total Count :', itemLength);
+
     res.render('home',
       {
         products,
         category,
         discountProducts
       });
+
+
 
   } catch (err) {
 
@@ -35,5 +49,9 @@ const getHome = async function (req, res, next) {
 
   }
 };
+
+
+
+
 
 module.exports = { getHome }

@@ -2,16 +2,35 @@ const mongoose = require('mongoose');
 const wishlistSchema = require('../models/wishlistSchema');
 const productsSchema = require('../models/productsSchema');
 const usersSchema = require('../models/usersSchema');
+const reviewSchema = require('../models/reviewSchema');
 
 const getWishlist = async (req, res, next) => {
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
 
-    const wishlist = await wishlistSchema.findOne({ userId: usersData._id })
-        .populate('productId').sort({ createdAt: -1 });
+
+    const [wishlist, reviewSummary] = await Promise.all([
+            wishlistSchema.findOne({ userId: usersData._id })
+            .populate('productId').sort({ createdAt: -1 }),
+            reviewSchema.aggregate([
+            {
+              $group: {
+                _id: "$productId",
+                avgRating: { $avg: "$rating" }
+              }
+            },
+            {
+              $project: {
+                _id: 0,
+                productId: { $toString: "$_id" }, 
+                avgRating: { $round: ["$avgRating", 1] }
+              }
+            }
+          ])
+        ]);
 
 
-    res.render('wishlist', { wishlist });
+    res.render('wishlist', { wishlist, reviewSummary });
 };
 
 const toggleWishlist = async (req, res) => {
