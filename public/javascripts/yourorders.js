@@ -242,3 +242,48 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(err => console.error('Error fetching badge counts:', err));
 });
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const radios = document.querySelectorAll('.reason-radio');
+
+    radios.forEach(radio => {
+      radio.addEventListener('change', function () {
+        const textareaId = this.dataset.textareaId;
+        const showTextarea = this.dataset.showTextarea === 'true';
+        const textarea = document.getElementById(textareaId);
+
+        if (textarea) {
+          const allRelated = document.querySelectorAll(`#${textareaId}`);
+          allRelated.forEach(t => t.style.display = 'none');
+
+          if (showTextarea) {
+            textarea.style.display = 'block';
+          }
+        }
+      });
+    });
+  });
+
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const allRadios = document.querySelectorAll('.reason-radio-cancel');
+
+    allRadios.forEach(radio => {
+      radio.addEventListener('change', function () {
+        const textareaId = this.dataset.textareaId;
+        const showTextarea = this.dataset.showTextarea === 'true';
+
+        const textarea = document.getElementById(textareaId);
+        if (!textarea) return;
+
+        document.querySelectorAll(`#${textareaId}`).forEach(el => el.style.display = 'none');
+
+        if (showTextarea) {
+          textarea.style.display = 'block';
+        }
+      });
+    });
+  });
+

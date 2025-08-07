@@ -309,7 +309,7 @@ const cancelorder = async (req, res, next) => {
     try {
         const orderId = String(req.params.orderId); 
         const productId = new mongoose.Types.ObjectId(req.params.productId);
-        const reason = req.body.reason;
+        const reason = req.body.reason === 'Others' ? req.body.otherReason : req.body.reason;
         const order = await ordersSchema.findOneAndUpdate(
         { orderId: orderId, "productInfo.productId": productId },
         { $set: { "productInfo.$.status": "cancelled", 
@@ -445,7 +445,8 @@ const postReturn = async (req, res, next) => {
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
 
-    const { orderId, productId, reason } = req.body;
+    const { orderId, productId, reason, otherReason } = req.body;
+    let finalReason = reason === "Others" ? otherReason : reason;
     const objectOrderId = new ObjectId(orderId);
     const objectProductId = new ObjectId(productId);
 
@@ -453,7 +454,7 @@ const postReturn = async (req, res, next) => {
       orderId: objectOrderId,
       userId: usersData._id,
       productId: objectProductId,
-      reason: reason
+      reason: finalReason
     });
 
     console.log('Return Data:', returnData);
