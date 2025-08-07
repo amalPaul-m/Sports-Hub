@@ -231,10 +231,7 @@
       </div>
     </div>
 
-
     {{/each}}
-
-
 
   </div>
 </div>
@@ -293,7 +290,7 @@
 
             <div class="col-md-3">
               <label class="form-label"><b>District</b></label>
-              <select class="form-select  shadow-none py-2" name="district" required>
+              <select class="form-select  shadow-none py-2" name="district" id="district" required>
                 <option value="" disabled selected>----- District -----</option>
                 <option value="Ernakulam">Ernakulam</option>
                 <option value="Thrissur">Thrissur</option>
@@ -304,7 +301,7 @@
 
             <div class="col-md-3">
               <label class="form-label"><b>State</b></label>
-              <select class="form-select  shadow-none py-2" name="state" required>
+              <select class="form-select  shadow-none py-2" name="state" id="state" required>
                 <option value="" disabled selected>------- State -------</option>
                 <option value="Kerala">Kerala</option>
                 <option value="Tamil Nadu">Tamil Nadu</option>
@@ -410,3 +407,6 @@
 {{#section 'scripts'}}
 <script src="/javascripts/address.js"></script>
 {{/section}}
+
+
+
