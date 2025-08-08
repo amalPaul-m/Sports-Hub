@@ -1,5 +1,7 @@
-const productsSchema = require('../models/productsSchema')
-const productTypesSchema = require('../models/productTypesSchema')
+const productsSchema = require('../models/productsSchema');
+const productTypesSchema = require('../models/productTypesSchema');
+const wishlistSchema = require('../models/wishlistSchema');
+const cartSchema = require('../models/cartSchema');
 
 const getProducts = async function (req, res, next) {
 
@@ -121,17 +123,31 @@ const listGetProducts = async function (req, res, next) {
 
 const unlistGetProducts = async function (req, res, next) {
   try {
-    const userId = req.params.id;
+    const productId = req.params.id;
 
-    // status set to active
-    await productsSchema.findByIdAndUpdate(userId,{isActive: false});
+    await productsSchema.findByIdAndUpdate(productId, { isActive: false });
+
+    await wishlistSchema.updateMany(
+      { productId: productId },
+      { $pull: { productId: productId } }
+    );
+
+    const carts = await cartSchema.find({ 'items.productId': productId });
+
+    for (const cart of carts) {
+      cart.items = cart.items.filter(
+        item => item.productId.toString() !== productId
+      );
+      await cart.save();
+    }
 
     res.redirect('/products');
   } catch (err) {
-    err.message = 'Error unlist products';
+    console.error('Error unlisting product:', err);
     next(err);
   }
 };
+
 
 
 

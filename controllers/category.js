@@ -1,6 +1,7 @@
 const productsSchema = require('../models/productsSchema');
 const productTypesSchema = require('../models/productTypesSchema');
-
+const wishlistSchema = require('../models/wishlistSchema');
+const cartSchema = require('../models/cartSchema');
 
 // get category page
 
@@ -94,7 +95,9 @@ const unblockCategory = async function (req, res, next) {
       productTypesSchema.findByIdAndUpdate(categoryId, { status: 'active' }),
       productsSchema.updateMany({ category: categoryName }, {$set: { isActive: true}})
     ]);
-  
+
+
+
     res.redirect('/category');
   } catch (err) {
     err.message = 'Error unblock category';
@@ -110,14 +113,35 @@ const blockCategory = async function (req, res, next) {
     const categoryId = req.params.id;
     const categoryName = req.params.name;
 
-    // status set to blocked
-
     await Promise.all([
       productTypesSchema.findByIdAndUpdate(categoryId, { status: 'blocked' }),
       productsSchema.updateMany({ category: categoryName }, {$set: { isActive: false}})
     ])
 
-    // Redirect back to the customers page
+    const wishlistData = await wishlistSchema.find().populate('productId');
+
+    for (const wishlist of wishlistData) {
+      const filteredProducts = wishlist.productId.filter(product => product.category !== categoryName);
+      
+      if (filteredProducts.length !== wishlist.productId.length) {
+        wishlist.productId = filteredProducts.map(p => p._id); 
+        await wishlist.save();
+      }
+    }
+
+
+    const carts = await cartSchema.find().populate('items.productId');
+    for (const cart of carts) {
+      const filteredItems = cart.items.filter(item =>
+        item.productId && item.productId.category !== categoryName
+      );
+
+      if (filteredItems.length !== cart.items.length) {
+        cart.items = filteredItems;
+        await cart.save();
+      }
+    }
+
     res.redirect('/category');
   } catch (err) {
     err.message = 'Error hide category data';
