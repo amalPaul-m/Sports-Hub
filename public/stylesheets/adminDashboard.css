@@ -210,3 +210,12 @@
         opacity: 1;
       }
     }
+
+
+
+    .bg-setup {
+      background-image: linear-gradient(to right top, #4d4d4d, #59595c, #66656b, #73727a, #807f8a);      margin: -25px !important;
+      padding: 20px;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+    }

@@ -439,6 +439,113 @@ const cancelorder = async (req, res, next) => {
         };
 
 
+const cancelEntairOrder = async (req, res, next) => {
+  try {
+    const orderId = String(req.params.orderId);
+    const reason = req.body.reason === 'Others' ? req.body.otherReason : req.body.reason;
+
+    const order = await ordersSchema.findOne({ orderId });
+
+    if (!order) {
+      return res.status(404).send('Order not found');
+    }
+
+    // Update all product statuses and set cancel reason
+    order.productInfo.forEach(item => {
+      item.status = 'cancelled';
+      item.cancelReason = reason;
+    });
+
+    order.deliveryStatus = 'cancelled';
+
+    await order.save();
+
+    // Restore stock quantity for each variant
+    for (const item of order.productInfo) {
+      const productId = item.productId?._id || item.productId;
+      const quantity = Number(item.quantity) || 0;
+
+      if (quantity <= 0) continue;
+
+      const normalizedColor = String(item.color || '').replace('#', '').trim().toLowerCase();
+      const normalizedSize = String(item.size || '').trim().toLowerCase();
+
+      await productsSchema.updateOne(
+        {
+          _id: productId,
+          variants: {
+            $elemMatch: {
+              color: { $regex: new RegExp(`^#?${normalizedColor}$`, 'i') },
+              size: { $regex: new RegExp(`^${normalizedSize}$`, 'i') }
+            }
+          }
+        },
+        {
+          $inc: { "variants.$.stockQuantity": quantity }
+        }
+      );
+    }
+
+    // Refund to wallet if online/wallet payment
+    if (['online', 'wallet'].includes(order.paymentInfo?.[0]?.paymentMethod)) {
+      const email = req.session.users?.email;
+      const usersData = await usersSchema.findOne({ email });
+
+      let totalRefund = 0;
+
+      for (const item of order.productInfo) {
+        const totalAmount = item.price * item.quantity;
+
+        if (order.couponInfo?.[0]?.discountAmount) {
+          const discount = order.couponInfo[0].discountAmount / order.productInfo.length;
+          totalRefund += Math.ceil(totalAmount - discount);
+        } else if (order.couponInfo?.[0]?.discountPercentage) {
+          const discount = totalAmount * (order.couponInfo[0].discountPercentage / 100);
+          totalRefund += Math.ceil(totalAmount - discount);
+        } else {
+          totalRefund += totalAmount;
+        }
+      }
+
+      const existingWallet = await walletSchema.findOne({ userId: usersData._id });
+
+      if (existingWallet) {
+        await walletSchema.updateOne(
+          { userId: usersData._id },
+          {
+            $inc: { balance: totalRefund },
+            $push: {
+              transaction: {
+                type: 'add',
+                amount: totalRefund,
+                description: 'Refund for full order cancellation',
+              }
+            }
+          }
+        );
+      } else {
+        const walletData = new walletSchema({
+          userId: usersData._id,
+          balance: totalRefund,
+          transaction: [{
+            type: 'add',
+            amount: totalRefund,
+            description: 'Refund for full order cancellation',
+          }]
+        });
+
+        await walletData.save();
+      }
+    }
+
+    return res.redirect('/youraccount/yourorders?success=4');
+  } catch (error) {
+    console.log(error);
+    error.message = 'Error cancelling full order';
+    next(error);
+  }
+};
+
 
 const postReturn = async (req, res, next) => {
   try {
@@ -644,6 +751,6 @@ const postEditReviews = async (req,res,next) => {
 module.exports = { 
     getyouraccount, getyourprofile, posteditprofile, 
     getchangepassword, patchchangepassword,getaddress, postaddress, 
-    editaddress, deleteaddress, getyourorders, cancelorder, postReturn,
+    editaddress, deleteaddress, getyourorders, cancelorder, cancelEntairOrder, postReturn,
     getCancelledOrders, postReviews, postEditReviews
  }

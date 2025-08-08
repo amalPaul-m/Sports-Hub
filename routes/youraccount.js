@@ -18,6 +18,7 @@ router.delete('/deleteaddress',checkBlockedUser, userAuthantication, accountCont
 
 router.get('/yourorders',checkBlockedUser, userAuthantication, accountController.getyourorders);
 router.patch('/cancelorder/:orderId/:productId',checkBlockedUser, userAuthantication, accountController.cancelorder);
+router.patch('/cancelEntairOrder/:orderId',checkBlockedUser, userAuthantication, accountController.cancelEntairOrder);
 
 router.post('/return',checkBlockedUser, userAuthantication, accountController.postReturn);
 
