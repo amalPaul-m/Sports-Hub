@@ -3,7 +3,7 @@ const router = express.Router();
 const checkBlockedUser = require('../middleware/checkBlockedUser');
 const userAuthantication = require('../middleware/userAuthantication');
 const upload = require('../middleware/upload');
-const accountController = require('../controllers/youraccount')
+const accountController = require('../controllers/youraccount');
 
 router.get('/',checkBlockedUser, userAuthantication, accountController.getyouraccount);
 router.get('/profile',checkBlockedUser, userAuthantication, accountController.getyourprofile);
@@ -15,6 +15,8 @@ router.get('/address',checkBlockedUser, userAuthantication, accountController.ge
 router.post('/address',checkBlockedUser, userAuthantication, accountController.postaddress);
 router.patch('/editaddress',checkBlockedUser, userAuthantication, accountController.editaddress);
 router.delete('/deleteaddress',checkBlockedUser, userAuthantication, accountController.deleteaddress);
+router.get('/get-pincode-info/:pincode',checkBlockedUser, userAuthantication, accountController.checkPinCode);
+
 
 router.get('/yourorders',checkBlockedUser, userAuthantication, accountController.getyourorders);
 router.patch('/cancelorder/:orderId/:productId',checkBlockedUser, userAuthantication, accountController.cancelorder);

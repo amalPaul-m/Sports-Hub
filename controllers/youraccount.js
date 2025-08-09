@@ -210,6 +210,30 @@ const deleteaddress = async (req,res,next) => {
 
 };
 
+
+
+const checkPinCode = async (req, res, next) => {
+  try {
+    const { pincode } = req.params;
+    const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+
+    if (!response.ok) {
+      throw new Error(`API responded with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (err) {
+    err.message = 'Error check pincode';
+    console.log(err)
+    next(err);
+  }
+};
+
+
+
+
 const getyourorders = async (req, res, next) => {
   try {
     const email = req.session.users?.email;
@@ -450,7 +474,6 @@ const cancelEntairOrder = async (req, res, next) => {
       return res.status(404).send('Order not found');
     }
 
-    // Update all product statuses and set cancel reason
     order.productInfo.forEach(item => {
       item.status = 'cancelled';
       item.cancelReason = reason;
@@ -460,7 +483,6 @@ const cancelEntairOrder = async (req, res, next) => {
 
     await order.save();
 
-    // Restore stock quantity for each variant
     for (const item of order.productInfo) {
       const productId = item.productId?._id || item.productId;
       const quantity = Number(item.quantity) || 0;
@@ -486,7 +508,6 @@ const cancelEntairOrder = async (req, res, next) => {
       );
     }
 
-    // Refund to wallet if online/wallet payment
     if (['online', 'wallet'].includes(order.paymentInfo?.[0]?.paymentMethod)) {
       const email = req.session.users?.email;
       const usersData = await usersSchema.findOne({ email });
@@ -538,7 +559,7 @@ const cancelEntairOrder = async (req, res, next) => {
       }
     }
 
-    return res.redirect('/youraccount/yourorders?success=4');
+    return res.redirect('/youraccount/yourorders?success=3');
   } catch (error) {
     console.log(error);
     error.message = 'Error cancelling full order';
@@ -752,5 +773,5 @@ module.exports = {
     getyouraccount, getyourprofile, posteditprofile, 
     getchangepassword, patchchangepassword,getaddress, postaddress, 
     editaddress, deleteaddress, getyourorders, cancelorder, cancelEntairOrder, postReturn,
-    getCancelledOrders, postReviews, postEditReviews
+    getCancelledOrders, postReviews, postEditReviews, checkPinCode
  }

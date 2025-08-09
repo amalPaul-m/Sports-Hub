@@ -1,33 +1,87 @@
-document.querySelector('input[name="pinCode"]').addEventListener('change', async function () {
+document.querySelector('input[name="pinCode"]').addEventListener("blur", async function () {
   const pincode = this.value.trim();
+  const loader = document.getElementById('loader1');
+  const errorpop = document.getElementById('error-popup1');
 
   if (/^\d{6}$/.test(pincode)) {
+    loader.style.display = 'inline-block'; 
     try {
-      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const response = await fetch(`/youraccount/get-pincode-info/${pincode}`);
       const data = await response.json();
 
+      loader.style.display = 'none'; 
+
       if (data[0].Status === 'Success') {
-        const postOffice = data[0].PostOffice[0];
-
-        // Auto-fill District and State
-        document.querySelector('select[name="district"]').value = postOffice.District;
-        document.querySelector('select[name="state"]').value = postOffice.State;
-
-        // Optional: Autofill area/street field
-        document.querySelector('input[name="street"]').value = postOffice.Name;
-
+        const District = data[0].PostOffice[0].District;
+        const State = data[0].PostOffice[0].State;
+        document.querySelector('input[name="district"]').value = District;
+        document.querySelector('input[name="state"]').value = State;
       } else {
-        alert('Invalid or unsupported PIN code');
+        document.querySelector('input[name="pinCode"]').value = '';
+        errorpop.style.display = 'inline-block'; 
+        setTimeout(() => {
+          errorpop.style.display = 'none';
+        }, 2000);
       }
     } catch (err) {
+      loader.style.display = 'none';
       console.error(err);
-      alert('Failed to fetch address info. Please try again later.');
+      alert('Failed to fetch address info.');
     }
+  }else {
+
+    document.getElementById('pinCode').value = '';
+    errorpop.style.display = 'inline-block'; 
+    setTimeout(() => {
+        errorpop.style.display = 'none';
+    }, 2000);
   }
 });
 
-  
-  
+
+
+document.getElementById('pinCode').addEventListener("blur", async function () {
+  const pincode = this.value.trim();
+  const loader = document.getElementById('loader');
+  const errorpop = document.getElementById('error-popup');
+
+  if (/^\d{6}$/.test(pincode)) {
+    loader.style.display = 'inline-block'; 
+    try {
+      const response = await fetch(`/youraccount/get-pincode-info/${pincode}`);
+      const data = await response.json();
+
+      loader.style.display = 'none';
+
+      if (data[0].Status === 'Success') {
+        const District = data[0].PostOffice[0].District;
+        const State = data[0].PostOffice[0].State;
+        document.getElementById('district').value = District;
+        document.getElementById('state').value = State;
+      } else {
+        document.getElementById('pinCode').value = '';
+        errorpop.style.display = 'inline-block'; 
+        setTimeout(() => {
+            errorpop.style.display = 'none';
+        }, 2000);
+      }
+    } catch (err) {
+      loader.style.display = 'none';
+      console.error(err);
+      alert('Failed to fetch address info.');
+    }
+  }else {
+
+    document.getElementById('pinCode').value = '';
+    errorpop.style.display = 'inline-block'; 
+    setTimeout(() => {
+        errorpop.style.display = 'none';
+    }, 2000);
+  }
+});
+
+
+
   
   (() => {
     'use strict';
@@ -57,3 +111,5 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(err => console.error('Error fetching badge counts:', err));
 });
+
+
