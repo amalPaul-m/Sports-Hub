@@ -23,8 +23,9 @@ const getProductDetails = async function (req, res, next) {
         "items.productId": id  
         });
 
-        const hide = isInCart?'disabled':'';
-        const btnvalue = isInCart?'In Cart':'Add to Cart';
+        // const hide = isInCart?'disabled':'';
+        const hide = isInCart?'':'';
+        const btnvalue = 'Add to Cart';
 
         
         const productDetails = await productsSchema.findOne({ _id : id });

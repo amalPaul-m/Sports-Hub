@@ -76,9 +76,21 @@
           </div>
         </div>
         <div class="d-flex align-items-center">
-          <button class="btn btn-outline-dark btn-sm me-2 qty-btn decrement" data-product-id="{{this.productId._id}}" onclick="updateQty(this, -1)"> - </button>
-          <span class="mx-1" id="qty-{{this.productId._id}}">{{this.quantity}}</span>
-          <button class="btn btn-outline-dark btn-sm mx-2 qty-btn increment" data-product-id="{{this.productId._id}}" onclick="updateQty(this, 1)">+</button>
+<button class="btn btn-outline-dark btn-sm me-2 qty-btn decrement"
+        data-product-id="{{this.productId._id}}"
+        data-size="{{this.size}}"
+        data-color="{{this.color}}">-</button>
+
+<span class="mx-1 item-qty"
+      data-product-id="{{this.productId._id}}"
+      data-size="{{this.size}}"
+      data-color="{{this.color}}">{{this.quantity}}</span>
+
+<button class="btn btn-outline-dark btn-sm mx-2 qty-btn increment"
+        data-product-id="{{this.productId._id}}"
+        data-size="{{this.size}}"
+        data-color="{{this.color}}">+</button>
+
           <span class="ms-3 fw-bold fs-5">₹{{this.price}}</span>
           <form action="/cart/remove/{{this._id}}?_method=PATCH" method="POST">
             <input type="hidden" name="_method" value="PATCH" />

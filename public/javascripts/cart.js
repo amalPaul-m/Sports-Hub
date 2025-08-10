@@ -1,54 +1,128 @@
-
-let dataStock = 0 ;
-document.querySelectorAll('.qty-btn').forEach(button => {
-  button.addEventListener('click', async () => {
-    const productId = button.getAttribute('data-product-id');
-    const action = button.classList.contains('increment') ? 'increase' : 'decrease';
-    document.getElementById('promo').value = '';
-    document.getElementById('coupon-error').innerText = '';
-    const response = await fetch(`/cart/${action}/${productId}`, {
-      method: 'PATCH'
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      dataStock = Number(data.stock);
-      // update quantity
-      document.querySelector(`#price-total`).textContent = data.grandTotal.toFixed(2);
-      document.querySelector(`#cart-total`).textContent = data.netAmount.toFixed(2);
-      document.querySelector(`#total-tax`).textContent = data.totalTax.toFixed(2);
-      document.querySelector(`#payable`).textContent = data.payable.toFixed(2);
-      document.querySelector(`#discount-total`).textContent = data.couponAmount.toFixed(2);
-      document.querySelector(`#shipping-charge`).textContent = data.shippingCharge.toFixed(2);
-
-      updateQty(button, action === 'increase' ? 1 : -1, dataStock);
-    } else if (data.removeItem) {
-      // Optionally remove the item if quantity is 0
-      document.getElementById(`cart-item-${productId}`).remove();
-    } else if (!data.success) {
-      document.querySelector('#error-msg').textContent = data.message;
-      dataStock = data.stock;
-      
-    }
-  });
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.qty-btn').forEach(btn => btn.addEventListener('click', onQtyClick));
 });
 
+async function onQtyClick(e) {
+  const button = e.currentTarget;
+  const productId = button.dataset.productId;
+  const size = button.dataset.size?.trim();
+  const color = button.dataset.color?.trim();
+  const action = button.classList.contains('increment') ? 'increase' : 'decrease';
 
-function updateQty(btn, delta) {
-  const span = btn.parentElement.querySelector("span.mx-1");
-  let qty = parseInt(span.innerText);
-  const minquantity = Math.min(3, parseInt(dataStock));
-  qty = Math.min(3, Math.max(1, qty + delta));
+  // quick checks
+  if (!productId || typeof size === 'undefined' || typeof color === 'undefined') {
+    console.error('Missing productId/size/color on button', button);
+    return;
+  }
 
-  span.innerText = qty;
+  // clear UI coupon messages (your existing logic)
+  const promoInput = document.getElementById('promo');
+  const couponError = document.getElementById('coupon-error');
+  if (promoInput) promoInput.value = '';
+  if (couponError) couponError.innerText = '';
 
-  const incrementBtn = btn.parentElement.querySelector(".increment");
-  const decrementBtn = btn.parentElement.querySelector(".decrement");
+  try {
+    const resp = await fetch(`/cart/${action}/${productId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ size, color })
+    });
 
-  if (incrementBtn) incrementBtn.disabled = qty >= 3;
-  if (decrementBtn) decrementBtn.disabled = qty <= 1;
+    const data = await resp.json();
+    console.log('cart update response', data);
+
+    if (!data.success) {
+      // show server message (if any)
+      const errorMsg = document.getElementById('error-msg');
+      if (errorMsg) errorMsg.textContent = data.message || 'Failed to update quantity';
+      // If server requests removal
+      if (data.removeItem) removeCartRow(productId, size, color);
+      return;
+    }
+
+    // Find and update the correct quantity span
+    const qtySpan = findQtySpan(productId, size, color);
+    if (qtySpan) qtySpan.textContent = data.newQty;
+
+    // Update the +/- buttons disabled state for that variant
+    const { incBtn, decBtn } = findButtons(productId, size, color);
+    const maxQty = Math.min(3, Number(data.stock || 3));
+    if (incBtn) incBtn.disabled = data.newQty >= maxQty;
+    if (decBtn) decBtn.disabled = data.newQty <= 1;
+
+    // Update totals if provided by backend (prefer backend values)
+    if (typeof data.grandTotal !== 'undefined') {
+      setTextIfPresent('price-total', formatNumber(data.grandTotal));
+      setTextIfPresent('cart-total', formatNumber(data.netAmount));
+      setTextIfPresent('total-tax', formatNumber(data.totalTax));
+      setTextIfPresent('payable', formatNumber(data.payable));
+      setTextIfPresent('discount-total', formatNumber(data.couponAmount || 0));
+      setTextIfPresent('shipping-charge', (data.shippingCharge || 0).toString());
+    }
+
+    // If server indicates the item was removed (qty 0) remove from DOM
+    if (data.removeItem) removeCartRow(productId, size, color);
+
+  } catch (err) {
+    console.error('Error updating cart quantity:', err);
+  }
 }
+
+// helpers
+
+function findQtySpan(productId, size, color) {
+
+  const nodes = document.querySelectorAll('.item-qty');
+  for (const n of nodes) {
+    if (n.dataset.productId === String(productId) &&
+        (n.dataset.size || '').trim() === (size || '').trim() &&
+        (n.dataset.color || '').trim() === (color || '').trim()) {
+      return n;
+    }
+  }
+  return null;
+}
+
+function findButtons(productId, size, color) {
+
+  const inc = Array.from(document.querySelectorAll('.qty-btn.increment')).find(b =>
+    b.dataset.productId === String(productId) &&
+    (b.dataset.size || '').trim() === (size || '').trim() &&
+    (b.dataset.color || '').trim() === (color || '').trim()
+  );
+  const dec = Array.from(document.querySelectorAll('.qty-btn.decrement')).find(b =>
+    b.dataset.productId === String(productId) &&
+    (b.dataset.size || '').trim() === (size || '').trim() &&
+    (b.dataset.color || '').trim() === (color || '').trim()
+  );
+  return { incBtn: inc, decBtn: dec };
+}
+
+function removeCartRow(productId, size, color) {
+
+  const row = document.querySelector(`.cart-item[data-product-id="${productId}"][data-size="${size}"][data-color="${color}"]`);
+  if (row) { row.remove(); return; }
+
+  const span = findQtySpan(productId, size, color);
+  if (span) {
+    const parent = span.closest('.cart-item');
+    if (parent) parent.remove();
+  }
+}
+
+function setTextIfPresent(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function formatNumber(v) {
+  return Number(v).toFixed(2);
+}
+
+
+
+
+
 
 // coupon applied
 
