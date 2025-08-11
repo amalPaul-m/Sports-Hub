@@ -12,18 +12,20 @@ const getOrderslist = async (req, res,next) => {
 
         const perPage = 8;
         const page = parseInt(req.query.page) || 1;
+        const totalOrdersData = ordersSchema.countDocuments();
+        const ordersData = ordersSchema.find()
+        .populate('addressId').populate('productInfo.productId')
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * perPage)
+        .limit(perPage);
+
         const [totalOrders, orders] = await Promise.all([
-            ordersSchema.countDocuments(),
-            ordersSchema.find()
-            .populate('addressId').populate('productInfo.productId')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * perPage)
-            .limit(perPage)
+            totalOrdersData,
+            ordersData
         ]);
 
         const totalPages = Math.ceil(totalOrders / perPage);
         
-        console.log(orders);
         res.render('orderslist', {
         orders,
         currentPage: page,

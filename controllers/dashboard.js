@@ -36,7 +36,7 @@ const getDashboard = async (req, res, next) => {
         sum += products.price * products.quantity;
       }
     }
-    totalSale = sum - orders.couponInfo[0]?.discount;
+    totalSale = sum - orders?.couponInfo?.[0]?.discount;
   }
 
   const [orderCount, usersCount, returnCount] = await Promise.all([
@@ -60,7 +60,6 @@ const getDashboard = async (req, res, next) => {
       getTopSellingProducts(matchStage),
       getTopSellingBrands(matchStage)
     ]);
-
 
 
 const monthlyTotals = Array(12).fill(0); 
