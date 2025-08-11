@@ -5,6 +5,7 @@ const wishlistSchema = require('../models/wishlistSchema');
 const couponSchema = require('../models/couponSchema');
 const couponSessionClr = require('../helpers/couponSessionClr');
 const ordersSchema = require('../models/ordersSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getCart = async (req,res,next) => {
 
@@ -131,6 +132,16 @@ const productDetailAddCart = async (req,res,next) => {
                 }]
         } );
         await cartData.save();
+
+        apiLogger.info('Cart created successfully', {
+            controller: 'cart',
+            action: 'createCart',
+            userId: usersData._id,
+            productId, productId,
+            color: selectedColor,
+            size: selectedSize
+        });
+
         couponSessionClr(req);
 
         }else {
@@ -186,6 +197,15 @@ const productDetailAddCart = async (req,res,next) => {
                 }
             );
 
+            apiLogger.info('Product added to cart', {
+                controller: 'cart',
+                action: 'addToCart',
+                userId: usersData._id,
+                productId,
+                color: selectedColor,
+                size: selectedSize
+            });
+
             if (updateResult.modifiedCount > 0) {
                 await wishlistSchema.updateOne(
                     { userId: usersData._id },
@@ -202,10 +222,14 @@ const productDetailAddCart = async (req,res,next) => {
 
         }
 
-    } catch (err){
-        err.message = 'not store cart data';  
-        console.log(err)
-        next(err);
+    } catch (error){
+        errorLogger.error('Failed to add to cart', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'cart',
+        action: 'addToCart'
+    });
+    next(error); 
     }
 
 };
@@ -224,14 +248,25 @@ const removeCart = async (req,res,next) => {
 
     couponSessionClr(req);
 
+    apiLogger.info('Item removed from cart', {
+        controller: 'cart',
+        action: 'removeCart',
+        userId: usersData._id,
+        cartId
+    });
 
     res.redirect('/cart');
     
-    } catch (err) {
+    } catch (error) {
 
-        err.message = 'not delete cart data';  
-        console.log(err)
-        next(err);
+        errorLogger.error('Failed to remove item from cart', {
+        originalMessage: error.message,
+        stack: error.stack, 
+        controller: 'cart',
+        action: 'removeCart'
+    });
+    next(error);  
+
     }
 
 };
@@ -335,9 +370,14 @@ const increaseItemCount = async (req, res) => {
       couponAmount: 0
     });
 
-  } catch (err) {
-    console.error("Error in increaseItemCount:", err);
-    res.status(500).json({ success: false });
+  } catch (error) {
+    errorLogger.error('Failed to increase item count', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'cart',
+      action: 'increaseItemCount'
+    });
+    next(error);
   }
 };
 
@@ -432,9 +472,14 @@ const decreaseItemCount = async (req, res) => {
       shippingCharge: shipping1,
       couponAmount:0
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false });
+  } catch (error) {
+    errorLogger.error('Failed to decrease item count', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'cart',
+      action: 'decreaseItemCount'
+    });
+    next(error);
   }
 };
 

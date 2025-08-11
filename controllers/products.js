@@ -2,6 +2,7 @@ const productsSchema = require('../models/productsSchema');
 const productTypesSchema = require('../models/productTypesSchema');
 const wishlistSchema = require('../models/wishlistSchema');
 const cartSchema = require('../models/cartSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getProducts = async function (req, res, next) {
 
@@ -29,9 +30,14 @@ const getProducts = async function (req, res, next) {
     });
 
 
-  } catch (err) {
-    err.message = 'not get products data';
-    next(err);
+  } catch (error) {
+        errorLogger.error('Failed to fetch get data', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'products',
+        action: 'getProducts'
+    });
+    next(error); 
   }
 };
 
@@ -43,9 +49,14 @@ const getAddProducts = async function (req, res, next) {
 
     res.render('addProducts', { category });
 
-  } catch (err) {
-    err.message = 'not get products data';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to fetch add products data', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'products',
+      action: 'getAddProducts'
+    });
+    next(error);
   }
 };
 
@@ -96,11 +107,23 @@ const postAddProducts = async function (req, res) {
 
     await product.save();
 
+    apiLogger.info('Product added successfully', {
+      controller: 'products',
+      action: 'postAddProducts',
+      productId: product._id,
+      productName: product.productName
+    });
+
     res.redirect('/products/add?success=1');
 
   } catch (error) {
-    err.message = 'Error adding products';
-    next(err);
+    errorLogger.error('Failed to add product', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'products',
+      action: 'postAddProducts'
+    });
+    next(error);
   }
 
 };
@@ -114,9 +137,14 @@ const listGetProducts = async function (req, res, next) {
     await productsSchema.findByIdAndUpdate(userId,{ isActive: true });
 
     res.redirect('/products');
-  } catch (err) {
-    err.message = 'Error list products';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to list product', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'products',
+      action: 'listGetProducts'
+    });
+    next(error);
   }
 };
 
@@ -142,9 +170,14 @@ const unlistGetProducts = async function (req, res, next) {
     }
 
     res.redirect('/products');
-  } catch (err) {
-    console.error('Error unlisting product:', err);
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to unlist product', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'products',
+      action: 'unlistGetProducts'
+    });
+    next(error);
   }
 };
 
@@ -166,9 +199,14 @@ const editGetProducts = async function (req, res, next) {
       category
     });
 
-  } catch (err) {
-    err.message = 'Error unlist products';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to fetch edit products data', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'products',
+      action: 'editGetProducts'
+    });
+    next(error);
   }
 
 };
@@ -183,9 +221,14 @@ const editThumbGetProducts = async function (req, res, next) {
     await productsSchema.findByIdAndUpdate(productId,{ $pull: { imageUrl: urlid } });
 
     res.redirect(`/products/edit/${productId}`);
-  } catch (err) {
-    err.message = 'Error edit products';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to edit thumbnail product', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'products',
+      action: 'editThumbGetProducts'
+    });
+    next(error);
   }
 };
 
@@ -270,13 +313,23 @@ const updatePostProducts = async function (req, res, next) {
       }
     }
 
+    apiLogger.info('Product updated successfully', {
+      controller: 'products',
+      action: 'updatePostProducts',
+      productId: referId,
+      productName: product.productName
+    });
 
     res.redirect('/products/add?success=2');
 
-  } catch (err) {
-    err.message = 'Error edit products';
-    console.log(err);
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to update product', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'products',
+      action: 'updatePostProducts'
+    });
+    next(error);
   }
 };
 
@@ -323,9 +376,14 @@ const searchProducts = async (req, res, next) => {
       totalPages
     });
 
-  } catch (err) {
-    console.error('[ERROR] searchProducts:', err);
-    next(new Error('Error search products'));
+  } catch (error) {
+    errorLogger.error('Failed to search products', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'products',
+      action: 'searchProducts'
+    });
+    next(error);
   }
 };
 

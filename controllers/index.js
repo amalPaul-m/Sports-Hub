@@ -1,5 +1,6 @@
-const productsSchema = require('../models/productsSchema')
-const productTypesSchema = require('../models/productTypesSchema')
+const productsSchema = require('../models/productsSchema');
+const productTypesSchema = require('../models/productTypesSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getIndex = async function (req, res, next) {
 
@@ -23,10 +24,14 @@ const getIndex = async function (req, res, next) {
         discountProducts
       });
 
-  } catch (err) {
+  } catch (error) {
 
-    err.message = 'cant access category data';
-    next(err);
+    errorLogger.error('Error fetching index data', {
+      controller: 'index',
+      action: 'getIndex',
+      error: error.message
+    });
+    next(error);
 
   }
 };

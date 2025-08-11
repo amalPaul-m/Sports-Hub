@@ -1,6 +1,7 @@
 const ordersSchema = require('../models/ordersSchema');
 const usersSchema = require('../models/usersSchema');
 const returnSchema = require('../models/returnSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getDashboard = async (req, res, next) => {
 
@@ -185,8 +186,11 @@ for (let order of ordersData) {
   });
 
 } catch (error){
-    error.message = 'Error get dashboard';
-    console.log(error)
+    errorLogger.error('Error fetching dashboard data', {
+        error: error.message,
+        controller: 'dashboard',
+        action: 'getDashboard'
+    });
     next(error);
 }
 }

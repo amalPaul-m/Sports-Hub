@@ -3,6 +3,7 @@ const cartSchema = require('../models/cartSchema');
 const usersSchema = require('../models/usersSchema');
 const wishlistSchema = require('../models/wishlistSchema');
 const reviewSchema = require('../models/reviewSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getProductDetails = async function (req, res, next) {
@@ -105,11 +106,16 @@ const getProductDetails = async function (req, res, next) {
         } else {
             res.redirect('/userproducts')
         }
-    } catch (err) {
+    } catch (error) {
 
-        err.message = 'Fetch data error';
-        next(err);
-
+        errorLogger.error('Error in getProductDetails', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'productdetails',
+            action: 'getProductDetails',
+            productId: req.query.productId
+        });
+        next(error);
     }
 };
 

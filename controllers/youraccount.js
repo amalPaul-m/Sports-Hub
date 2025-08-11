@@ -8,6 +8,7 @@ const reviewSchema = require('../models/reviewSchema');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getyouraccount = async (req, res, next) => {
 
@@ -20,11 +21,14 @@ const getyouraccount = async (req, res, next) => {
             domainLink: process.env.DOMAIN_LINK
          });
 
-    } catch (err) {
-
-        err.message = 'Error get youraccount';
-        console.log(err)
-        next(err);
+    } catch (error) {
+        errorLogger.error('Failed to get your account', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'youraccount',
+        action: 'getyouraccount'
+    });
+    next(error); 
     }
     
 };
@@ -36,10 +40,14 @@ const getyourprofile = async (req,res,next) => {
         const usersDetails = await usersSchema.findOne({ email });
         res.render('yourprofile', { usersDetails });
 
-    } catch(err) {
-        err.message = 'Error get youraccount';
-        console.log(err)
-        next(err);
+    } catch(error) {
+        errorLogger.error('Failed to get your profile', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'youraccount',
+        action: 'getyourprofile'
+    });
+    next(error);
     }
 };
 
@@ -55,15 +63,25 @@ const posteditprofile = async (req,res,next) => {
             { new: true }                      
         );
 
+        apiLogger.info('Profile updated successfully', {
+            controller: 'youraccount',
+            action: 'posteditprofile',
+            email: email
+        });
+
         const usersDetails = await usersSchema.findOne({ email });
 
         res.render('yourprofile', { usersDetails });
 
 
-    } catch(err) {
-        err.message = 'Error update youraccount';
-        console.log(err)
-        next(err);
+    } catch(error) {
+        errorLogger.error('Failed to edit profile', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'youraccount',
+        action: 'posteditprofile'
+    });
+    next(error);
     }
 
 }
@@ -97,13 +115,23 @@ const patchchangepassword = async (req,res,next) => {
             { new: true }                      
         );
     
+        apiLogger.info('Password changed successfully', {
+            controller: 'youraccount',
+            action: 'patchchangepassword',
+            email: email
+        });
+
         res.redirect('/logout?success=1');
 
      }   
-   } catch (err) {
-        err.message = 'Error change password';
-        console.log(err)
-        next(err);
+   } catch (error) {
+        errorLogger.error('Failed to change password', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'youraccount',
+        action: 'patchchangepassword'
+    });
+    next(error); 
    }
 }    
 
@@ -121,11 +149,14 @@ const getaddress = async (req, res, next) => {
 
         res.render('address',{ addressData });
 
-    } catch (err) {
-
-        err.message = 'Error get address';
-        console.log(err)
-        next(err);
+    } catch (error) {
+        errorLogger.error('Failed to get address', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'youraccount',
+        action: 'getaddress'
+    });
+    next(error);
     }
     
 };
@@ -153,12 +184,24 @@ const postaddress = async (req,res,next) => {
         });
 
             await addressData.save();
+
+            apiLogger.info('Address added successfully', {
+                controller: 'youraccount',
+                action: 'postaddress',
+                userId: usersData._id,
+                addressType: req.body.addressType
+            });
+
             res.redirect('/youraccount/address');
 
-    }catch (err) {
-        err.message = 'Error save address';
-        console.log(err)
-        next(err);
+    }catch (error) {
+        errorLogger.error('Failed to add address', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'youraccount',
+        action: 'postaddress'
+    });
+    next(error);
     }
 };
 
@@ -183,12 +226,24 @@ const editaddress = async (req,res,next) => {
         };
 
         await addressSchema.findByIdAndUpdate(addressId, { $set: editAddressData }, { new: true });
+        
+        apiLogger.info('Address edited successfully', {
+            controller: 'youraccount',
+            action: 'editaddress',
+            addressId: addressId,
+            addressType: req.body.addressType
+        });
+
         res.redirect('/youraccount/address');
 
-    } catch(err) {
-        err.message = 'Error edit address';
-        console.log(err)
-        next(err);
+    } catch(error) {
+        errorLogger.error('Failed to edit address', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'youraccount',
+            action: 'editaddress'
+        });
+        next(error);
     }
 };
 
@@ -199,13 +254,24 @@ const deleteaddress = async (req,res,next) => {
         
         const addressId = req.body.addressId;
 
-        await addressSchema.findByIdAndDelete(addressId)
+        await addressSchema.findByIdAndDelete(addressId);
+
+        apiLogger.info('Address deleted successfully', {
+            controller: 'youraccount',
+            action: 'deleteaddress',
+            addressId: addressId
+        });
+
         res.redirect('/youraccount/address'); 
 
-    }catch(err) {
-        err.message = 'Error delete address';
-        console.log(err)
-        next(err);
+    }catch(error) {
+        errorLogger.error('Failed to delete address', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'youraccount',
+            action: 'deleteaddress'
+        });
+        next(error);  
     }
 
 };
@@ -224,10 +290,14 @@ const checkPinCode = async (req, res, next) => {
     const data = await response.json();
     res.json(data);
 
-  } catch (err) {
-    err.message = 'Error check pincode';
-    console.log(err)
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to check pin code', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'youraccount',
+      action: 'checkPinCode'
+    });
+    next(error);
   }
 };
 
@@ -320,8 +390,12 @@ const getyourorders = async (req, res, next) => {
     });
 
   } catch (error) {
-    err.message = 'Error getting orders';
-    console.log(error);
+    errorLogger.error('Failed to get your orders', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'youraccount',
+      action: 'getyourorders'
+    });
     next(error);
   }
 };
@@ -453,12 +527,24 @@ const cancelorder = async (req, res, next) => {
                 }
             }
 
+            apiLogger.info('Order cancelled successfully', {
+                controller: 'youraccount',
+                action: 'cancelorder',
+                orderId: orderId,
+                productId: productId,
+                reason: reason
+            });
+
                 res.redirect('/youraccount/yourorders?success=3');
 
             } catch (error) {
-                error.message = 'Error cancel order';
-                console.log(error);
-                next(error);
+                errorLogger.error('Failed to cancel order', {
+                    originalMessage: error.message,
+                    stack: error.stack,
+                    controller: 'youraccount',
+                    action: 'cancelorder'
+                });
+                    next(error);
             }
         };
 
@@ -559,10 +645,21 @@ const cancelEntairOrder = async (req, res, next) => {
       }
     }
 
+    apiLogger.info('Entire order cancelled successfully', {
+      controller: 'youraccount',
+      action: 'cancelEntairOrder',
+      orderId: orderId,
+      reason: reason
+    });
+
     return res.redirect('/youraccount/yourorders?success=3');
   } catch (error) {
-    console.log(error);
-    error.message = 'Error cancelling full order';
+    errorLogger.error('Failed to cancel entire order', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'youraccount',
+      action: 'cancelEntairOrder'
+    });
     next(error);
   }
 };
@@ -598,9 +695,13 @@ const postReturn = async (req, res, next) => {
 
     } catch (error) {
 
-        error.message = 'Error cancel order';
-        console.log(error);
-        next(error);
+        errorLogger.error('Failed to post return', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'youraccount',
+            action: 'postReturn'
+        });
+            next(error);
     }
 }
 
@@ -676,8 +777,12 @@ const getCancelledOrders = async (req, res, next) => {
         
 
     } catch (error) {
-        error.message = 'Error getting cancelled orders';
-        console.log(error);
+        errorLogger.error('Failed to get cancelled orders', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'youraccount',
+            action: 'getCancelledOrders'
+        });
         next(error);
     }
 }
@@ -716,8 +821,12 @@ const postReviews = async (req,res,next) => {
     res.redirect('/youraccount/yourorders?success=1'); 
     }
   } catch (error) {
-    error.message = 'Error post review';
-    console.log(error);
+    errorLogger.error('Failed to post review', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'youraccount',
+        action: 'postReviews'
+    });
     next(error);
   }
 
@@ -758,12 +867,26 @@ const postEditReviews = async (req,res,next) => {
         },
         { new: true }
         );
+
+        apiLogger.info('Review edited successfully', {
+            controller: 'youraccount',
+            action: 'postEditReviews',
+            userId: userId,
+            productId: productEdit,
+            rating: ratingEdit,
+            comment: commentEdit,
+            images: updatedImages
+        });
         
         res.redirect('/youraccount/yourorders?success=1'); 
 
     }catch (error) {
-        error.message = 'Error edit review';
-        console.log(error);
+        errorLogger.error('Failed to edit review', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'youraccount',
+            action: 'postEditReviews'
+        });
         next(error);
     }
 

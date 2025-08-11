@@ -9,6 +9,7 @@ const generateOrderId = require('../helpers/generateOrderId');
 const razorpayInstance = require('../configuration/razorpay');
 const transactionSchema = require('../models/transactionSchema');
 const couponSchema = require('../models/couponSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getCheckout = async (req,res,next) => {
   
@@ -59,12 +60,18 @@ const getCheckout = async (req,res,next) => {
 
     res.render('checkout', { addressData });
 
-  } catch (err) {
-    err.message = 'Failed to load checkout page';
-    console.error(err);
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error in getCheckout:', {
+      message: error.message, 
+      stack: error.stack,
+      controller: 'checkout',
+      action: 'getCheckout',
+      userId: req.session.users?._id || null
+    });
+    next(error);
   }
 };
+
 
 const postCheckout = async (req,res,next) => {
 
@@ -77,8 +84,8 @@ if (!addressId) {
 req.session.selectedAddressId = addressId;
 
 res.redirect('/checkout/confirm');
-
 };
+
 
 const getConfirm = async (req,res,next) => {
 
@@ -158,10 +165,15 @@ const getConfirm = async (req,res,next) => {
     res.render('confirm', { cartItem, orderAddress, 
        totalAmount, tax, net, payableAmount, discountAmount, code, shipping });
 
-  } catch(err) {
-        err.message = 'not get data';  
-        console.log(err)
-        next(err);
+  } catch(error) {
+        errorLogger.error('Error in getConfirm:', {
+        message: error.message,
+        stack: error.stack,
+        controller: 'checkout',
+        action: 'getConfirm',
+        userId: req.session.users?._id || null
+    });
+    next(error);
   }
 };
 
@@ -200,7 +212,6 @@ const postPayment = async (req,res,next) => {
 
   try {
 
-    
     if(req.session.payableAmount > 1000){
 
       return res.render('payment',{message: 'Cash on Delivery not applicable for order value greater than ₹1000'});
@@ -260,6 +271,16 @@ const postPayment = async (req,res,next) => {
 
     await newOrder.save();
 
+    apiLogger.info('Order created successfully', {
+      controller: 'checkout',
+      action: 'postPayment',
+      orderId: newOrder.orderId,
+      userId: user,
+      couponCode: req.session.couponCode || null,
+      totalAmount: req.session.payableAmount,
+      paymentMethod: paymentType
+    });
+
     if(req.session.couponCode) {
     await couponSchema.findOneAndUpdate({ code: req.session.couponCode },
       { $inc: { balance: -1 }}
@@ -301,10 +322,15 @@ const postPayment = async (req,res,next) => {
 
     res.render('ordersuccess');
 
-    } catch(err) {
-        err.message = 'not save data';  
-        console.log(err)
-        next(err);
+    } catch(error) {
+        errorLogger.error('Error in postPayment:', {
+        message: error.message,
+        stack: error.stack,
+        controller: 'checkout',
+        action: 'postPayment',
+        userId: req.session.users?._id || null
+    });
+    next(error);
     }
 
 };
@@ -386,6 +412,16 @@ const postWallet = async (req,res,next) => {
 
             await newOrder.save();
 
+            apiLogger.info('Order created successfully', {
+              controller: 'checkout',
+              action: 'postWallet',
+              orderId: newOrder.orderId,
+              userId: user,
+              couponCode: req.session.couponCode || null,
+              totalAmount: req.session.payableAmount,
+              paymentMethod: paymentType
+            });
+
             if(req.session.couponCode) {
             await couponSchema.findOneAndUpdate({ code: req.session.couponCode },
               { $inc: { balance: -1 }}
@@ -429,7 +465,13 @@ const postWallet = async (req,res,next) => {
                
 
     } catch (error) {
-        console.log(error);
+        errorLogger.error('Error in postWallet:', {
+        message: error.message,
+        stack: error.stack,
+        controller: 'checkout',
+        action: 'postWallet',
+        userId: req.session.users?._id || null
+        });
         next(error);
     }
 }
@@ -475,7 +517,13 @@ const createRazorpayOrder = async (req, res, next) => {
             currency: order.currency
         });
     } catch (error) {
-        console.log(error);
+        errorLogger.error('Failed to create Razorpay order', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'checkout',
+        action: 'createRazorpayOrder',
+        userId: req.session.users?._id || null
+        });
         next(error);
     }
 };
@@ -545,7 +593,17 @@ const getRazorpaySuccess = async (req, res, next) => {
         });
 
         const savedOrder = await newOrderOnline.save();
-        console.log(savedOrder)
+
+        apiLogger.info('Order created successfully', {
+            controller: 'checkout',
+            action: 'getRazorpaySuccess',
+            orderId: savedOrder.orderId,
+            userId: user,
+            couponCode: req.session.couponCode || null,
+            totalAmount: req.session.payableAmount,
+            paymentMethod: req.session.selectedPaymentType
+        });
+
 
         if(req.session.couponCode){
         await couponSchema.findOneAndUpdate({ code: req.session.couponCode },
@@ -616,6 +674,13 @@ const getRazorpaySuccess = async (req, res, next) => {
         
 
     } catch (error) {
+        errorLogger.error('Failed to get Razorpay success', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'checkout',
+        action: 'getRazorpaySuccess',
+        userId: req.session.users?._id || null
+    });
         next(error);
     }
 };
@@ -633,7 +698,7 @@ const getSuccess =  (req,res,next) => {
 
   res.render('ordersuccess');
   
-}
+};
 
 module.exports = { getCheckout, postCheckout, getPayment, postPayment, 
   getConfirm, postConfirm, createRazorpayOrder, getRazorpaySuccess, 

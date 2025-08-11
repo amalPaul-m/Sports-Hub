@@ -2,6 +2,8 @@ const productsSchema = require('../models/productsSchema');
 const productTypesSchema = require('../models/productTypesSchema');
 const wishlistSchema = require('../models/wishlistSchema');
 const cartSchema = require('../models/cartSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
+const { error } = require('winston');
 
 // get category page
 
@@ -46,9 +48,13 @@ const getCategory = async function (req, res, next) {
     });
 
 
-  } catch (err) {
-    err.message = 'not get category data';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error fetching category data', {
+      controller: 'category',
+      action: 'getCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 
@@ -71,13 +77,24 @@ const postCategory = async function (req, res, next) {
     } else {
 
       await category.save();
-      console.log('category added', category);
+
+      apiLogger.info('Category added successfully', {
+        controller: 'category',
+        action: 'postCategory',
+        categoryId: category._id,
+        categoryName: category.name
+      });
+
       res.redirect('/category?success=1')
     }
 
-  } catch (err) {
-    err.message = 'not gstore category data';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error storing category data', {
+      controller: 'category',
+      action: 'postCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 
@@ -89,19 +106,27 @@ const unblockCategory = async function (req, res, next) {
     const categoryId = req.params.id;
     const categoryName = req.params.name;
 
-    // status set to active
-
     Promise.all([
       productTypesSchema.findByIdAndUpdate(categoryId, { status: 'active' }),
       productsSchema.updateMany({ category: categoryName }, {$set: { isActive: true}})
     ]);
 
-
+    apiLogger.info('Category unblocked successfully', {
+      controller: 'category',
+      action: 'unblockCategory',
+      categoryId,
+      categoryName
+    });
 
     res.redirect('/category');
-  } catch (err) {
-    err.message = 'Error unblock category';
-    next(err);
+
+  } catch (error) {
+    errorLogger.error('Error unblocking category data', {
+      controller: 'category',
+      action: 'unblockCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 
@@ -126,6 +151,14 @@ const blockCategory = async function (req, res, next) {
       if (filteredProducts.length !== wishlist.productId.length) {
         wishlist.productId = filteredProducts.map(p => p._id); 
         await wishlist.save();
+
+        apiLogger.info('Wishlist updated after blocking category', {
+          controller: 'category',
+          action: 'blockCategory',
+          wishlistId: wishlist._id,
+          categoryName
+        });
+
       }
     }
 
@@ -139,13 +172,25 @@ const blockCategory = async function (req, res, next) {
       if (filteredItems.length !== cart.items.length) {
         cart.items = filteredItems;
         await cart.save();
+
+        apiLogger.info('Cart updated after blocking category', {
+          controller: 'category',
+          action: 'blockCategory',
+          cartId: cart._id,
+          categoryName
+        });
+
       }
     }
 
     res.redirect('/category');
-  } catch (err) {
-    err.message = 'Error hide category data';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error blocking category data', {
+      controller: 'category',
+      action: 'blockCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 
@@ -171,13 +216,24 @@ const updateCategory = async function (req, res, next) {
       
       await productTypesSchema.findByIdAndUpdate(categoryId, { $set: category });
       // await db.collection('productTypes').updateOne({ _id: new ObjectId(categoryId) }, { $set: category })
-      console.log('category added', category);
+      
+      apiLogger.info('Category updated successfully', {
+        controller: 'category',
+        action: 'updateCategory',
+        categoryId, 
+        categoryName: category.name
+      });
+
       res.redirect('/category?success=2')
     }
    
-  } catch (err) {
-    err.message = 'not store category data';  
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error updating category data', {
+      controller: 'category',
+      action: 'updateCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 

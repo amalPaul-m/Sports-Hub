@@ -1,4 +1,5 @@
 const couponSchema = require('../models/couponSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getCoupon = async (req,res,next) => {
 
@@ -40,8 +41,6 @@ const postAddCoupon = async (req,res,next) => {
 
         const existCoupon = await couponSchema.findOne({ code: code });
 
-        console.log(existCoupon)
-
         if (existCoupon) {
             return res.redirect('/coupon/add?error=1');
         }
@@ -60,12 +59,23 @@ const postAddCoupon = async (req,res,next) => {
 
         await coupon.save();
 
+        apiLogger.info('Coupon added successfully', {
+            controller: 'coupon',   
+            action: 'addCoupon',
+            couponId: coupon._id,
+            couponCode: coupon.code
+        });
+
         res.redirect('/coupon/add?success=1')
 
     }catch (error) {
-       error.message = 'not add coupon data';
-       console.log(error)
-       next(error);
+       errorLogger.error('Failed to add coupon', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'coupon',
+        action: 'addCoupon'
+    });
+    next(error); 
     }
 
 }
@@ -79,12 +89,22 @@ const patchDelCoupon = async(req,res,next) => {
 
         await couponSchema.findByIdAndDelete(couponId);
 
+        apiLogger.info('Coupon deleted successfully', {
+            controller: 'coupon',
+            action: 'deleteCoupon',
+            couponId
+        });
+
         res.redirect('/coupon?success=1');
 
     }catch (error) {
-       error.message = 'not add coupon data';
-       console.log(error)
-       next(error);
+       errorLogger.error('Failed to delete coupon data', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'coupon',
+        action: 'deleteCoupon'
+    });
+    next(error); 
     }
 
 }
@@ -100,14 +120,20 @@ const getEditCoupon = async(req,res,next) => {
         res.render('editcoupon', { couponData });
 
     }catch (error) {
-       error.message = 'not edit coupon data';
-       console.log(error)
-       next(error);
+       errorLogger.error('Failed to get edit coupon', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'coupon',
+        action: 'editCoupon'
+    });
+    next(error); 
     }
 };
 
 
 const updateCoupon = async (req,res,next) => {
+
+    try {
 
     const couponId = req.params.id;
 
@@ -141,7 +167,25 @@ const updateCoupon = async (req,res,next) => {
             { new: true }
         );
 
+        apiLogger.info('Coupon updated successfully', {
+            controller: 'coupon',
+            action: 'updateCoupon',
+            couponId,
+            limitDifference
+        });
+
         res.redirect('/coupon?success=2');
+
+    } catch (error) {
+
+        errorLogger.error('Failed to update coupon', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'coupon',
+            action: 'updateCoupon'
+        });
+        next(error);
+    }
 };
 
 module.exports = { getCoupon, postAddCoupon, getAddCoupon, 

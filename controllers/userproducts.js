@@ -4,6 +4,7 @@ const wishlistSchema = require('../models/wishlistSchema');
 const usersSchema = require('../models/usersSchema');
 const offersSchema = require('../models/offersSchema');
 const reviewSchema = require('../models/reviewSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getUserProducts = async (req, res, next) => {
   try {
@@ -112,10 +113,14 @@ const getUserProducts = async (req, res, next) => {
       reviewSummary
     });
 
-  } catch (err) {
-    console.error('Product loading error:', err);
-    err.message = 'Cannot access category or products';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to get user products', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'userproducts',
+        action: 'getUserProducts'
+    });
+    next(error); 
   }
 };
 
@@ -221,10 +226,14 @@ const filterUserProducts = async (req, res, next) => {
       queryParams
     });
 
-  } catch (err) {
-    console.error('Product loading error:', err);
-    err.message = 'Cannot access category or products';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to filter user products', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'userproducts',
+        action: 'filterUserProducts'
+    });
+    next(error);
   }
 };
 
@@ -304,10 +313,14 @@ const searchUserProducts = async (req,res,next)=>{
       reviewSummary 
     });
 
-  } catch (err) {
-    console.error('Product loading error:', err);
-    err.message = 'Cannot access category or products';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to search user products', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'userproducts',
+        action: 'searchUserProducts'
+    });
+    next(error);
   }
 }
 

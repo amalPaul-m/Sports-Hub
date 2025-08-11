@@ -3,6 +3,7 @@ const returnsSchema = require('../models/returnSchema');
 const razorpayInstance = require('../configuration/razorpay');
 const walletSchema = require('../models/walletSchema');
 const usersSchema = require('../models/usersSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getOrderslist = async (req, res,next) => {
@@ -30,8 +31,11 @@ const getOrderslist = async (req, res,next) => {
         });
 
     } catch (error) {
-        error.message = 'not get orders data';
-        console.log(error);
+        errorLogger.error('Error fetching orders list', {
+            controller: 'orderslist',
+            action: 'getOrderslist',
+            error: error.message
+        });
         next(error);
     }
 }
@@ -52,11 +56,21 @@ const shippedOrder = async (req, res, next) => {
             return res.status(404).send('Order not found');
         }
 
+        apiLogger.info('Order status updated to shipped', {
+            controller: 'orderslist',
+            action: 'shippedOrder',
+            orderId
+        });
+
         res.redirect('/orderslist');
     
 } catch(error) {
-        error.message = 'not change status to shipped';
-        console.log(error);
+        errorLogger.error('Error updating order status to shipped', {
+            controller: 'orderslist',
+            action: 'shippedOrder',
+            orderId,
+            error: error.message
+        });
         next(error);
     }
 };
@@ -77,11 +91,21 @@ const outofdeliveryOrder = async (req, res, next) => {
             return res.status(404).send('Order not found');
         }
 
+        apiLogger.info('Order status updated to out of delivery', {
+            controller: 'orderslist',
+            action: 'outofdeliveryOrder',
+            orderId
+        });
+
         res.redirect('/orderslist');
     
 } catch(error) {
-        error.message = 'not change status to out of delivery';
-        console.log(error);
+        errorLogger.error('Error updating order status to out of delivery', {
+            controller: 'orderslist',
+            action: 'outofdeliveryOrder',
+            orderId,
+            error: error.message
+        });
         next(error);
     }
 }
@@ -102,11 +126,21 @@ const delivered = async (req, res, next) => {
             return res.status(404).send('Order not found');
         }
 
+        apiLogger.info('Order status updated to delivered', {
+            controller: 'orderslist',
+            action: 'delivered',
+            orderId
+        });
+
         res.redirect('/orderslist');
 
     } catch(error) {
-        error.message = 'not change status to delivered';
-        console.log(error);
+        errorLogger.error('Error updating order status to delivered', {
+            controller: 'orderslist',
+            action: 'delivered',
+            orderId,
+            error: error.message
+        });
         next(error);
     }
 }
@@ -132,11 +166,21 @@ const cancelled = async (req, res, next) => {
             return res.status(404).send('Order not found');
         }
 
+        apiLogger.info('Order status updated to cancelled', {
+            controller: 'orderslist',
+            action: 'cancelled',
+            orderId
+        });
+
         res.redirect('/orderslist');
 
     } catch(error) {
-        error.message = 'not change status to cancelled';
-        console.log(error);
+        errorLogger.error('Error updating order status to cancelled', {
+            controller: 'orderslist',
+            action: 'cancelled',
+            orderId,
+            error: error.message
+        });
         next(error);
     }
 };
@@ -173,16 +217,20 @@ const getReturnOrderslist = async (req, res, next) => {
         });
 
     } catch (error) {
-        error.message = 'not get return orders data';
-        console.log(error);
+        errorLogger.error('Error fetching return orders list', {
+            controller: 'orderslist',
+            action: 'getReturnOrderslist',
+            error: error.message
+        });
         next(error);
     }
 }
 
+
 const acceptReturn = async (req, res, next) => {
+    
     try {
         const returnId = req.params.id;
-
         const updatedReturn = await returnsSchema.findById(
             returnId
 
@@ -266,12 +314,9 @@ const acceptReturn = async (req, res, next) => {
 
             const productInfo = order.productInfo[0];
             totalAmount = productInfo.price*productInfo.quantity;
-
-            const email = req.session.users?.email;
-            const [usersData, orderData] = await Promise.all([
-                usersSchema.findOne({ email }),
-                ordersSchema.findOne({_id: orderId})
-            ]);
+            
+            const orderData = await ordersSchema.findOne({_id: orderId});
+            const userId = orderData.userId;
 
             let returnAmount = 0;
         
@@ -295,12 +340,11 @@ const acceptReturn = async (req, res, next) => {
 
                 }
 
-
-                const existingWallet = await walletSchema.findOne({ userId: usersData._id });
+                const existingWallet = await walletSchema.findOne({ userId: userId });
             
                     if (existingWallet) {
                         await walletSchema.updateOne(
-                            { userId: usersData._id },
+                            { userId: userId },
                             {
                                 $inc: { balance: returnAmount },
                                 $push: {
@@ -314,7 +358,7 @@ const acceptReturn = async (req, res, next) => {
                         );
                     } else {
                         const walletData = new walletSchema({
-                            userId: usersData._id,
+                            userId: userId,
                             balance: returnAmount,
                             transaction: [{
                                 type: 'add',
@@ -345,8 +389,11 @@ const acceptReturn = async (req, res, next) => {
         res.redirect('/orderslist/ordersreturnlist');
 
     } catch (error) {
-        error.message = 'not change return status to accept';
-        console.log(error);
+        errorLogger.error('Error accepting return request', {
+            controller: 'orderslist',
+            action: 'acceptReturn',
+            error: error.message
+        });
         next(error);
     }
 
@@ -367,11 +414,20 @@ const rejectReturn = async (req, res, next) => {
             return res.status(404).send('Return request not found');
         }
 
+        apiLogger.info('Return request rejected successfully', {
+            controller: 'orderslist',
+            action: 'rejectReturn',
+            returnId
+        });
+
         res.redirect('/orderslist/ordersreturnlist');
 
     } catch (error) {
-        error.message = 'not change return status to reject';
-        console.log(error);
+        errorLogger.error('Error rejecting return request', {
+            controller: 'orderslist',
+            action: 'rejectReturn',
+            error: error.message
+        });
         next(error);
     }   
 

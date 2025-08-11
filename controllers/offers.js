@@ -2,6 +2,7 @@
 const productsSchema = require('../models/productsSchema');
 const offersSchema = require('../models/offersSchema');
 const productTypesSchema = require('../models/productTypesSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getOffers = async(req,res,next) => {
 
@@ -38,9 +39,12 @@ const getOffers = async(req,res,next) => {
     });
 
     } catch(error) {
-        err.message = 'Error get offers';
-        console.log(err);
-        next(err);
+        errorLogger.error('Error fetching offers', {
+            controller: 'offers',
+            action: 'getOffers',
+            error: error.message
+        });
+        next(error);
     }    
 };
 
@@ -54,9 +58,12 @@ const getAddProductOffers = async (req,res,next) => {
         res.render('productoffer', { productsData });
 
     } catch (error) {
-        err.message = 'Error get add product offers';
-        console.log(err);
-        next(err);
+        errorLogger.error('Error get add product offers', {
+            controller: 'offers',
+            action: 'getAddProductOffers',
+            error: error.message
+        });
+        next(error);
     }
     
 };
@@ -80,6 +87,14 @@ const postAddProductOffers = async (req,res,next) => {
 
         productsoffer.save();
 
+        apiLogger.info('Product offer added successfully', {
+            controller: 'offers',
+            action: 'postAddProductOffers',
+            targetName,
+            discountPercentage,
+            startDate,
+            endDate
+        });
 
         const productDetail = await productsSchema.findOne({productName: targetName})
         const categoryOff = await offersSchema.findOne({targetName: productDetail.category})
@@ -97,9 +112,12 @@ const postAddProductOffers = async (req,res,next) => {
 
         res.redirect('/offers/add/product-offer?success=1');
     } catch (error) {
-        error.message = 'Error post add product offers';
-        console.log(err);
-        next(err);
+        errorLogger.error('Error post add product offers', {
+            controller: 'offers',
+            action: 'postAddProductOffers',
+            error: error.message
+        });
+        next(error);
     }
 
 };
@@ -116,9 +134,12 @@ const getAddCategoryOffers = async(req,res,next) => {
 
 
     } catch(error) {
-        error.message = 'Error get category offers';
-        console.log(err);
-        next(err);
+       errorLogger.error('Error get add category offers', {
+        controller: 'offers',
+        action: 'getAddCategoryOffers',
+        error: error.message
+    });
+         next(error);
     }
 
 };
@@ -142,7 +163,15 @@ const postAddCategoryOffers = async (req,res,next) => {
 
         categoryoffer.save();
 
-        
+        apiLogger.info('Category offer added successfully', {
+            controller: 'offers',
+            action: 'postAddCategoryOffers',
+            targetName,
+            discountPercentage,
+            startDate,
+            endDate
+        });
+                
         const categoryDetail = await productsSchema.find({category: targetName});
 
         for(const product of categoryDetail){
@@ -166,8 +195,11 @@ const postAddCategoryOffers = async (req,res,next) => {
         res.redirect('/offers/add/category-offer?success=1');
 
     } catch (error) {
-        error.message = 'Error get category offers';
-        console.log(error);
+        errorLogger.error('Error post add category offers', {
+            controller: 'offers',
+            action: 'postAddCategoryOffers',
+            error: error.message
+        });
         next(error);
     }
 
@@ -252,12 +284,21 @@ const deleteOffers = async (req,res,next) => {
 
         await offersSchema.findByIdAndDelete(offerId);
 
+        apiLogger.info('Offer deleted successfully', {
+            controller: 'offers',
+            action: 'deleteOffers',
+            offerId
+        });
+
         res.redirect('/offers?success=1');
 
     } catch(error) {
-        error.message = 'Error delete offers';
-        console.log(err);
-        next(err);
+        errorLogger.error('Error deleting offer', {
+            controller: 'offers',
+            action: 'deleteOffers',
+            error: error.message
+        });
+        next(error);
     }
 
 };
@@ -276,11 +317,13 @@ const getEditProductOffers = async (req,res,next) => {
         res.render('editproductoffer', { editData, productsData });
 
     } catch(error) {
-        error.message = 'Error edit product offers';
-        console.log(error);
+        errorLogger.error('Error get edit product offers', {
+            controller: 'offers',
+            action: 'getEditProductOffers',
+            error: error.message
+        });
         next(error);
     }
-
 }; 
 
 
@@ -326,12 +369,23 @@ const postEditProductOffers = async (req,res,next) => {
             )
         }
 
+        apiLogger.info('Product offer updated successfully', {
+            controller: 'offers',
+            action: 'postEditProductOffers',
+            targetName,
+            discountPercentage,
+            startDate,
+            endDate
+        });
 
         res.redirect('/offers?success=2');
 
     } catch(error) {
-        error.message = 'Error post edit product offers';
-        console.log(error);
+        errorLogger.error('Error post edit product offers', {
+            controller: 'offers',
+            action: 'postEditProductOffers',
+            error: error.message
+        });
         next(error);
     } 
 
@@ -351,8 +405,11 @@ const getEditCategoryOffers = async (req,res,next) => {
         res.render('editcategoryoffer', { editData, productTypesData });
 
     } catch(error) {
-        error.message = 'Error edit product offers';
-        console.log(error);
+        errorLogger.error('Error get edit category offers', {
+            controller: 'offers',
+            action: 'getEditCategoryOffers',
+            error: error.message
+        });
         next(error);
     }
 
@@ -406,12 +463,23 @@ const postEditCategoryOffers = async (req,res,next) => {
         }
         }
 
+        apiLogger.info('Category offer updated successfully', {
+            controller: 'offers',
+            action: 'postEditCategoryOffers',
+            targetName,
+            discountPercentage,
+            startDate,
+            endDate
+        });
 
         res.redirect('/offers?success=2');
 
     } catch (error) {
-        error.message = 'Error get category offers';
-        console.log(error);
+        errorLogger.error('Error post edit category offers', {
+            controller: 'offers',
+            action: 'postEditCategoryOffers',
+            error: error.message
+        });
         next(error);
     }
 

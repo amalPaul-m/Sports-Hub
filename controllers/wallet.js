@@ -1,6 +1,7 @@
 const walletSchema = require('../models/walletSchema');
 const usersSchema = require('../models/usersSchema');
 const razorpayInstance = require('../configuration/razorpay');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getWallet = async (req, res, next) => {
     try {
@@ -29,9 +30,13 @@ const getWallet = async (req, res, next) => {
             razorpayKey: process.env.RAZORPAY_API_KEY
         });
     } catch (error) {
-        error.message = 'Error fetching wallet';
-        console.log(error);
-        next(error);
+        errorLogger.error('Failed to get wallet', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'wallet',
+        action: 'getWallet'
+    });
+    next(error); 
     }
 };
 
@@ -57,7 +62,12 @@ const createWalletOrder = async (req, res, next) => {
             amount
         });
     } catch (error) {
-        console.log(error);
+        errorLogger.error('Failed to create wallet order', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'wallet',
+            action: 'createWalletOrder'
+        });
         next(error);
     }
 };
@@ -90,7 +100,12 @@ const walletPaymentSuccess = async (req, res, next) => {
         res.redirect('/wallet?success=3');
         
     } catch (error) {
-        console.log(error);
+        errorLogger.error('Failed to process wallet payment success', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'wallet',
+            action: 'walletPaymentSuccess'
+        });
         next(error);
     }
 };
@@ -105,8 +120,12 @@ const addAmount = async (req,res,next) => {
         const usersData = await usersSchema.findOne({ email });
 
     }catch (error) {
-        error.message = 'Error add amount in wallet';
-        console.log(error);
+        errorLogger.error('Failed to add amount to wallet', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'wallet',
+            action: 'addAmount'
+        });
         next(error);
     }
 

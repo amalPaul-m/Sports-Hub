@@ -1,5 +1,6 @@
 const usersSchema = require('../models/usersSchema');
 const ordersSchema = require('../models/ordersSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getCustomers = async (req, res, next) => {
@@ -39,9 +40,12 @@ const getCustomers = async (req, res, next) => {
       totalPages,
       query
     });
-  } catch (err) {
-    err.message = 'Error fetching customers';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error fetching customers', {
+      message: error.message,
+      stack: error.stack
+    });
+    next(error);
   }
 };
 
@@ -54,11 +58,20 @@ const unblockCustomers = async function (req, res, next) {
     // status set to active
     await usersSchema.findByIdAndUpdate(userId,{status: 'active'});
 
+    apiLogger.info('User unblocked successfully', {
+      controller: 'customers',
+      action: 'unblockCustomers',
+      userId
+    });
+
     // Redirect back to the customers page
     res.redirect('/customers');
-  } catch (err) {
-    err.message = 'Error unblock user';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error unblocking user', {
+      message: error.message,
+      stack: error.stack
+    });
+    next(error);
   }
 };
 
@@ -71,11 +84,20 @@ const blockCustomers = async function (req, res, next) {
     // status set to active
     await usersSchema.findByIdAndUpdate(userId, {status: 'blocked'});
 
+    apiLogger.info('User blocked successfully', {
+      controller: 'customers',
+      action: 'blockCustomers',
+      userId
+    });
+
     // Redirect back to the customers page
     res.redirect('/customers');
-  } catch (err) {
-    err.message = 'Error block user';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error blocking user', {
+      message: error.message,
+      stack: error.stack
+    });
+    next(error);
   }
 };
 
@@ -114,9 +136,12 @@ const searchCustomers = async (req, res, next) => {
       totalPages
     });
     
-  } catch (err) {
-    err.message = 'Error searching customers';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error searching customers', {
+      message: error.message,
+      stack: error.stack
+    });
+    next(error);
   }
 };
 

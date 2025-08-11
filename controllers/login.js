@@ -1,5 +1,6 @@
 const usersSchema = require('../models/usersSchema')
 const bcrypt = require('bcrypt');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getLogin = function (req, res, next) {
@@ -49,9 +50,15 @@ const postLogin = async (req, res) => {
 
     res.redirect('/home');
 
-  } catch (err) {
-    err.message = 'Login error';
-    next(err);
+  } catch (error) {
+    
+    errorLogger.error('Login error', {
+      controller: 'login',
+      action: 'postLogin',
+      error: error.message
+    });
+    next(error);
+
   }
 };
 

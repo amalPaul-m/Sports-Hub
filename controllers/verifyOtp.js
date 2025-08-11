@@ -2,6 +2,7 @@ const usersSchema = require('../models/usersSchema');
 const walletSchema = require('../models/walletSchema');
 const generateOtp = require('../authentication/generateotp');
 const sendVerificationEmail = require('../authentication/mailer');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const postVerifyOtp = async (req, res, next) => {
   try {
@@ -60,10 +61,14 @@ const postVerifyOtp = async (req, res, next) => {
 
       return res.json({ success: false, message: 'Invalid OTP' });
     }
-  } catch (err) {
-    err.message = 'Error verifying OTP';
-    console.log(err)
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to verify OTP', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'verifyOtp',
+      action: 'postVerifyOtp'
+    });
+    next(error);
   }
 };
 
@@ -86,9 +91,14 @@ const postResendOtp = async (req, res, next) => {
       return res.json({ success: false, message: 'Failed to send email' });
     }
 
-  } catch (err) {
-    err.message = 'Error resending OTP';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to resend OTP', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'verifyOtp',
+      action: 'postResendOtp'
+    });
+    next(error);
   }
 };
 

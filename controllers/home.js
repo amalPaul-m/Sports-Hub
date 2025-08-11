@@ -1,8 +1,9 @@
-const productsSchema = require('../models/productsSchema')
-const productTypesSchema = require('../models/productTypesSchema')
+const productsSchema = require('../models/productsSchema');
+const productTypesSchema = require('../models/productTypesSchema');
 const cartSchema = require('../models/cartSchema');
 const usersSchema = require('../models/usersSchema');
 const wishlistSchema = require('../models/wishlistSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getHome = async function (req, res, next) {
@@ -33,10 +34,14 @@ const getHome = async function (req, res, next) {
       });
 
 
-  } catch (err) {
+  } catch (error) {
 
-    err.message = 'Cant access category or products';
-    next(err);
+    errorLogger.error('Error fetching home data', {
+      controller: 'home',
+      action: 'getHome',
+      error: error.message
+    });
+    next(error);
 
   }
 };
@@ -61,10 +66,14 @@ try {
 
   res.json({'wishlistCount': wishlistCount,'cartCount': cartCount});
 
-}catch (err) {
-  err.message = 'Cant access Home page';
-  console.log(err)
-  next(err);
+}catch (error) {
+  
+  errorLogger.error('Error fetching home badge data', {
+    controller: 'home',
+    action: 'getHomeBadge',
+    error: error.message
+  });
+  next(error);
 
 }
   
