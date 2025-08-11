@@ -23,7 +23,7 @@ const getCheckout = async (req,res,next) => {
     const user = usersData._id;
 
     const cartItem = await cartSchema.findOne({ userId: user }).populate('items.productId');
-    if (!cartItem || !cartItem.items.length) {
+    if (!cartItem || !cartItem?.items?.length) {
       return res.redirect('/cart?error=empty_cart');
     }
 
@@ -32,7 +32,7 @@ const getCheckout = async (req,res,next) => {
     for (const item of cartItem.items) {
       const product = item.productId;
 
-      const matchingVariant = product.variants.find(variant =>
+      const matchingVariant = product?.variants?.find(variant =>
         String(variant.size).trim().toLowerCase() === String(item.size).trim().toLowerCase() &&
         String(variant.color).replace('#', '').trim().toLowerCase() === String(item.color).replace('#', '').trim().toLowerCase() &&
         Number(variant.stockQuantity) >= Number(item.quantity)
@@ -114,7 +114,7 @@ const getConfirm = async (req,res,next) => {
         res.redirect('/cart');
     }
 
-    let totalAmount = cartItem.items.reduce((sum, item) => {
+    let totalAmount = cartItem?.items?.reduce((sum, item) => {
         return sum + item.price * item.quantity;
         }, 0);
 
@@ -234,7 +234,7 @@ const postPayment = async (req,res,next) => {
     const user = usersData._id;
     const cartItem = await cartSchema.findOne({ userId: user });
 
-    const totalAmount = cartItem.items.reduce((sum, item) => {
+    const totalAmount = cartItem?.items?.reduce((sum, item) => {
         return sum + item.price * item.quantity;
         }, 0);
 
@@ -359,7 +359,7 @@ const postWallet = async (req,res,next) => {
             const paymentType = 'wallet';    
             const cartItem = await cartSchema.findOne({ userId: user });
 
-            const totalAmount = cartItem.items.reduce((sum, item) => {
+            const totalAmount = cartItem?.items?.reduce((sum, item) => {
                 return sum + item.price * item.quantity;
                 }, 0);
 

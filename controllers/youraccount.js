@@ -171,16 +171,16 @@ const postaddress = async (req,res,next) => {
 
         const addressData = new addressSchema ({
             userId: usersData._id,
-            fullName: req.body.fullName,
-            mobileNumber: req.body.mobileNumber,
-            pinCode: req.body.pinCode,
-            street: req.body.street,
-            houseNo: req.body.houseNo,
-            district: req.body.district,
-            state: req.body.state,
-            landMark: req.body.landMark,
-            alternate_number: req.body.alternate_number,    
-            addressType: req.body.addressType
+            fullName: req.body?.fullName,
+            mobileNumber: req.body?.mobileNumber,
+            pinCode: req.body?.pinCode,
+            street: req.body?.street,
+            houseNo: req.body?.houseNo,
+            district: req.body?.district,
+            state: req.body?.state,
+            landMark: req.body?.landMark,
+            alternate_number: req.body?.alternate_number,    
+            addressType: req.body?.addressType
         });
 
             await addressData.save();
@@ -189,7 +189,7 @@ const postaddress = async (req,res,next) => {
                 controller: 'youraccount',
                 action: 'postaddress',
                 userId: usersData._id,
-                addressType: req.body.addressType
+                addressType: req.body?.addressType
             });
 
             res.redirect('/youraccount/address');
@@ -210,19 +210,19 @@ const editaddress = async (req,res,next) => {
 
     try {
 
-        const addressId = req.body.addressId;
+        const addressId = req.body?.addressId;
 
         const editAddressData = {
-            fullName: req.body.fullName,
-            mobileNumber: req.body.mobileNumber,
-            pinCode: req.body.pinCode,
-            street: req.body.street,
-            houseNo: req.body.houseNo,
-            district: req.body.district,
-            state: req.body.state,
-            landMark: req.body.landMark,
-            alternate_number: req.body.alternate_number,    
-            addressType: req.body.addressType
+            fullName: req.body?.fullName,
+            mobileNumber: req.body?.mobileNumber,
+            pinCode: req.body?.pinCode,
+            street: req.body?.street,
+            houseNo: req.body?.houseNo,
+            district: req.body?.district,
+            state: req.body?.state,
+            landMark: req.body?.landMark,
+            alternate_number: req.body?.alternate_number,    
+            addressType: req.body?.addressType
         };
 
         await addressSchema.findByIdAndUpdate(addressId, { $set: editAddressData }, { new: true });
@@ -231,7 +231,7 @@ const editaddress = async (req,res,next) => {
             controller: 'youraccount',
             action: 'editaddress',
             addressId: addressId,
-            addressType: req.body.addressType
+            addressType: req.body?.addressType
         });
 
         res.redirect('/youraccount/address');
@@ -252,7 +252,7 @@ const deleteaddress = async (req,res,next) => {
 
     try {
         
-        const addressId = req.body.addressId;
+        const addressId = req.body?.addressId;
 
         await addressSchema.findByIdAndDelete(addressId);
 
@@ -407,7 +407,7 @@ const cancelorder = async (req, res, next) => {
     try {
         const orderId = String(req.params.orderId); 
         const productId = new mongoose.Types.ObjectId(req.params.productId);
-        const reason = req.body.reason === 'Others' ? req.body.otherReason : req.body.reason;
+        const reason = req.body?.reason === 'Others' ? req.body?.otherReason : req.body?.reason;
         const order = await ordersSchema.findOneAndUpdate(
         { orderId: orderId, "productInfo.productId": productId },
         { $set: { "productInfo.$.status": "cancelled", 
@@ -477,7 +477,7 @@ const cancelorder = async (req, res, next) => {
         if(discountAmount!=null && discountAmount!==0){
 
             const discount = order.couponInfo?.[0]?.discountAmount;
-            const count = order.productInfo.length;
+            const count = order.productInfo?.length;
             const difference = discount / count;
             returnAmount = Math.ceil(totalAmount - difference);
 
@@ -551,8 +551,8 @@ const cancelorder = async (req, res, next) => {
 
 const cancelEntairOrder = async (req, res, next) => {
   try {
-    const orderId = String(req.params.orderId);
-    const reason = req.body.reason === 'Others' ? req.body.otherReason : req.body.reason;
+    const orderId = String(req.params?.orderId);
+    const reason = req.body?.reason === 'Others' ? req.body?.otherReason : req.body?.reason;
 
     const order = await ordersSchema.findOne({ orderId });
 

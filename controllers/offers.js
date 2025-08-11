@@ -14,7 +14,7 @@ const getOffers = async(req,res,next) => {
         
         const totalOffers = await offersSchema.countDocuments();
         const totalPages = Math.ceil(totalOffers / limit);
-        const offerType = req.query.offerType;
+        const offerType = req.query?.offerType;
         let offersData;
 
         if(!offerType) {
@@ -210,7 +210,7 @@ const deleteOffers = async (req,res,next) => {
 
     try {
 
-        const offerId = req.params.id;
+        const offerId = req.params?.id;
         const offer = await offersSchema.findById(offerId);
 
         if(offer.offerType==='Product') {
@@ -308,7 +308,7 @@ const getEditProductOffers = async (req,res,next) => {
 
     try {
 
-        const offerId = req.params.id;
+        const offerId = req.params?.id;
         const[editData, productsData] = await Promise.all([
             offersSchema.findByIdAndUpdate(offerId),
             productsSchema.distinct('productName')
@@ -332,7 +332,7 @@ const postEditProductOffers = async (req,res,next) => {
 
     try {
 
-        const offerId = req.params.id;
+        const offerId = req.params?.id;
 
         const { targetName, offerName,
              discountPercentage, startDate, endDate } = req.body;
@@ -396,7 +396,7 @@ const getEditCategoryOffers = async (req,res,next) => {
 
     try {
 
-        const offerId = req.params.id;
+        const offerId = req.params?.id;
         const [editData, productTypesData] = await Promise.all([
             offersSchema.findByIdAndUpdate(offerId),
             productTypesSchema.distinct('name')
@@ -420,7 +420,7 @@ const postEditCategoryOffers = async (req,res,next) => {
 
     try {
 
-        const offerId = req.params.id;
+        const offerId = req.params?.id;
 
         const { targetName, offerName,
              discountPercentage, startDate, endDate } = req.body;

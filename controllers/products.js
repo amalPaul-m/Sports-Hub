@@ -86,17 +86,17 @@ const postAddProducts = async function (req, res) {
     const variants = parseVariants();
 
     const product = new productsSchema ({
-      productName: req.body.productName,
-      description: req.body.description,
-      category: req.body.category,
-      unitSize: req.body.unitSize,
-      regularPrice: parseFloat(req.body.regularPrice),
-      salePrice: parseFloat(req.body.salePrice),
-      ageRange: req.body.ageRange,
-      material: req.body.material,
-      itemWeight: parseFloat(req.body.itemWeight),
-      warranty: parseInt(req.body.warranty),
-      brandName: req.body.brandName,
+      productName: req.body?.productName,
+      description: req.body?.description,
+      category: req.body?.category,
+      unitSize: req.body?.unitSize,
+      regularPrice: parseFloat(req.body?.regularPrice),
+      salePrice: parseFloat(req.body?.salePrice),
+      ageRange: req.body?.ageRange,
+      material: req.body?.material,
+      itemWeight: parseFloat(req.body?.itemWeight),
+      warranty: parseInt(req.body?.warranty),
+      brandName: req.body?.brandName,
       imageUrl: imageNames, 
       variants: variants.map(v => ({
         size: v.size,
@@ -131,7 +131,7 @@ const postAddProducts = async function (req, res) {
 
 const listGetProducts = async function (req, res, next) {
   try {
-    const userId = req.params.id;
+    const userId = req.params?.id;
 
     // status set to active
     await productsSchema.findByIdAndUpdate(userId,{ isActive: true });
@@ -151,7 +151,7 @@ const listGetProducts = async function (req, res, next) {
 
 const unlistGetProducts = async function (req, res, next) {
   try {
-    const productId = req.params.id;
+    const productId = req.params?.id;
 
     await productsSchema.findByIdAndUpdate(productId, { isActive: false });
 
@@ -163,7 +163,7 @@ const unlistGetProducts = async function (req, res, next) {
     const carts = await cartSchema.find({ 'items.productId': productId });
 
     for (const cart of carts) {
-      cart.items = cart.items.filter(
+      cart.items = cart.items?.filter(
         item => item.productId.toString() !== productId
       );
       await cart.save();
@@ -187,7 +187,7 @@ const unlistGetProducts = async function (req, res, next) {
 const editGetProducts = async function (req, res, next) {
 
   try {
-    const productId = req.params.id;
+    const productId = req.params?.id;
 
     const [productDetails, category] = await Promise.all([
       productsSchema.findById(productId),
@@ -238,11 +238,11 @@ const updatePostProducts = async function (req, res, next) {
   try {
 
     console.log(req.body);
-    const imageNames = req.files.map(file => file.filename);
+    const imageNames = req.files?.map(file => file.filename);
     const referId = req.body.id;
 
     const productData = await productsSchema.findById(referId);
-    const imgLength = productData.imageUrl.length;
+    const imgLength = productData.imageUrl?.length;
     const newImg = imageNames.length;
     const totalImagesAfterUpload = imgLength + newImg;
     if(totalImagesAfterUpload< 4){
@@ -253,17 +253,17 @@ const updatePostProducts = async function (req, res, next) {
 
     // Update Product Fields
     const product = {
-      productName: req.body.productName,
-      description: req.body.description,
-      category: req.body.category,
-      unitSize: req.body.unitSize,
-      regularPrice: parseFloat(req.body.regularPrice),
-      salePrice: parseFloat(req.body.salePrice),
-      ageRange: req.body.ageRange,
-      material: req.body.material,
-      itemWeight: parseFloat(req.body.itemWeight),
-      warranty: parseInt(req.body.warranty),
-      brandName: req.body.brandName
+      productName: req.body?.productName,
+      description: req.body?.description,
+      category: req.body?.category,
+      unitSize: req.body?.unitSize,
+      regularPrice: parseFloat(req.body?.regularPrice),
+      salePrice: parseFloat(req.body?.salePrice),
+      ageRange: req.body?.ageRange,
+      material: req.body?.material,
+      itemWeight: parseFloat(req.body?.itemWeight),
+      warranty: parseInt(req.body?.warranty),
+      brandName: req.body?.brandName
     };
 
     await productsSchema.findByIdAndUpdate(

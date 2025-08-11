@@ -13,7 +13,7 @@ const getRest = (req, res, next) => {
 const postRest = async (req, res, next) => {
 
   try {
-    const newPassword = req.body.password;
+    const newPassword = req.body?.password;
   console.log(newPassword);
   const email = req.session.resetEmail;
 

@@ -11,10 +11,10 @@ const getCategory = async function (req, res, next) {
 
   try {
     
-    const page = parseInt(req.query.page) || 1;
+    const page = parseInt(req?.query?.page) || 1;
     const limit = 3;
     const skip = (page - 1) * limit;
-    const query = req.query.q ? req.query.q.trim() : '';
+    const query = req?.query?.q ? req.query.q.trim() : '';
 
     // Filter
     const filter = query
@@ -63,12 +63,12 @@ const getCategory = async function (req, res, next) {
 const postCategory = async function (req, res, next) {
 
   try {
-    const input = req.body.name;
+    const input = req.body?.name;
     const name = input.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 
     const category = new productTypesSchema ( {
       name: name,
-      description: req.body.description
+      description: req.body?.description
     })
 
 
@@ -103,8 +103,8 @@ const postCategory = async function (req, res, next) {
 const unblockCategory = async function (req, res, next) {
 
   try {
-    const categoryId = req.params.id;
-    const categoryName = req.params.name;
+    const categoryId = req.params?.id;
+    const categoryName = req.params?.name;
 
     Promise.all([
       productTypesSchema.findByIdAndUpdate(categoryId, { status: 'active' }),
@@ -135,8 +135,8 @@ const unblockCategory = async function (req, res, next) {
 const blockCategory = async function (req, res, next) {
 
   try {
-    const categoryId = req.params.id;
-    const categoryName = req.params.name;
+    const categoryId = req.params?.id;
+    const categoryName = req.params?.name;
 
     await Promise.all([
       productTypesSchema.findByIdAndUpdate(categoryId, { status: 'blocked' }),
@@ -148,7 +148,7 @@ const blockCategory = async function (req, res, next) {
     for (const wishlist of wishlistData) {
       const filteredProducts = wishlist.productId.filter(product => product.category !== categoryName);
       
-      if (filteredProducts.length !== wishlist.productId.length) {
+      if (filteredProducts.length !== wishlist?.productId?.length) {
         wishlist.productId = filteredProducts.map(p => p._id); 
         await wishlist.save();
 
@@ -165,11 +165,11 @@ const blockCategory = async function (req, res, next) {
 
     const carts = await cartSchema.find().populate('items.productId');
     for (const cart of carts) {
-      const filteredItems = cart.items.filter(item =>
-        item.productId && item.productId.category !== categoryName
+      const filteredItems = cart?.items?.filter(item =>
+        item.productId && item.productId?.category !== categoryName
       );
 
-      if (filteredItems.length !== cart.items.length) {
+      if (filteredItems.length !== cart.items?.length) {
         cart.items = filteredItems;
         await cart.save();
 
@@ -199,15 +199,14 @@ const blockCategory = async function (req, res, next) {
 const updateCategory = async function (req, res, next) {
 
   try {
-    const categoryId = req.params.id
-    const input = req.body.name;
+    const categoryId = req.params?.id
+    const input = req.body?.name;
     const name = input.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 
     const category = {
       name: name,
-      description: req.body.description
+      description: req.body?.description
     }
-    console.log(categoryId)
 
 
     if (await productTypesSchema.findOne({ name: category.name })) {

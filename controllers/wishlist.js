@@ -37,7 +37,7 @@ const toggleWishlist = async (req, res) => {
   const usersData = await usersSchema.findOne({ email });
   const userId = usersData._id;
 
-  const productId = req.params.productId;
+  const productId = req.params?.productId;
   const productObjectId = new mongoose.Types.ObjectId(productId); 
 
   console.log('Product ID:', productObjectId);

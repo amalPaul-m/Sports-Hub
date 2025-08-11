@@ -13,7 +13,7 @@ const getProductDetails = async function (req, res, next) {
         const email = req.session.users?.email;
         const usersData = await usersSchema.findOne({ email });
         const userId = usersData._id;
-        const id = req.query.productId;
+        const id = req.query?.productId;
 
         if (!email) {
             return res.redirect('/login');

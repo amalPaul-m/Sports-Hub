@@ -85,7 +85,7 @@ const patchDelCoupon = async(req,res,next) => {
 
     try {
 
-        const couponId = req.params.id;
+        const couponId = req.params?.id;
 
         await couponSchema.findByIdAndDelete(couponId);
 
@@ -114,7 +114,7 @@ const getEditCoupon = async(req,res,next) => {
 
     try {
 
-        const couponId = req.params.id;
+        const couponId = req.params?.id;
         const couponData = await couponSchema.findById(couponId);
 
         res.render('editcoupon', { couponData });
@@ -135,7 +135,7 @@ const updateCoupon = async (req,res,next) => {
 
     try {
 
-    const couponId = req.params.id;
+    const couponId = req.params?.id;
 
     const {
             name, code, discountAmount,

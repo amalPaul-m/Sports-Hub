@@ -238,8 +238,7 @@ const productDetailAddCart = async (req,res,next) => {
 const removeCart = async (req,res,next) => {
 
     try {
-    const cartId = req.params.id;
-    console.log(cartId)
+    const cartId = req.params?.id;
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
 
@@ -278,7 +277,7 @@ const increaseItemCount = async (req, res) => {
   const email = req.session.users?.email;
   const usersData = await usersSchema.findOne({ email });
   const userId = usersData._id;
-  const productId = req.params.productId;
+  const productId = req.params?.productId;
 
   try {
     const cart = await cartSchema.findOne({ userId });
@@ -286,15 +285,15 @@ const increaseItemCount = async (req, res) => {
     // const item = cart.items.find(i => i.productId.toString() === productId);
     const item = cart.items.find(i => 
       i.productId.toString() === productId &&
-      i.size === req.body.size &&
-      i.color === req.body.color
+      i.size === req.body?.size &&
+      i.color === req.body?.color
     );
     if (!item) return res.status(404).json({ success: false });
 
     const product = await productsSchema.findById(productId);
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
 
-    const matchedVariant = product.variants.find(
+    const matchedVariant = product.variants?.find(
       v => v.size === item.size && v.color === item.color
     );
 
@@ -338,7 +337,7 @@ const increaseItemCount = async (req, res) => {
     await cart.save();
 
     const updatedPrice = item.quantity * item.price;
-    const cartTotal = cart.items.reduce((sum, i) => sum + (i.quantity * i.price), 0);
+    const cartTotal = cart?.items?.reduce((sum, i) => sum + (i.quantity * i.price), 0);
     const netAmount = +(cartTotal / 1.18).toFixed(2);
     const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
     let grandTotal = +(cartTotal).toFixed(2);
@@ -388,13 +387,13 @@ const decreaseItemCount = async (req, res) => {
   const email = req.session.users?.email;
   const usersData = await usersSchema.findOne({ email });
   const userId = usersData._id;
-  const productId = req.params.productId;
+  const productId = req.params?.productId;
 
   try {
     const cart = await cartSchema.findOne({ userId });
     const { size, color } = req.body;
     // const itemIndex = cart.items.findIndex(i => i.productId.toString() === productId);
-    const itemIndex = cart.items.findIndex(i => 
+    const itemIndex = cart?.items?.findIndex(i => 
       i.productId.toString() === productId &&
       i.size === req.body.size &&
       i.color === req.body.color
@@ -406,7 +405,7 @@ const decreaseItemCount = async (req, res) => {
 
 
     if (item.quantity === 1) {
-      const cartTotal = cart.items.reduce((sum, i) => sum + i.quantity * i.price, 0);
+      const cartTotal = cart?.items?.reduce((sum, i) => sum + i.quantity * i.price, 0);
       const netAmount = +(cartTotal / 1.18).toFixed(2);
       const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
       let grandTotal = +(cartTotal).toFixed(2);
@@ -443,7 +442,7 @@ const decreaseItemCount = async (req, res) => {
     await cart.save();
 
     const updatedPrice = item.quantity * item.price;
-    const cartTotal = cart.items.reduce((sum, i) => sum + i.quantity * i.price, 0);
+    const cartTotal = cart?.items?.reduce((sum, i) => sum + i.quantity * i.price, 0);
     const netAmount = +(cartTotal / 1.18).toFixed(2);
     const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
     let grandTotal = +(cartTotal).toFixed(2);
@@ -499,7 +498,7 @@ const checkCoupon = async (req,res,next) => {
   });
     
 
-  if(codeExist && codeExist.couponInfo[0].couponCode === couponCode){
+  if(codeExist && codeExist?.couponInfo?.[0]?.couponCode === couponCode){
     return res.json({
       success: false,
       message: 'You have already used this coupon.'

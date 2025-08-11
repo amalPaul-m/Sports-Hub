@@ -9,7 +9,7 @@ const getCustomers = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const skip = (page - 1) * limit;
-    const query = req.query.q ? req.query.q.trim() : '';
+    const query = req.query?.q ? req.query.q.trim() : '';
 
     // Filter
     const filter = query
@@ -53,7 +53,7 @@ const getCustomers = async (req, res, next) => {
 
 const unblockCustomers = async function (req, res, next) {
   try {
-    const userId = req.params.id;
+    const userId = req.params?.id;
 
     // status set to active
     await usersSchema.findByIdAndUpdate(userId,{status: 'active'});
@@ -79,7 +79,7 @@ const unblockCustomers = async function (req, res, next) {
 
 const blockCustomers = async function (req, res, next) {
   try {
-    const userId = req.params.id;
+    const userId = req.params?.id;
 
     // status set to active
     await usersSchema.findByIdAndUpdate(userId, {status: 'blocked'});

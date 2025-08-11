@@ -45,7 +45,7 @@ const getOrderslist = async (req, res,next) => {
 
 const shippedOrder = async (req, res, next) => {
     try { 
-        const orderId = req.params.id;
+        const orderId = req.params?.id;
         console.log(orderId);
 
         const updatedOrder = await ordersSchema.findByIdAndUpdate(
@@ -80,7 +80,7 @@ const shippedOrder = async (req, res, next) => {
 
 const outofdeliveryOrder = async (req, res, next) => {
     try { 
-        const orderId = req.params.id;
+        const orderId = req.params?.id;
         console.log(orderId);
 
         const updatedOrder = await ordersSchema.findByIdAndUpdate(
@@ -115,7 +115,7 @@ const outofdeliveryOrder = async (req, res, next) => {
 
 const delivered = async (req, res, next) => {
     try { 
-        const orderId = req.params.id;
+        const orderId = req.params?.id;
         console.log(orderId);
 
         const updatedOrder = await ordersSchema.findByIdAndUpdate(
@@ -150,7 +150,7 @@ const delivered = async (req, res, next) => {
 
 const cancelled = async (req, res, next) => {
     try { 
-        const orderId = req.params.id;
+        const orderId = req.params?.id;
         console.log(orderId);
 
         const updatedOrder = await ordersSchema.findByIdAndUpdate(
@@ -232,7 +232,7 @@ const getReturnOrderslist = async (req, res, next) => {
 const acceptReturn = async (req, res, next) => {
     
     try {
-        const returnId = req.params.id;
+        const returnId = req.params?.id;
         const updatedReturn = await returnsSchema.findById(
             returnId
 
@@ -247,7 +247,7 @@ const acceptReturn = async (req, res, next) => {
 
         const paymentInfo = updatedReturn.orderId?.paymentInfo;
         const itemId = updatedReturn.productId;
-        const orderId = updatedReturn.orderId._id;
+        const orderId = updatedReturn.orderId?._id;
         let totalAmount = 0;
 
         if (paymentInfo[0].paymentMethod === 'online'){
@@ -261,7 +261,7 @@ const acceptReturn = async (req, res, next) => {
 
         ]);
 
-        const productInfo = order.productInfo[0];
+        const productInfo = order.productInfo?.[0];
         totalAmount = productInfo.price*productInfo.quantity;
 
 
@@ -270,7 +270,7 @@ const acceptReturn = async (req, res, next) => {
                 if(orderData.couponInfo?.[0]?.discountAmount!==null && orderData.couponInfo?.[0]?.discountAmount!==0){
         
                     const discount = orderData.couponInfo?.[0]?.discountAmount;
-                    const count = orderData.productInfo.length;
+                    const count = orderData.productInfo?.length;
                     const difference = discount / count;
                     returnAmount = Math.ceil(totalAmount - difference);
         
@@ -325,7 +325,7 @@ const acceptReturn = async (req, res, next) => {
                 if(orderData.couponInfo?.[0]?.discountAmount!==null && orderData.couponInfo?.[0]?.discountAmount!==0){
         
                     const discount = orderData.couponInfo?.[0]?.discountAmount || 0;
-                    const count = orderData.productInfo.length;
+                    const count = orderData.productInfo?.length;
                     const difference = discount / count;
                     returnAmount = Math.ceil(totalAmount - difference);
         
@@ -403,7 +403,7 @@ const acceptReturn = async (req, res, next) => {
 
 const rejectReturn = async (req, res, next) => {
     try {   
-        const returnId = req.params.id;
+        const returnId = req.params?.id;
         console.log(returnId);
 
         const updatedReturn = await returnsSchema.findByIdAndUpdate(
