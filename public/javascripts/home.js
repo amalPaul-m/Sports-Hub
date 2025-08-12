@@ -1,3 +1,19 @@
+
+document.addEventListener('DOMContentLoaded', () => {
+  const homeWishlist = document.getElementById('home-badge-wishlist');
+  const homeCart = document.getElementById('home-badge-cart');
+
+  fetch('/home/home-badge')
+    .then(response => response.json())
+    .then(data => {
+      if (homeWishlist) homeWishlist.innerText = data.wishlistCount || 0;
+      if (homeCart) homeCart.innerText = data.cartCount || 0;
+    })
+    .catch(err => console.error('Error fetching badge counts:', err));
+});
+
+
+
 const new_arraival = document.getElementById('new_arraival');
 const top_selling = document.getElementById('top_selling');
 
@@ -40,3 +56,5 @@ const cartButtons = document.querySelectorAll('.btn-addCart');
       document.querySelectorAll('.tab-link').forEach(tab => tab.classList.remove('active'));
       elem.classList.add('active');
     }
+
+

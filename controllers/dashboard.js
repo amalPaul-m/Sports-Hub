@@ -1,6 +1,10 @@
 const ordersSchema = require('../models/ordersSchema');
 const usersSchema = require('../models/usersSchema');
 const returnSchema = require('../models/returnSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
+const {getTopCategories,getTopSellingProducts, getTopSellingBrands} = 
+require('../helpers/dashboardService');
+const { calculateNetOrderTotal } = require('../helpers/orderTotals');
 
 const getDashboard = async (req, res, next) => {
 
@@ -25,15 +29,9 @@ const getDashboard = async (req, res, next) => {
 
     const ordersData = await ordersSchema.find(query);
 
-  let sum = 0;
   let totalSale = 0;
   for(let orders of ordersData){
-    for(let products of orders.productInfo){
-      if(products.status==='confirmed'){
-        sum += products.price * products.quantity;
-      }
-    }
-    totalSale = sum - orders.couponInfo[0]?.discount;
+    totalSale += calculateNetOrderTotal(orders);
   }
 
   const [orderCount, usersCount, returnCount] = await Promise.all([
@@ -52,130 +50,21 @@ const getDashboard = async (req, res, next) => {
   }
 
 
-  const [topCategories, topSellingProducts, topSellingBrands] = await Promise.all([
-    
-  ordersSchema.aggregate([{ $unwind: '$productInfo' },
-  { $match: matchStage },
-  {
-    $lookup: {
-      from: 'products',
-      localField: 'productInfo.productId',
-      foreignField: '_id',
-      as: 'productDetails'
-    }
-  },
-  { $unwind: '$productDetails' },
-
-  {
-    $group: {
-      _id: '$productDetails.category', 
-      totalSold: { $sum: '$productInfo.quantity' }
-    }
-  },
-  { $sort: { totalSold: -1 } },
-  { $limit: 10 },
-  {
-    $project: {
-      _id: 0,
-      category: '$_id',
-      totalSold: 1
-    }
-  }
-]),
-
-ordersSchema.aggregate([
-  { $unwind: "$productInfo" },
-  { $match: matchStage },
-  {
-    $group: {
-      _id: "$productInfo.productId",
-      totalSold: { $sum: "$productInfo.quantity" },
-      totalRevenue: {
-        $sum: { $multiply: ["$productInfo.quantity", "$productInfo.price"] }
-      }
-    }
-  },
-  {
-    $lookup: {
-      from: "products",
-      localField: "_id",
-      foreignField: "_id",
-      as: "productDetails"
-    }
-  },
-  { $unwind: "$productDetails" },
-  {
-    $project: {
-      _id: 0,
-      productId: "$_id",
-      productName: "$productDetails.productName",
-      firstImage: { $arrayElemAt: ["$productDetails.imageUrl", 0] },
-      totalSold: 1,
-      totalRevenue: 1
-    }
-  },
-  { $sort: { totalSold: -1 } },
-  { $limit: 10 }
-]),
-
-ordersSchema.aggregate([
-
-  { $unwind: "$productInfo" },
-  { $match: matchStage },
-  {
-    $group: {
-      _id: "$productInfo.productId",
-      totalSold: { $sum: "$productInfo.quantity" }
-    }
-  },
-  {
-    $lookup: {
-      from: "products",
-      localField: "_id",
-      foreignField: "_id",
-      as: "product"
-    }
-  },
-  { $unwind: "$product" },
-  {
-    $group: {
-      _id: "$product.brandName",
-      totalSold: { $sum: "$totalSold" }
-    }
-  },
-  { $sort: { totalSold: -1 } },
-  { $limit: 10 },
-  {
-    $project: {
-      _id: 0,
-      brandName: "$_id",
-      totalSold: 1
-    }
-  }
-])
-]);
-
+    const [topCategories, topSellingProducts, topSellingBrands] = await Promise.all([
+      getTopCategories(matchStage),
+      getTopSellingProducts(matchStage),
+      getTopSellingBrands(matchStage)
+    ]);
 
 
 const monthlyTotals = Array(12).fill(0); 
 
 for (let order of ordersData) {
-  let orderTotal = 0;
-
-  for (let product of order.productInfo) {
-    if (product.status === 'confirmed') {
-      orderTotal += product.price * product.quantity;
-    }
-  }
-
-  const discount = order.couponInfo?.[0]?.discountAmount || 0;
-  const netTotal = orderTotal - discount;
-
+  
+  const netTotal = calculateNetOrderTotal(order);
   const monthIndex = new Date(order.createdAt).getMonth(); 
   monthlyTotals[monthIndex] += netTotal;
 }
-
-
 
   
   res.render('dashboard', { totalSale, orderCount, usersCount, 
@@ -185,8 +74,11 @@ for (let order of ordersData) {
   });
 
 } catch (error){
-    error.message = 'Error get dashboard';
-    console.log(error)
+    errorLogger.error('Error fetching dashboard data', {
+        error: error.message,
+        controller: 'dashboard',
+        action: 'getDashboard'
+    });
     next(error);
 }
 }

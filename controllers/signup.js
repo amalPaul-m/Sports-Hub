@@ -3,6 +3,7 @@ const generateOtp = require('../authentication/generateotp');
 const sendVerificationEmail = require('../authentication/mailer');
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getSignup = async (req, res, next) => {
@@ -27,7 +28,7 @@ const postSignup = async (req, res, next) => {
   try {
     const { name, email, password, phone } = req.body;
 
-    const nameTag = name.split(' ').join('').toLowerCase();
+    const nameTag = name?.split(' ').join('').toLowerCase();
     const code = crypto.randomBytes(3).toString("hex"); 
     const refferalCode = `${nameTag}${code}`;
 
@@ -79,10 +80,14 @@ const postSignup = async (req, res, next) => {
 
     }
   }
-  } catch (err) {
-    err.message = 'Error inserting user';
-    console.log(err)
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to signup', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'signup',
+        action: 'postSignup'
+    });
+    next(error); 
   }
 };
 

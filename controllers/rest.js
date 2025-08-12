@@ -1,5 +1,6 @@
 const usersSchema = require('../models/usersSchema')
 const bcrypt = require('bcrypt');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getRest = (req, res, next) => {
@@ -12,7 +13,7 @@ const getRest = (req, res, next) => {
 const postRest = async (req, res, next) => {
 
   try {
-    const newPassword = req.body.password;
+    const newPassword = req.body?.password;
   console.log(newPassword);
   const email = req.session.resetEmail;
 
@@ -31,9 +32,14 @@ const postRest = async (req, res, next) => {
     res.redirect('/login');
   });
 }
-  catch(err){
-    err.message = 'Error change user password';
-    next(err);
+  catch(error){
+    errorLogger.error('Failed to reset', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'reset',
+        action: 'postRest'
+    });
+    next(error); 
   }
 };
 

@@ -10,6 +10,7 @@ const passport = require('passport');
 const hbs = require('hbs');
 const dotenv = require('dotenv');
 const Razorpay = require('razorpay');
+const fetch = require('node-fetch');
 dotenv.config();
 require('dotenv').config();
 const methodOverride = require('method-override');
@@ -104,6 +105,7 @@ hbs.registerHelper('add', (a, b) => a + b);
 hbs.registerHelper('mul', (a, b) => a * b);
 hbs.registerHelper('subtract', (a, b) => a - b);
 hbs.registerHelper('eq', (a, b) => a === b);
+hbs.registerHelper('ne', (a, b) => a !== b);
 hbs.registerHelper('gt', (a, b) => a > b);
 hbs.registerHelper('lt', (a, b) => a < b);
 hbs.registerHelper('or', function (a, b, options) {
@@ -132,6 +134,27 @@ hbs.registerHelper('pagination', (totalPages) => {
 
 hbs.registerHelper('gte', function (a, b) {
   return a >= b;
+});
+
+hbs.registerHelper('percentage', function (a, b) {
+  const per = Math.ceil(((a-b)/a)*100);
+  return per;
+});
+
+hbs.registerHelper('StockCount', function (variants) {
+  let totalStock = 0;
+        for(const variant of variants) {
+            totalStock+=variant.stockQuantity;
+    }
+    return totalStock;
+});
+
+hbs.registerHelper('range', function (start, end) {
+  let arr = [];
+  for (let i = start; i <= end; i++) {
+    arr.push(i);
+  }
+  return arr;
 });
 
 hbs.registerHelper('firstImage', function (imagesArray) {

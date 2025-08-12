@@ -5,6 +5,7 @@ const wishlistSchema = require('../models/wishlistSchema');
 const couponSchema = require('../models/couponSchema');
 const couponSessionClr = require('../helpers/couponSessionClr');
 const ordersSchema = require('../models/ordersSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getCart = async (req,res,next) => {
 
@@ -130,38 +131,105 @@ const productDetailAddCart = async (req,res,next) => {
                 size: selectedSize
                 }]
         } );
-
         await cartData.save();
+
+        apiLogger.info('Cart created successfully', {
+            controller: 'cart',
+            action: 'createCart',
+            userId: usersData._id,
+            productId, productId,
+            color: selectedColor,
+            size: selectedSize
+        });
 
         couponSessionClr(req);
 
         }else {
 
-            const addData = {
+          const productData = await productsSchema.findOne(
+              {
+                  _id: productId,
+                  variants: {
+                      $elemMatch: {
+                          color: selectedColor,
+                          size: selectedSize
+                      }
+                  }
+              },
+              { 'variants.$': 1 } 
+          );
+
+          if (!productData || !productData.variants.length) {
+              console.log("Variant not found");
+              return;
+          }
+
+          const stock = productData.variants[0].stockQuantity;
+
+          if (stock <= 0) {
+              return res.json({ message: "The variant is out of stock!" });
+          }else {
+
+           const addData = {
                 productId,
                 quantity: 1,
                 price: currproduct.salePrice,
                 regularPrice: currproduct.regularPrice,
                 color: selectedColor,
                 size: selectedSize
+            };
+
+            const updateResult = await cartSchema.updateOne(
+                {
+                    _id: cart._id,
+                    items: {
+                        $not: {
+                            $elemMatch: {
+                                productId: productId,
+                                color: selectedColor,
+                                size: selectedSize
+                            }
+                        }
+                    }
+                },
+                {
+                    $push: { items: addData }
+                }
+            );
+
+            apiLogger.info('Product added to cart', {
+                controller: 'cart',
+                action: 'addToCart',
+                userId: usersData._id,
+                productId,
+                color: selectedColor,
+                size: selectedSize
+            });
+
+            if (updateResult.modifiedCount > 0) {
+                await wishlistSchema.updateOne(
+                    { userId: usersData._id },
+                    { $pull: { productId: productId } }
+                );
+                return res.json({ message: "Added to Cart" });
+            } else {
+                return res.json({ message: "Variant already exist!" });
             }
 
-        await Promise.all([
-          cartSchema.findOneAndUpdate(
-            { _id: cart._id }, { $push: { items: addData } }),
-
-          wishlistSchema.findOneAndUpdate(
-            { userId: usersData._id },{ $pull: { productId: productId } })
-        ]);
+        }
 
         couponSessionClr(req);
 
         }
 
-    } catch (err){
-        err.message = 'not store cart data';  
-        console.log(err)
-        next(err);
+    } catch (error){
+        errorLogger.error('Failed to add to cart', {
+        originalMessage: error.message,
+        stack: error.stack,
+        controller: 'cart',
+        action: 'addToCart'
+    });
+    next(error); 
     }
 
 };
@@ -170,8 +238,7 @@ const productDetailAddCart = async (req,res,next) => {
 const removeCart = async (req,res,next) => {
 
     try {
-    const cartId = req.params.id;
-    console.log(cartId)
+    const cartId = req.params?.id;
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
 
@@ -180,14 +247,25 @@ const removeCart = async (req,res,next) => {
 
     couponSessionClr(req);
 
+    apiLogger.info('Item removed from cart', {
+        controller: 'cart',
+        action: 'removeCart',
+        userId: usersData._id,
+        cartId
+    });
 
     res.redirect('/cart');
     
-    } catch (err) {
+    } catch (error) {
 
-        err.message = 'not delete cart data';  
-        console.log(err)
-        next(err);
+        errorLogger.error('Failed to remove item from cart', {
+        originalMessage: error.message,
+        stack: error.stack, 
+        controller: 'cart',
+        action: 'removeCart'
+    });
+    next(error);  
+
     }
 
 };
@@ -199,17 +277,23 @@ const increaseItemCount = async (req, res) => {
   const email = req.session.users?.email;
   const usersData = await usersSchema.findOne({ email });
   const userId = usersData._id;
-  const productId = req.params.productId;
+  const productId = req.params?.productId;
 
   try {
     const cart = await cartSchema.findOne({ userId });
-    const item = cart.items.find(i => i.productId.toString() === productId);
+    const { size, color } = req.body;
+    // const item = cart.items.find(i => i.productId.toString() === productId);
+    const item = cart.items.find(i => 
+      i.productId.toString() === productId &&
+      i.size === req.body?.size &&
+      i.color === req.body?.color
+    );
     if (!item) return res.status(404).json({ success: false });
 
     const product = await productsSchema.findById(productId);
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
 
-    const matchedVariant = product.variants.find(
+    const matchedVariant = product.variants?.find(
       v => v.size === item.size && v.color === item.color
     );
 
@@ -253,7 +337,7 @@ const increaseItemCount = async (req, res) => {
     await cart.save();
 
     const updatedPrice = item.quantity * item.price;
-    const cartTotal = cart.items.reduce((sum, i) => sum + (i.quantity * i.price), 0);
+    const cartTotal = cart?.items?.reduce((sum, i) => sum + (i.quantity * i.price), 0);
     const netAmount = +(cartTotal / 1.18).toFixed(2);
     const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
     let grandTotal = +(cartTotal).toFixed(2);
@@ -285,9 +369,14 @@ const increaseItemCount = async (req, res) => {
       couponAmount: 0
     });
 
-  } catch (err) {
-    console.error("Error in increaseItemCount:", err);
-    res.status(500).json({ success: false });
+  } catch (error) {
+    errorLogger.error('Failed to increase item count', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'cart',
+      action: 'increaseItemCount'
+    });
+    next(error);
   }
 };
 
@@ -298,18 +387,25 @@ const decreaseItemCount = async (req, res) => {
   const email = req.session.users?.email;
   const usersData = await usersSchema.findOne({ email });
   const userId = usersData._id;
-  const productId = req.params.productId;
+  const productId = req.params?.productId;
 
   try {
     const cart = await cartSchema.findOne({ userId });
-    const itemIndex = cart.items.findIndex(i => i.productId.toString() === productId);
+    const { size, color } = req.body;
+    // const itemIndex = cart.items.findIndex(i => i.productId.toString() === productId);
+    const itemIndex = cart?.items?.findIndex(i => 
+      i.productId.toString() === productId &&
+      i.size === req.body.size &&
+      i.color === req.body.color
+    );
+
     if (itemIndex === -1) return res.status(404).json({ success: false });
 
     const item = cart.items[itemIndex];
 
 
     if (item.quantity === 1) {
-      const cartTotal = cart.items.reduce((sum, i) => sum + i.quantity * i.price, 0);
+      const cartTotal = cart?.items?.reduce((sum, i) => sum + i.quantity * i.price, 0);
       const netAmount = +(cartTotal / 1.18).toFixed(2);
       const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
       let grandTotal = +(cartTotal).toFixed(2);
@@ -346,7 +442,7 @@ const decreaseItemCount = async (req, res) => {
     await cart.save();
 
     const updatedPrice = item.quantity * item.price;
-    const cartTotal = cart.items.reduce((sum, i) => sum + i.quantity * i.price, 0);
+    const cartTotal = cart?.items?.reduce((sum, i) => sum + i.quantity * i.price, 0);
     const netAmount = +(cartTotal / 1.18).toFixed(2);
     const totalTax = +(cartTotal - cartTotal / 1.18).toFixed(2);
     let grandTotal = +(cartTotal).toFixed(2);
@@ -375,9 +471,14 @@ const decreaseItemCount = async (req, res) => {
       shippingCharge: shipping1,
       couponAmount:0
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false });
+  } catch (error) {
+    errorLogger.error('Failed to decrease item count', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'cart',
+      action: 'decreaseItemCount'
+    });
+    next(error);
   }
 };
 
@@ -397,7 +498,7 @@ const checkCoupon = async (req,res,next) => {
   });
     
 
-  if(codeExist && codeExist.couponInfo[0].couponCode === couponCode){
+  if(codeExist && codeExist?.couponInfo?.[0]?.couponCode === couponCode){
     return res.json({
       success: false,
       message: 'You have already used this coupon.'

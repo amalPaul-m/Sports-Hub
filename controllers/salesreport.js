@@ -2,6 +2,7 @@ const ordersSchema = require('../models/ordersSchema');
 const ExcelJS = require('exceljs');
 const puppeteer = require('puppeteer');
 const hbs = require('handlebars');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const SHIPPING_CHARGE = Number(process.env.SHIPPING_CHARGE) || 0;
 
@@ -77,8 +78,13 @@ const getSalesReport = async (req, res, next) => {
         })
 
     }catch (error) {
-        error.message = 'Error get orders report';
-        console.log('error');
+        errorLogger.error('Error in getSalesReport', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'salesreport',
+            action: 'getSalesReport',
+            query: req.query
+        });
         next(error);
     }
 };
@@ -145,8 +151,13 @@ const exportExcelSalesReport = async (req, res, next) => {
         await workbook.xlsx.write(res);
         res.end();
     } catch (error) {
-        console.error("Excel Export Error:", error);
-        error.message = 'Error export excel';
+        errorLogger.error('Error in exportExcelSalesReport', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'salesreport',
+            action: 'exportExcelSalesReport',
+            query: req.session.query
+        });
         next(error);
     }
 };
@@ -169,8 +180,13 @@ const getSalesReportExport =  async (req, res, next) => {
         });
 
     } catch (error) {
-        error.message = 'Error export pdf';
-        console.log('error');
+        errorLogger.error('Error in getSalesReportExport', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'salesreport',
+            action: 'getSalesReportExport',
+            query: req.session.query
+        });
         next(error);
     }
 };
@@ -208,7 +224,13 @@ const exportPdfSalesReport = async (req, res, next) => {
 
         res.end(pdfBuffer);
     } catch (error) {
-        console.error('PDF Export Error:', error);
+        errorLogger.error('Error in exportPdfSalesReport', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'salesreport',
+            action: 'exportPdfSalesReport',
+            query: req.session.query
+        });
         next(error);
     }
 };

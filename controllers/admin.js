@@ -14,8 +14,9 @@ const getAdminLogin = function (req, res, next) {
 
 const postAdminLogin = function (req, res, next) {
 
-    console.log(req.body)
-    if (req.body.user == username && req.body.password == password) {
+    const user = req.body?.user;
+    const pass = req.body?.password;
+    if (user == username && pass == password) {
 
         req.session.isAdmin = true;
         req.session.user = false;

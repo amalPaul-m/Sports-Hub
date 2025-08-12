@@ -458,6 +458,31 @@ h3 {
 
 
 
+.custom-carousel-item1 {
+  background-image: linear-gradient(to right top, #b3f2ff, #a3e9ff, #95dfff, #8cd4ff, #87c9ff, #8cc2ff, #95bbff, #a0b3ff, #b2aeff, #c8a7ff, #e19fff, #fa94ff);  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 470px; /* adjust as needed */
+  position: relative;
+}
+
+.custom-carousel-item2 {
+  background-image: linear-gradient(to right top, #ff00d3, #f500d8, #ea00de, #dd00e3, #d000e9, #d021ec, #cf31f0, #cf3df3, #db56f6, #e76bf8, #f180fc, #fb94ff);  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 470px; /* adjust as needed */
+  position: relative;
+}
+
+.custom-carousel-item3 {
+  background-image: linear-gradient(to right top, #f8df40, #e5e22d, #cee61a, #b3e905, #93ec00, #78f13a, #58f559, #23f874, #09fca2, #35ffc7, #65ffe3, #94fff5);  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 470px; /* adjust as needed */
+  position: relative;
+}
+
+
 /* ================= add to cart button ================== */
 
 

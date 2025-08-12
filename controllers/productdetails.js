@@ -3,6 +3,7 @@ const cartSchema = require('../models/cartSchema');
 const usersSchema = require('../models/usersSchema');
 const wishlistSchema = require('../models/wishlistSchema');
 const reviewSchema = require('../models/reviewSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getProductDetails = async function (req, res, next) {
@@ -12,7 +13,7 @@ const getProductDetails = async function (req, res, next) {
         const email = req.session.users?.email;
         const usersData = await usersSchema.findOne({ email });
         const userId = usersData._id;
-        const id = req.query.productId;
+        const id = req.query?.productId;
 
         if (!email) {
             return res.redirect('/login');
@@ -23,8 +24,9 @@ const getProductDetails = async function (req, res, next) {
         "items.productId": id  
         });
 
-        const hide = isInCart?'disabled':'';
-        const btnvalue = isInCart?'In Cart':'Add to Cart';
+        // const hide = isInCart?'disabled':'';
+        const hide = isInCart?'':'';
+        const btnvalue = 'Add to Cart';
 
         
         const productDetails = await productsSchema.findOne({ _id : id });
@@ -104,11 +106,16 @@ const getProductDetails = async function (req, res, next) {
         } else {
             res.redirect('/userproducts')
         }
-    } catch (err) {
+    } catch (error) {
 
-        err.message = 'Fetch data error';
-        next(err);
-
+        errorLogger.error('Error in getProductDetails', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'productdetails',
+            action: 'getProductDetails',
+            productId: req.query.productId
+        });
+        next(error);
     }
 };
 

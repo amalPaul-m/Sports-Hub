@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const hbs = require('handlebars');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const ordersSchema = require('../models/ordersSchema');
 require('../models/addressSchema');
@@ -103,9 +104,16 @@ const downloadInvoice = async (req, res) => {
     });
 
     res.end(pdfBuffer);
-  } catch (err) {
-    console.error('Error generating PDF:', err);
-    res.status(500).send('Could not generate invoice.');
+  } catch (error) {
+
+    errorLogger.error('Failed to download invoice', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'invoice',
+      action: 'downloadInvoice'
+    });
+    next(error);
+
   }
 };
 
