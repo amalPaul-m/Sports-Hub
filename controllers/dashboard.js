@@ -4,6 +4,7 @@ const returnSchema = require('../models/returnSchema');
 const { apiLogger, errorLogger } = require('../middleware/logger');
 const {getTopCategories,getTopSellingProducts, getTopSellingBrands} = 
 require('../helpers/dashboardService');
+const { calculateNetOrderTotal } = require('../helpers/orderTotals');
 
 const getDashboard = async (req, res, next) => {
 
@@ -28,15 +29,9 @@ const getDashboard = async (req, res, next) => {
 
     const ordersData = await ordersSchema.find(query);
 
-  let sum = 0;
   let totalSale = 0;
   for(let orders of ordersData){
-    for(let products of orders.productInfo){
-      if(products.status==='confirmed'){
-        sum += products.price * products.quantity;
-      }
-    }
-    totalSale = sum - orders?.couponInfo?.[0]?.discount;
+    totalSale += calculateNetOrderTotal(orders);
   }
 
   const [orderCount, usersCount, returnCount] = await Promise.all([
@@ -65,22 +60,11 @@ const getDashboard = async (req, res, next) => {
 const monthlyTotals = Array(12).fill(0); 
 
 for (let order of ordersData) {
-  let orderTotal = 0;
-
-  for (let product of order.productInfo) {
-    if (product.status === 'confirmed') {
-      orderTotal += product.price * product.quantity;
-    }
-  }
-
-  const discount = order.couponInfo?.[0]?.discountAmount || 0;
-  const netTotal = orderTotal - discount;
-
+  
+  const netTotal = calculateNetOrderTotal(order);
   const monthIndex = new Date(order.createdAt).getMonth(); 
   monthlyTotals[monthIndex] += netTotal;
 }
-
-
 
   
   res.render('dashboard', { totalSale, orderCount, usersCount, 

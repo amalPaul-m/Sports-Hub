@@ -28,7 +28,7 @@ const postSignup = async (req, res, next) => {
   try {
     const { name, email, password, phone } = req.body;
 
-    const nameTag = name.split(' ').join('').toLowerCase();
+    const nameTag = name?.split(' ').join('').toLowerCase();
     const code = crypto.randomBytes(3).toString("hex"); 
     const refferalCode = `${nameTag}${code}`;
 
