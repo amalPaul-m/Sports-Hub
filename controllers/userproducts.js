@@ -117,12 +117,12 @@ const getUserProducts = async (req, res, next) => {
 
   } catch (error) {
     errorLogger.error('Failed to get user products', {
-        originalMessage: error.message,
-        stack: error.stack,
-        controller: 'userproducts',
-        action: 'getUserProducts'
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'userproducts',
+      action: 'getUserProducts'
     });
-    next(error); 
+    next(error);
   }
 };
 
@@ -206,7 +206,7 @@ const filterUserProducts = async (req, res, next) => {
         {
           $project: {
             _id: 0,
-            productId: { $toString: "$_id" }, 
+            productId: { $toString: "$_id" },
             avgRating: { $round: ["$avgRating", 1] }
           }
         }
@@ -230,19 +230,19 @@ const filterUserProducts = async (req, res, next) => {
 
   } catch (error) {
     errorLogger.error('Failed to filter user products', {
-        originalMessage: error.message,
-        stack: error.stack,
-        controller: 'userproducts',
-        action: 'filterUserProducts'
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'userproducts',
+      action: 'filterUserProducts'
     });
     next(error);
   }
 };
 
 
-const searchUserProducts = async (req,res,next)=>{
+const searchUserProducts = async (req, res, next) => {
 
- try {
+  try {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
     const limit = 6;
     const skip = (page - 1) * limit;
@@ -256,9 +256,9 @@ const searchUserProducts = async (req,res,next)=>{
     }
 
     const [totalProducts, categories, products] = await Promise.all([
-        productsSchema.countDocuments(filter),
-        productTypesSchema.find({ status: 'active' }).sort({ _id: 1 }),
-        productsSchema.find(filter).sort({ updatedAt: -1 }).skip(skip)
+      productsSchema.countDocuments(filter),
+      productTypesSchema.find({ status: 'active' }).sort({ _id: 1 }),
+      productsSchema.find(filter).sort({ updatedAt: -1 }).skip(skip)
         .limit(limit).lean()
     ]);
 
@@ -266,14 +266,14 @@ const searchUserProducts = async (req,res,next)=>{
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
 
-     // Fetch user's wishlist product IDs
+    // Fetch user's wishlist product IDs
     const wishlistProductIds = await wishlistSchema.find({ userId: usersData._id }).distinct('productId');
     const wishlistProductIdStrings = wishlistProductIds.map(id => id.toString());
 
     // Mark wishlisted products
     const updatedProducts = products.map(product => ({
-        ...product,
-        isWishlisted: wishlistProductIdStrings.includes(product._id.toString())
+      ...product,
+      isWishlisted: wishlistProductIdStrings.includes(product._id.toString())
     }));
 
 
@@ -286,9 +286,9 @@ const searchUserProducts = async (req,res,next)=>{
     const finalData = [allProductsTab];
 
     const [productMaterial, productBrand, reviewSummary] = await Promise.all([
-        (productsSchema.distinct('material')).sort(),
-        (productsSchema.distinct('brandName')).sort(),
-        reviewSchema.aggregate([
+      (productsSchema.distinct('material')).sort(),
+      (productsSchema.distinct('brandName')).sort(),
+      reviewSchema.aggregate([
         {
           $group: {
             _id: "$productId",
@@ -298,7 +298,7 @@ const searchUserProducts = async (req,res,next)=>{
         {
           $project: {
             _id: 0,
-            productId: { $toString: "$_id" }, 
+            productId: { $toString: "$_id" },
             avgRating: { $round: ["$avgRating", 1] }
           }
         }
@@ -312,15 +312,15 @@ const searchUserProducts = async (req,res,next)=>{
       productMaterial,
       productBrand,
       query: searchQuery,
-      reviewSummary 
+      reviewSummary
     });
 
   } catch (error) {
     errorLogger.error('Failed to search user products', {
-        originalMessage: error.message,
-        stack: error.stack,
-        controller: 'userproducts',
-        action: 'searchUserProducts'
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'userproducts',
+      action: 'searchUserProducts'
     });
     next(error);
   }

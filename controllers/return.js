@@ -8,7 +8,7 @@ const getReturn = async (req, res) => {
             return res.redirect('/login');
         }
 
-        res.render('return', {  });
+        res.render('return', {});
 
     } catch (error) {
 

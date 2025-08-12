@@ -23,14 +23,14 @@ const getCustomers = async (req, res, next) => {
       : {};
 
     // Query data
-      const [totalUsers, users] = await Promise.all([
-        usersSchema.countDocuments(filter),
-        usersSchema
+    const [totalUsers, users] = await Promise.all([
+      usersSchema.countDocuments(filter),
+      usersSchema
         .find(filter)
-        .sort({ _id: -1 }) 
+        .sort({ _id: -1 })
         .skip(skip)
         .limit(limit)
-      ]);
+    ]);
 
     const totalPages = Math.ceil(totalUsers / limit);
 
@@ -56,7 +56,7 @@ const unblockCustomers = async function (req, res, next) {
     const userId = req.params?.id;
 
     // status set to active
-    await usersSchema.findByIdAndUpdate(userId,{status: 'active'});
+    await usersSchema.findByIdAndUpdate(userId, { status: 'active' });
 
     apiLogger.info('User unblocked successfully', {
       controller: 'customers',
@@ -82,7 +82,7 @@ const blockCustomers = async function (req, res, next) {
     const userId = req.params?.id;
 
     // status set to active
-    await usersSchema.findByIdAndUpdate(userId, {status: 'blocked'});
+    await usersSchema.findByIdAndUpdate(userId, { status: 'blocked' });
 
     apiLogger.info('User blocked successfully', {
       controller: 'customers',
@@ -112,11 +112,11 @@ const searchCustomers = async (req, res, next) => {
 
     const filter = query
       ? {
-          $or: [
-            { name: { $regex: query, $options: 'i' } },
-            { email: { $regex: query, $options: 'i' } }
-          ]
-        }
+        $or: [
+          { name: { $regex: query, $options: 'i' } },
+          { email: { $regex: query, $options: 'i' } }
+        ]
+      }
       : {};
 
     const totalUsers = await usersSchema.countDocuments(filter);
@@ -135,7 +135,7 @@ const searchCustomers = async (req, res, next) => {
       currentPage: page,
       totalPages
     });
-    
+
   } catch (error) {
     errorLogger.error('Error searching customers', {
       message: error.message,
@@ -146,4 +146,4 @@ const searchCustomers = async (req, res, next) => {
 };
 
 
-module.exports = {getCustomers, unblockCustomers, blockCustomers, searchCustomers}
+module.exports = { getCustomers, unblockCustomers, blockCustomers, searchCustomers }

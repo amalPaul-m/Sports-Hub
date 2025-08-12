@@ -31,12 +31,12 @@ const getWallet = async (req, res, next) => {
         });
     } catch (error) {
         errorLogger.error('Failed to get wallet', {
-        originalMessage: error.message,
-        stack: error.stack,
-        controller: 'wallet',
-        action: 'getWallet'
-    });
-    next(error); 
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'wallet',
+            action: 'getWallet'
+        });
+        next(error);
     }
 };
 
@@ -98,7 +98,7 @@ const walletPaymentSuccess = async (req, res, next) => {
         );
 
         res.redirect('/wallet?success=3');
-        
+
     } catch (error) {
         errorLogger.error('Failed to process wallet payment success', {
             originalMessage: error.message,
@@ -112,14 +112,14 @@ const walletPaymentSuccess = async (req, res, next) => {
 
 
 
-const addAmount = async (req,res,next) => {
+const addAmount = async (req, res, next) => {
 
     try {
 
         const email = req.session.users?.email;
         const usersData = await usersSchema.findOne({ email });
 
-    }catch (error) {
+    } catch (error) {
         errorLogger.error('Failed to add amount to wallet', {
             originalMessage: error.message,
             stack: error.stack,

@@ -13,10 +13,10 @@ const getProducts = async function (req, res, next) {
     const skip = (page - 1) * limit;
 
     const [totalUsers, productsList, totalUsersUnlist, productsUnList] = await Promise.all([
-        productsSchema.countDocuments({ isActive: true }),
-        productsSchema.find({ isActive: true }).sort({ updatedAt: -1 }).skip(skip).limit(limit),
-        productsSchema.countDocuments({ isActive: true }),
-        productsSchema.find({ isActive: false }).sort({ updatedAt: -1 }).skip(skip).limit(limit)
+      productsSchema.countDocuments({ isActive: true }),
+      productsSchema.find({ isActive: true }).sort({ updatedAt: -1 }).skip(skip).limit(limit),
+      productsSchema.countDocuments({ isActive: true }),
+      productsSchema.find({ isActive: false }).sort({ updatedAt: -1 }).skip(skip).limit(limit)
     ]);
 
     const totalPages = Math.ceil(totalUsers / limit);
@@ -25,19 +25,19 @@ const getProducts = async function (req, res, next) {
     res.render('productslist', {
       productsList, productsUnList,
       currentPage: page,
-      totalPages,currentPageUnlist: page,
+      totalPages, currentPageUnlist: page,
       totalPagesUnlist
     });
 
 
   } catch (error) {
-        errorLogger.error('Failed to fetch get data', {
-        originalMessage: error.message,
-        stack: error.stack,
-        controller: 'products',
-        action: 'getProducts'
+    errorLogger.error('Failed to fetch get data', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'products',
+      action: 'getProducts'
     });
-    next(error); 
+    next(error);
   }
 };
 
@@ -70,22 +70,22 @@ const postAddProducts = async function (req, res) {
     const body = req.body;
 
     const parseVariants = () => {
-    const result = [];
-    let i = 0;
-    while (req.body[`variantSize_${i}`]) {
-      result.push({
-        size: req.body[`variantSize_${i}`],
-        color: req.body[`variantColor_${i}`],
-        stockQuantity: parseInt(req.body[`variantStock_${i}`])
-      });
-      i++;
-    }
-    return result;
-  };
+      const result = [];
+      let i = 0;
+      while (req.body[`variantSize_${i}`]) {
+        result.push({
+          size: req.body[`variantSize_${i}`],
+          color: req.body[`variantColor_${i}`],
+          stockQuantity: parseInt(req.body[`variantStock_${i}`])
+        });
+        i++;
+      }
+      return result;
+    };
 
     const variants = parseVariants();
 
-    const product = new productsSchema ({
+    const product = new productsSchema({
       productName: req.body?.productName,
       description: req.body?.description,
       category: req.body?.category,
@@ -97,7 +97,7 @@ const postAddProducts = async function (req, res) {
       itemWeight: parseFloat(req.body?.itemWeight),
       warranty: parseInt(req.body?.warranty),
       brandName: req.body?.brandName,
-      imageUrl: imageNames, 
+      imageUrl: imageNames,
       variants: variants.map(v => ({
         size: v.size,
         color: v.color,
@@ -134,7 +134,7 @@ const listGetProducts = async function (req, res, next) {
     const userId = req.params?.id;
 
     // status set to active
-    await productsSchema.findByIdAndUpdate(userId,{ isActive: true });
+    await productsSchema.findByIdAndUpdate(userId, { isActive: true });
 
     res.redirect('/products');
   } catch (error) {
@@ -218,7 +218,7 @@ const editThumbGetProducts = async function (req, res, next) {
   try {
     const { urlid, productId } = req.params;
 
-    await productsSchema.findByIdAndUpdate(productId,{ $pull: { imageUrl: urlid } });
+    await productsSchema.findByIdAndUpdate(productId, { $pull: { imageUrl: urlid } });
 
     res.redirect(`/products/edit/${productId}`);
   } catch (error) {
@@ -245,7 +245,7 @@ const updatePostProducts = async function (req, res, next) {
     const imgLength = productData.imageUrl?.length;
     const newImg = imageNames.length;
     const totalImagesAfterUpload = imgLength + newImg;
-    if(totalImagesAfterUpload< 4){
+    if (totalImagesAfterUpload < 4) {
 
       res.redirect('/products/update?error=1');
 
@@ -276,7 +276,7 @@ const updatePostProducts = async function (req, res, next) {
     );
 
 
-      const variantIndexes = Object.keys(req.body)
+    const variantIndexes = Object.keys(req.body)
       .filter(key => key.startsWith('variantSize_'))
       .map(key => key.split('_')[1]);
 
@@ -366,7 +366,7 @@ const searchProducts = async (req, res, next) => {
 
     productsUnList = await productsSchema.find(inactiveFilter)
       .sort({ _id: -1 })
-      
+
 
     res.render('productslist', {
       productsList,
@@ -389,6 +389,8 @@ const searchProducts = async (req, res, next) => {
 
 
 
-module.exports = { getProducts,getAddProducts, postAddProducts, 
-  listGetProducts, unlistGetProducts, editGetProducts,editThumbGetProducts, 
-  updatePostProducts, searchProducts }
+module.exports = {
+  getProducts, getAddProducts, postAddProducts,
+  listGetProducts, unlistGetProducts, editGetProducts, editThumbGetProducts,
+  updatePostProducts, searchProducts
+}

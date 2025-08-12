@@ -11,7 +11,6 @@ const getForgot = (req, res) => {
 };
 
 
-
 const postForgot = async (req, res) => {
   const { email } = req.body;
 
@@ -85,7 +84,7 @@ const postResendOtp = async (req, res) => {
       controller: 'forgot',
       action: 'postResendOtp'
     });
-    next(error); 
+    next(error);
   }
 };
 

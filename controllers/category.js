@@ -10,7 +10,7 @@ const { error } = require('winston');
 const getCategory = async function (req, res, next) {
 
   try {
-    
+
     const page = parseInt(req?.query?.page) || 1;
     const limit = 3;
     const skip = (page - 1) * limit;
@@ -29,7 +29,7 @@ const getCategory = async function (req, res, next) {
 
     // Query data
 
-    const[totalUsers, categoryList] = await Promise.all([
+    const [totalUsers, categoryList] = await Promise.all([
       productTypesSchema.countDocuments(filter),
       productTypesSchema
         .find()
@@ -66,7 +66,7 @@ const postCategory = async function (req, res, next) {
     const input = req.body?.name;
     const name = input.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 
-    const category = new productTypesSchema ( {
+    const category = new productTypesSchema({
       name: name,
       description: req.body?.description
     })
@@ -108,7 +108,7 @@ const unblockCategory = async function (req, res, next) {
 
     Promise.all([
       productTypesSchema.findByIdAndUpdate(categoryId, { status: 'active' }),
-      productsSchema.updateMany({ category: categoryName }, {$set: { isActive: true}})
+      productsSchema.updateMany({ category: categoryName }, { $set: { isActive: true } })
     ]);
 
     apiLogger.info('Category unblocked successfully', {
@@ -140,16 +140,16 @@ const blockCategory = async function (req, res, next) {
 
     await Promise.all([
       productTypesSchema.findByIdAndUpdate(categoryId, { status: 'blocked' }),
-      productsSchema.updateMany({ category: categoryName }, {$set: { isActive: false}})
+      productsSchema.updateMany({ category: categoryName }, { $set: { isActive: false } })
     ])
 
     const wishlistData = await wishlistSchema.find().populate('productId');
 
     for (const wishlist of wishlistData) {
       const filteredProducts = wishlist.productId.filter(product => product.category !== categoryName);
-      
+
       if (filteredProducts.length !== wishlist?.productId?.length) {
-        wishlist.productId = filteredProducts.map(p => p._id); 
+        wishlist.productId = filteredProducts.map(p => p._id);
         await wishlist.save();
 
         apiLogger.info('Wishlist updated after blocking category', {
@@ -212,20 +212,20 @@ const updateCategory = async function (req, res, next) {
     if (await productTypesSchema.findOne({ name: category.name })) {
       res.redirect('/category?fail=1')
     } else {
-      
+
       await productTypesSchema.findByIdAndUpdate(categoryId, { $set: category });
       // await db.collection('productTypes').updateOne({ _id: new ObjectId(categoryId) }, { $set: category })
-      
+
       apiLogger.info('Category updated successfully', {
         controller: 'category',
         action: 'updateCategory',
-        categoryId, 
+        categoryId,
         categoryName: category.name
       });
 
       res.redirect('/category?success=2')
     }
-   
+
   } catch (error) {
     errorLogger.error('Error updating category data', {
       controller: 'category',
@@ -237,4 +237,4 @@ const updateCategory = async function (req, res, next) {
 };
 
 
-module.exports = {getCategory, postCategory, unblockCategory, blockCategory, updateCategory}
+module.exports = { getCategory, postCategory, unblockCategory, blockCategory, updateCategory }

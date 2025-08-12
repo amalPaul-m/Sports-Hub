@@ -11,7 +11,7 @@ const getSalesReport = async (req, res, next) => {
     try {
 
         const page = parseInt(req.query.page) || 1;
-        const limit = 10;  
+        const limit = 10;
         const skip = (page - 1) * limit;
 
 
@@ -26,9 +26,9 @@ const getSalesReport = async (req, res, next) => {
 
         const [totalCoupons, ordersData] = await Promise.all([
             ordersSchema.countDocuments(query),
-            ordersSchema.find(query).sort({createdAt: -1})
-            .skip(skip).limit(limit)                   
-            .populate('userId')
+            ordersSchema.find(query).sort({ createdAt: -1 })
+                .skip(skip).limit(limit)
+                .populate('userId')
         ]);
 
         const totalPages = Math.ceil(totalCoupons / limit);
@@ -52,9 +52,9 @@ const getSalesReport = async (req, res, next) => {
                 }
             });
             const discount = regularTotal - order.paymentInfo[0]?.totalAmount;
-            if (!isNaN(discount) && regularTotal>1000) {
+            if (!isNaN(discount) && regularTotal > 1000) {
                 totalDiscountSum += discount;
-            }else {
+            } else {
                 totalDiscountSum += Number(discount + SHIPPING_CHARGE);
             }
         });
@@ -77,7 +77,7 @@ const getSalesReport = async (req, res, next) => {
             toDate: req.query.toDate || ''
         })
 
-    }catch (error) {
+    } catch (error) {
         errorLogger.error('Error in getSalesReport', {
             message: error.message,
             stack: error.stack,
@@ -115,7 +115,7 @@ const exportExcelSalesReport = async (req, res, next) => {
         let slNo = 1;
         ordersData.forEach(order => {
             const totalRegularPrice = order.productInfo.reduce(
-                (sum, item) => sum + (item.regularPrice * item.quantity || 0), 
+                (sum, item) => sum + (item.regularPrice * item.quantity || 0),
                 0
             );
 
@@ -166,7 +166,7 @@ const exportExcelSalesReport = async (req, res, next) => {
 
 
 
-const getSalesReportExport =  async (req, res, next) => {
+const getSalesReportExport = async (req, res, next) => {
     try {
 
         const ordersData = await ordersSchema.find(req.session.query)
@@ -193,13 +193,13 @@ const getSalesReportExport =  async (req, res, next) => {
 
 const exportPdfSalesReport = async (req, res, next) => {
     try {
-         const ordersData = await ordersSchema.find(req.session.query).populate('userId');
+        const ordersData = await ordersSchema.find(req.session.query).populate('userId');
 
-         const saleCount = req.session.salescount;
-         const totalOrderAmount = req.session.totalOrderAmount;
-         const totalDiscount = req.session.totaldiscount;
-         const html = await new Promise((resolve, reject) => {
-            res.render('salesreport-export', { layout: false, ordersData, saleCount, totalOrderAmount, totalDiscount  }, (err, html) => {
+        const saleCount = req.session.salescount;
+        const totalOrderAmount = req.session.totalOrderAmount;
+        const totalDiscount = req.session.totaldiscount;
+        const html = await new Promise((resolve, reject) => {
+            res.render('salesreport-export', { layout: false, ordersData, saleCount, totalOrderAmount, totalDiscount }, (err, html) => {
                 if (err) reject(err);
                 else resolve(html);
             });
@@ -237,5 +237,7 @@ const exportPdfSalesReport = async (req, res, next) => {
 
 
 
-module.exports = { getSalesReport, exportExcelSalesReport, 
-     getSalesReportExport , exportPdfSalesReport }
+module.exports = {
+    getSalesReport, exportExcelSalesReport,
+    getSalesReportExport, exportPdfSalesReport
+}

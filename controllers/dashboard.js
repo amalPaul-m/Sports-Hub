@@ -2,18 +2,18 @@ const ordersSchema = require('../models/ordersSchema');
 const usersSchema = require('../models/usersSchema');
 const returnSchema = require('../models/returnSchema');
 const { apiLogger, errorLogger } = require('../middleware/logger');
-const {getTopCategories,getTopSellingProducts, getTopSellingBrands} = 
-require('../helpers/dashboardService');
+const { getTopCategories, getTopSellingProducts, getTopSellingBrands } =
+  require('../helpers/dashboardService');
 const { calculateNetOrderTotal } = require('../helpers/orderTotals');
 
 const getDashboard = async (req, res, next) => {
 
   try {
 
-  if (!req.session.isAdmin) {
-    console.log(req.session.isAdmin)
-    return res.redirect('/admin');
-  }
+    if (!req.session.isAdmin) {
+      console.log(req.session.isAdmin)
+      return res.redirect('/admin');
+    }
 
     const fromDate = req.query.fromDate ? new Date(req.query.fromDate) : null;
     const toDate = req.query.toDate ? new Date(req.query.toDate) : null;
@@ -29,25 +29,25 @@ const getDashboard = async (req, res, next) => {
 
     const ordersData = await ordersSchema.find(query);
 
-  let totalSale = 0;
-  for(let orders of ordersData){
-    totalSale += calculateNetOrderTotal(orders);
-  }
+    let totalSale = 0;
+    for (let orders of ordersData) {
+      totalSale += calculateNetOrderTotal(orders);
+    }
 
-  const [orderCount, usersCount, returnCount] = await Promise.all([
-    ordersSchema.countDocuments(query),
-    usersSchema.countDocuments(query),
-    returnSchema.countDocuments(query)
-  ]);
+    const [orderCount, usersCount, returnCount] = await Promise.all([
+      ordersSchema.countDocuments(query),
+      usersSchema.countDocuments(query),
+      returnSchema.countDocuments(query)
+    ]);
 
 
-  const matchStage = {
-  'productInfo.status': 'confirmed'
-  };
+    const matchStage = {
+      'productInfo.status': 'confirmed'
+    };
 
-  if (fromDate && toDate) {
-    matchStage.createdAt = { $gte: fromDate, $lte: toDate };
-  }
+    if (fromDate && toDate) {
+      matchStage.createdAt = { $gte: fromDate, $lte: toDate };
+    }
 
 
     const [topCategories, topSellingProducts, topSellingBrands] = await Promise.all([
@@ -57,30 +57,31 @@ const getDashboard = async (req, res, next) => {
     ]);
 
 
-const monthlyTotals = Array(12).fill(0); 
+    const monthlyTotals = Array(12).fill(0);
 
-for (let order of ordersData) {
-  
-  const netTotal = calculateNetOrderTotal(order);
-  const monthIndex = new Date(order.createdAt).getMonth(); 
-  monthlyTotals[monthIndex] += netTotal;
-}
+    for (let order of ordersData) {
 
-  
-  res.render('dashboard', { totalSale, orderCount, usersCount, 
-    returnCount, topCategories, topSellingProducts, topSellingBrands, monthlyTotals,
-    fromDate: req.query.fromDate || '',
-    toDate: req.query.toDate || '' 
-  });
+      const netTotal = calculateNetOrderTotal(order);
+      const monthIndex = new Date(order.createdAt).getMonth();
+      monthlyTotals[monthIndex] += netTotal;
+    }
 
-} catch (error){
+
+    res.render('dashboard', {
+      totalSale, orderCount, usersCount,
+      returnCount, topCategories, topSellingProducts, topSellingBrands, monthlyTotals,
+      fromDate: req.query.fromDate || '',
+      toDate: req.query.toDate || ''
+    });
+
+  } catch (error) {
     errorLogger.error('Error fetching dashboard data', {
-        error: error.message,
-        controller: 'dashboard',
-        action: 'getDashboard'
+      error: error.message,
+      controller: 'dashboard',
+      action: 'getDashboard'
     });
     next(error);
-}
+  }
 }
 
 module.exports = { getDashboard }

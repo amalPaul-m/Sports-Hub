@@ -1,35 +1,35 @@
 const couponSchema = require('../models/couponSchema');
 const { apiLogger, errorLogger } = require('../middleware/logger');
 
-const getCoupon = async (req,res,next) => {
+const getCoupon = async (req, res, next) => {
 
-        const page = parseInt(req.query.page) || 1;
-        const limit = 5;  
-        const skip = (page - 1) * limit;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const skip = (page - 1) * limit;
 
-        const [couponData, totalCoupons] = await Promise.all([
-            couponSchema.find().sort({createdAt:-1}).skip(skip).limit(limit),
-            couponSchema.countDocuments()
-        ]);
+    const [couponData, totalCoupons] = await Promise.all([
+        couponSchema.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
+        couponSchema.countDocuments()
+    ]);
 
-        const totalPages = Math.ceil(totalCoupons / limit);
+    const totalPages = Math.ceil(totalCoupons / limit);
 
 
-        res.render('coupon', {
-            couponData,
-            currentPage: page,
-            totalPages
-        });
+    res.render('coupon', {
+        couponData,
+        currentPage: page,
+        totalPages
+    });
 
 };
 
-const getAddCoupon = (req,res,next) => {
+const getAddCoupon = (req, res, next) => {
 
     res.render('addcoupon');
 
 };
 
-const postAddCoupon = async (req,res,next) => {
+const postAddCoupon = async (req, res, next) => {
 
     try {
 
@@ -60,7 +60,7 @@ const postAddCoupon = async (req,res,next) => {
         await coupon.save();
 
         apiLogger.info('Coupon added successfully', {
-            controller: 'coupon',   
+            controller: 'coupon',
             action: 'addCoupon',
             couponId: coupon._id,
             couponCode: coupon.code
@@ -68,20 +68,20 @@ const postAddCoupon = async (req,res,next) => {
 
         res.redirect('/coupon/add?success=1')
 
-    }catch (error) {
-       errorLogger.error('Failed to add coupon', {
-        originalMessage: error.message,
-        stack: error.stack,
-        controller: 'coupon',
-        action: 'addCoupon'
-    });
-    next(error); 
+    } catch (error) {
+        errorLogger.error('Failed to add coupon', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'coupon',
+            action: 'addCoupon'
+        });
+        next(error);
     }
 
 }
 
 
-const patchDelCoupon = async(req,res,next) => {
+const patchDelCoupon = async (req, res, next) => {
 
     try {
 
@@ -97,20 +97,20 @@ const patchDelCoupon = async(req,res,next) => {
 
         res.redirect('/coupon?success=1');
 
-    }catch (error) {
-       errorLogger.error('Failed to delete coupon data', {
-        originalMessage: error.message,
-        stack: error.stack,
-        controller: 'coupon',
-        action: 'deleteCoupon'
-    });
-    next(error); 
+    } catch (error) {
+        errorLogger.error('Failed to delete coupon data', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'coupon',
+            action: 'deleteCoupon'
+        });
+        next(error);
     }
 
 }
 
 
-const getEditCoupon = async(req,res,next) => {
+const getEditCoupon = async (req, res, next) => {
 
     try {
 
@@ -119,32 +119,32 @@ const getEditCoupon = async(req,res,next) => {
 
         res.render('editcoupon', { couponData });
 
-    }catch (error) {
-       errorLogger.error('Failed to get edit coupon', {
-        originalMessage: error.message,
-        stack: error.stack,
-        controller: 'coupon',
-        action: 'editCoupon'
-    });
-    next(error); 
+    } catch (error) {
+        errorLogger.error('Failed to get edit coupon', {
+            originalMessage: error.message,
+            stack: error.stack,
+            controller: 'coupon',
+            action: 'editCoupon'
+        });
+        next(error);
     }
 };
 
 
-const updateCoupon = async (req,res,next) => {
+const updateCoupon = async (req, res, next) => {
 
     try {
 
-    const couponId = req.params?.id;
+        const couponId = req.params?.id;
 
-    const {
+        const {
             name, code, discountAmount,
             discountPercentage, activeFrom,
             expireTo, limit, minimumOrderAmount
         } = req.body;
 
         const couponData = await couponSchema.findOne({ name: name });
-        
+
         const limitDifference = limit - couponData.limit;
 
         const coupon = {
@@ -188,5 +188,7 @@ const updateCoupon = async (req,res,next) => {
     }
 };
 
-module.exports = { getCoupon, postAddCoupon, getAddCoupon, 
-    patchDelCoupon, getEditCoupon, updateCoupon }
+module.exports = {
+    getCoupon, postAddCoupon, getAddCoupon,
+    patchDelCoupon, getEditCoupon, updateCoupon
+}
