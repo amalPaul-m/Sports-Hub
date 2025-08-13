@@ -85,6 +85,15 @@ const postAddProductOffers = async (req, res, next) => {
             endDate: endDate
         })
 
+        const productsExists = await offersSchema.findOne({
+            targetName: targetName,
+            offerType: 'Product'
+        });
+
+        if( productsExists) {
+            res.redirect('/offers/add/category-offer?error=1');
+        }else {
+
         productsoffer.save();
 
         apiLogger.info('Product offer added successfully', {
@@ -111,6 +120,7 @@ const postAddProductOffers = async (req, res, next) => {
         }
 
         res.redirect('/offers/add/product-offer?success=1');
+        }
     } catch (error) {
         errorLogger.error('Error post add product offers', {
             controller: 'offers',
@@ -161,6 +171,14 @@ const postAddCategoryOffers = async (req, res, next) => {
             endDate: endDate
         })
 
+        const categoryExists = await offersSchema.findOne({
+            targetName: targetName,
+            offerType: 'Category'
+        });
+
+        if( categoryExists) {
+            res.redirect('/offers/add/category-offer?error=1');
+        }else {
         categoryoffer.save();
 
         apiLogger.info('Category offer added successfully', {
@@ -195,7 +213,7 @@ const postAddCategoryOffers = async (req, res, next) => {
         }
 
         res.redirect('/offers/add/category-offer?success=1');
-
+        }
     } catch (error) {
         errorLogger.error('Error post add category offers', {
             controller: 'offers',
@@ -352,8 +370,9 @@ const postEditProductOffers = async (req, res, next) => {
         );
 
 
-        const productDetail = await productsSchema.findOne({ productName: targetName })
-        const categoryOff = await offersSchema.findOne({ targetName: productDetail.category })
+        const productDetail = await productsSchema.findOne({ productName: targetName });
+        console.log(productDetail)
+        const categoryOff = await offersSchema.findOne({ targetName: productDetail.category });
         const updateOffer = {
             discountPercentage: discountPercentage,
             startDate: startDate,
@@ -361,10 +380,10 @@ const postEditProductOffers = async (req, res, next) => {
         }
 
         if (!categoryOff || categoryOff.discountPercentage < discountPercentage ||
-            new Date(product.startDate).getTime() < new Date(startDate).getTime() ||
-            new Date(product.endDate).getTime() < new Date(endDate).getTime() ||
-            new Date(product.startDate).getTime() > new Date(startDate).getTime() ||
-            new Date(product.endDate).getTime() > new Date(endDate).getTime()) {
+            new Date(productDetail.startDate).getTime() < new Date(startDate).getTime() ||
+            new Date(productDetail.endDate).getTime() < new Date(endDate).getTime() ||
+            new Date(productDetail.startDate).getTime() > new Date(startDate).getTime() ||
+            new Date(productDetail.endDate).getTime() > new Date(endDate).getTime()) {
 
             await productsSchema.updateMany({ productName: targetName },
                 { $set: { ...updateOffer } }
@@ -454,7 +473,7 @@ const postEditCategoryOffers = async (req, res, next) => {
                 new Date(product.endDate).getTime() < new Date(endDate).getTime() ||
                 new Date(product.startDate).getTime() > new Date(startDate).getTime() ||
                 new Date(product.endDate).getTime() > new Date(endDate).getTime()) {
-
+console.log('hello guys')
                 await productsSchema.updateOne({ _id: product._id },
                     {
                         $set: {

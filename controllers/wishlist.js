@@ -11,7 +11,7 @@ const getWishlist = async (req, res, next) => {
 
   const [wishlist, reviewSummary] = await Promise.all([
     wishlistSchema.findOne({ userId: usersData._id })
-      .populate('productId').sort({ createdAt: -1 }),
+    .populate({path: 'productId', options: { sort: { createdAt: -1 } }}),
     reviewSchema.aggregate([
       {
         $group: {

@@ -82,13 +82,14 @@
                       <span id="error-msg"></span>
                         <div class="col-md-12">
                             <label class="form-label fw-semibold">Select Catrgory Name</label>
-                            <select class="form-select shadow-none" name="targetName" required>
+                            <input type="text" class="form-control shadow-none" name="targetName" value="{{editData.targetName}}" readonly />
+                            {{!-- <select class="form-select shadow-none" name="targetName" required>
                                 <option value="" disabled>Select a category</option>
                                 <option value="{{editData.targetName}}" selected>{{editData.targetName}}</option>
                                 {{#each productTypesData}}
                                 <option value="{{this}}">{{this}}</option>
                                 {{/each}}
-                            </select>
+                            </select> --}}
                             <div class="invalid-feedback">Please select a category name.</div>
                         </div>
                         <div class="col-md-6">
