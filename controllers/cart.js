@@ -213,7 +213,7 @@ const productDetailAddCart = async (req, res, next) => {
           );
           return res.json({ message: "Added to Cart" });
         } else {
-          return res.json({ message: "Variant already exist!" });
+          return res.json({ message: "Variant already in cart!" });
         }
 
       }

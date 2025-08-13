@@ -111,6 +111,20 @@ hbs.registerHelper('lt', (a, b) => a < b);
 hbs.registerHelper('or', function (a, b, options) {
     return a || b ? options.fn(this) : options.inverse(this);
 });
+hbs.registerHelper('ore', function (a, b) {
+    return a || b;
+});
+hbs.registerHelper('getPaymentAmount', function (paymentInfo) {
+    return paymentInfo && paymentInfo.length && paymentInfo[0].totalAmount
+        ? paymentInfo[0].totalAmount
+        : 0;
+});
+hbs.registerHelper('safeSubtract', function(a, b) {
+    const valA = Number(a) || 0;
+    const valB = Number(b) || 0;
+    const result = valA - valB;
+    return result < 0 ? 0 : result;
+});
 hbs.registerHelper('json', function (context) {
   return JSON.stringify(context);
 });

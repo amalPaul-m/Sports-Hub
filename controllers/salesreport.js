@@ -25,8 +25,8 @@ const getSalesReport = async (req, res, next) => {
         }
 
         const [totalCoupons, ordersData] = await Promise.all([
-            ordersSchema.countDocuments(query),
-            ordersSchema.find(query).sort({ createdAt: -1 })
+            ordersSchema.countDocuments({ ...query, deliveryStatus: 'delivered' }),
+            ordersSchema.find({...query, deliveryStatus:'delivered'}).sort({ createdAt: -1 })
                 .skip(skip).limit(limit)
                 .populate('userId')
         ]);
@@ -72,7 +72,7 @@ const getSalesReport = async (req, res, next) => {
             totalCoupons,
             grandTotalRegularPrice,
             totalDiscountSum,
-            shippingCharge: SHIPPING_CHARGE,
+            shippingCharge: grandTotalRegularPrice<1000 ? SHIPPING_CHARGE : 0,
             fromDate: req.query.fromDate || '',
             toDate: req.query.toDate || ''
         })
@@ -94,7 +94,7 @@ const getSalesReport = async (req, res, next) => {
 
 const exportExcelSalesReport = async (req, res, next) => {
     try {
-        const ordersData = await ordersSchema.find(req.session.query)
+        const ordersData = await ordersSchema.find({...req.session.query, deliveryStatus:'delivered'})
             .sort({ createdAt: -1 })
             .populate('userId');
 
@@ -169,7 +169,7 @@ const exportExcelSalesReport = async (req, res, next) => {
 const getSalesReportExport = async (req, res, next) => {
     try {
 
-        const ordersData = await ordersSchema.find(req.session.query)
+        const ordersData = await ordersSchema.find({...req.session.query, deliveryStatus:'delivered'})
             .sort({ createdAt: -1 })
             .populate('userId');
 
@@ -193,7 +193,8 @@ const getSalesReportExport = async (req, res, next) => {
 
 const exportPdfSalesReport = async (req, res, next) => {
     try {
-        const ordersData = await ordersSchema.find(req.session.query).populate('userId');
+        const ordersData = await ordersSchema.find({...req.session.query, deliveryStatus:'delivered'}).populate('userId')
+        .sort({ createdAt: -1 });
 
         const saleCount = req.session.salescount;
         const totalOrderAmount = req.session.totalOrderAmount;

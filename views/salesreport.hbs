@@ -134,16 +134,18 @@
             <td>{{this.orderId}}</td>
             <td>{{this.userId.name}}</td>
             <td>{{calcTotalRegularPrice this.productInfo}}</td>
-            <td>{{#if (gt (calcTotalRegularPrice this.productInfo) 1000)}}
-              {{subtract (calcTotalRegularPrice this.productInfo) this.paymentInfo.[0].totalAmount}}
-              {{else}}
-              {{subtract (calcTotalRegularPrice this.productInfo) (subtract this.paymentInfo.[0].totalAmount ../shippingCharge)}}
-              {{/if}}</td>
+            <td>
+    {{#if (gt (calcTotalRegularPrice this.productInfo) 1000)}}
+        {{safeSubtract (calcTotalRegularPrice this.productInfo) (getPaymentAmount this.paymentInfo)}}
+    {{else}}
+        {{safeSubtract (calcTotalRegularPrice this.productInfo) 
+                        (safeSubtract (getPaymentAmount this.paymentInfo) (ore ../shippingCharge 0))}}
+    {{/if}}
+</td>
             <td>{{this.paymentInfo.[0].paymentMethod}}</td>
             <td>{{this.deliveryStatus}}</td>
             <td>{{formatDateFull this.createdAt}}</td>
           </tr>
-
         {{/each}}
         {{else}}
 
@@ -164,7 +166,7 @@
         <ul class="pagination">
           {{#if (gt currentPage 1)}}
           <li class="page-item">
-            <a class="page-link pagination-border shadow-none" href="/salesreport?page={{subtract currentPage 1}}"
+            <a class="page-link pagination-border shadow-none" href="/salesreport?page={{subtract currentPage 1}}{{#if ../fromDate}}&fromDate={{../fromDate}}{{/if}}{{#if ../toDate}}&toDate={{../toDate}}{{/if}}"
               aria-label="Previous">
               <span aria-hidden="true" class="text-black">&lang;</span>
             </a>
@@ -172,13 +174,13 @@
           {{/if}}
           {{#each (pagination totalPages)}}
           <li class="page-item ms-2 {{#if (eq this ../currentPage)}}active{{/if}}">
-            <a class="page-link pagination-number" href="/salesreport?page={{this}}">{{this}}</a>
+            <a class="page-link pagination-number" href="/salesreport?page={{this}}{{#if ../fromDate}}&fromDate={{../fromDate}}{{/if}}{{#if ../toDate}}&toDate={{../toDate}}{{/if}}">{{this}}</a>
           </li>
           {{/each}}
 
           {{#if (lt currentPage totalPages)}}
           <li class="page-item ms-2">
-            <a class="page-link pagination-border shadow-none" href="/salesreport?page={{add currentPage 1}}"
+            <a class="page-link pagination-border shadow-none" href="/salesreport?page={{add currentPage 1}}{{#if ../fromDate}}&fromDate={{../fromDate}}{{/if}}{{#if ../toDate}}&toDate={{../toDate}}{{/if}}"
               aria-label="Next">
               <span aria-hidden="true" class="text-black">&rang;</span>
             </a>
