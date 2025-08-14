@@ -366,6 +366,7 @@ const getyourorders = async (req, res, next) => {
         "productInfo.status": "confirmed"
       })
         .populate('productInfo.productId')
+        .populate('addressId')
         .sort({ createdAt: -1 })
         .skip(skip1)
         .limit(limit1),

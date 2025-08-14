@@ -369,7 +369,7 @@
         <img src="/images/products/{{firstImage this.productId.imageUrl}}" class="img-fluid" alt="Product Image">
       </div>
       <div class="col-md-5">
-        <h6 class="">{{this.productId.productName}}</h6>
+        <h6 class=""><a href="#" class="text-decoration-none"  data-bs-toggle="modal" data-bs-target="#orderDetailsDelivered{{this.productId._id}}">{{this.productId.productName}}</a></h6>
         <p class="mb-1 text-muted">Brand: {{this.productId.brandName}}</p>
         <p class="mb-1 text-muted">Color: <button class="btn" style="background-color: {{this.color}};"></button></p>
         <p class="mb-1 text-muted">Size: {{this.size}} {{this.productId.unitSize}}</p>
@@ -398,6 +398,48 @@
     </div>
   </div>  
 
+
+
+<!-- Order Details -->
+    <div class="modal fade" id="orderDetailsDelivered{{this.productId._id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Order Id : #{{../this.orderId}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5 class="fw-bold">Product Information</h5>
+        {{#each ../this.productInfo}}
+          <p>{{this.productId.productName}} 
+          <span class="ps-1 fs-5 fw-bold float-end">₹ {{mul this.quantity this.price}}.00</span><br>
+          <span class="">Qty: {{this.quantity}}</span><span class="ps-3">Status: {{this.status}}</span></p>
+        {{/each}}
+
+        <h5 class="fw-bold mt-5">Payment Information</h5>
+        <p>Payment Method <span class="float-end">{{../paymentInfo.[0].paymentMethod}}</span><br>
+        Payment Status <span class="float-end">{{../paymentInfo.[0].paymentStatus}}</span></p>
+        <p>
+          Net Amount  <span class="float-end">₹ {{netAmount (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
+          Gst Amount (18%) <span class="float-end">₹ {{gst (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
+          Total Amount <span class="float-end">₹ {{add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount}}.00</span>
+        </p>
+        <p>Discount Amount <span class="float-end">- ₹ {{ ../couponInfo.[0].discount}}</span>
+        <h5 class="fw-bold">Payable Amount <span class="float-end">₹ {{../paymentInfo.[0].totalAmount}}</span></h5>
+        </p> <hr>
+        
+        <h5 class="fw-bold mt-3">Address Information</h5>
+        {{../addressId.fullName}} <br>
+        {{../addressId.houseNo}}, {{../addressId.landMark}}<br>
+        {{../addressId.street}}<br>
+        {{../addressId.district}}, {{../addressId.state}}<br>
+        {{../addressId.pinCode}}<br>
+        {{../addressId.mobileNumber}}, {{../addressId.alternate_number}}
+      </div>
+  
+    </div>
+  </div>
+</div>
 
 
 <!-- Dispaly Error Modal -->
