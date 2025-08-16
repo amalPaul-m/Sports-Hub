@@ -105,6 +105,7 @@
          
           <!-- Example Rows -->
           {{#each orders}}
+          {{#if (eq this.orderStatus "confirmed")}}
           <tr>
             <td>{{addOne @index}}</td>
             <td><a href="" class="text-decoration-none" data-bs-toggle="modal" 
@@ -364,7 +365,7 @@
             </div>
           </div>
 
-
+          {{/if}}
           {{/each}}
 
 

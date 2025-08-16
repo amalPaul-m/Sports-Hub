@@ -506,6 +506,55 @@ const createRazorpayOrder = async (req, res, next) => {
       return sum + item.price * item.quantity;
     }, 0);
 
+
+
+
+
+
+      const rawAddress = req.session.selectedAddressId;
+      const addressId = typeof rawAddress === 'object' ? rawAddress.addressId : rawAddress;
+
+      if (!mongoose.Types.ObjectId.isValid(addressId)) {
+        res.redirect('/login')
+      }
+
+      const validAddressId = new mongoose.Types.ObjectId(addressId);
+
+      const discount = Math.floor(totalAmount - req.session.payableAmount);
+
+      const couponData = await couponSchema.findOne({ code: req.session.couponCode });
+
+      const orderId = await generateOrderId();
+
+      const newOrderOnline = new ordersSchema({
+        orderId,
+        userId: user,
+        deliveryStatus: 'pending',
+        orderStatus: 'cancelled',
+        productInfo: cartItem.items.map(item => ({
+          productId: item.productId._id,
+          quantity: item.quantity,
+          price: item.price,
+          regularPrice: item.regularPrice,
+          color: item.color,
+          size: item.size,
+        })),
+        addressId: validAddressId,
+        paymentInfo: [],
+        couponInfo: {
+          couponCode: req.session.couponCode || null,
+          discount: discount || 0,
+          discountAmount: couponData?.discountAmount || 0,
+          discountPercentage: couponData?.discountPercentage || 0
+        }
+      });
+
+      const savedOrder = await newOrderOnline.save();
+      await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
+      req.session.razorpayOrderId = savedOrder.orderId;
+
+
+
     const options = {
       amount: req.session.payableAmount * 100, // in paisa
       currency: "INR",
@@ -533,10 +582,52 @@ const createRazorpayOrder = async (req, res, next) => {
 };
 
 
+const retryRazorpayOrder = async (req, res, next) => {
+  try {
+
+    const { orderId } = req.body;
+
+    const orderData = await ordersSchema.findById(orderId);
+
+    const totalAmount = orderData.productInfo.reduce((sum, item) => {
+      return sum + item.price * item.quantity;
+    }, 0);
+
+    const finalAmount = Math.floor(totalAmount - orderData.couponInfo[0]?.discount);
+
+    const options = {
+      amount: finalAmount * 100, // in paisa
+      currency: "INR",
+      receipt: `order_rcptid_${Date.now()}`
+    };
+  console.log(options);
+    const order = await razorpayInstance.orders.create(options);
+
+    res.status(200).json({
+      success: true,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency
+    });
+
+  }
+  catch (error) {
+    errorLogger.error('Failed to retry Razorpay order', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'checkout',
+      action: 'retryRazorpayOrder',
+      userId: req.session.users?._id || null
+    });
+    next(error);
+  }
+};
+
+
 
 const getRazorpaySuccess = async (req, res, next) => {
   try {
-    const { payment_id, order_id } = req.query;
+    const { payment_id, order_id, orderId } = req.query;
 
     const payment = await razorpayInstance.payments.fetch(payment_id);
 
@@ -544,68 +635,86 @@ const getRazorpaySuccess = async (req, res, next) => {
 
       req.session.selectedPaymentType = 'online';
       req.session.razorpayPaymentId = payment_id;
-      req.session.razorpayOrderId = order_id;
+      req.session.razorpayTransactonOrderId = order_id;
 
-      const rawAddress = req.session.selectedAddressId;
-      const addressId = typeof rawAddress === 'object' ? rawAddress.addressId : rawAddress;
 
-      if (!mongoose.Types.ObjectId.isValid(addressId)) {
-        res.redirect('/login')
-      }
+      // const rawAddress = req.session.selectedAddressId;
+      // const addressId = typeof rawAddress === 'object' ? rawAddress.addressId : rawAddress;
 
-      const orderId = await generateOrderId();
+      // if (!mongoose.Types.ObjectId.isValid(addressId)) {
+      //   res.redirect('/login')
+      // }
 
-      const validAddressId = new mongoose.Types.ObjectId(addressId);
-      const email = req.session.users?.email;
-      const usersData = await usersSchema.findOne({ email });
-      const user = usersData._id;
-      const cartItem = await cartSchema.findOne({ userId: user });
+      // const orderId = await generateOrderId();
 
-      const totalAmount = cartItem.items.reduce((sum, item) => {
-        return sum + item.price * item.quantity;
-      }, 0);
+      
+      const orderNumber = !orderId ? req.session.razorpayOrderId : orderId;
 
-      const discount = Math.floor(totalAmount - req.session.payableAmount);
-
-      const couponData = await couponSchema.findOne({ code: req.session.couponCode });
-
-      const newOrderOnline = new ordersSchema({
-        orderId,
-        userId: user,
-        deliveryStatus: 'pending',
-        productInfo: cartItem.items.map(item => ({
-          productId: item.productId._id,
-          quantity: item.quantity,
-          price: item.price,
-          regularPrice: item.regularPrice,
-          color: item.color,
-          size: item.size,
-        })),
-        addressId: validAddressId,
-        paymentInfo: {
-          totalAmount: req.session.payableAmount,
-          paymentMethod: req.session.selectedPaymentType,
-          paymentStatus: req.session.selectedPaymentType === 'COD' ? 'unpaid' : 'paid',
-          transactionId: req.session.selectedPaymentType === 'online' ? req.session.razorpayPaymentId : null
+      await ordersSchema.findOneAndUpdate(
+      { orderId: orderNumber },
+      {
+        $set: {
+          // orderId: orderId,
+          orderStatus: 'confirmed'
         },
-        couponInfo: {
-          couponCode: req.session.couponCode || null,
-          discount: discount || 0,
-          discountAmount: couponData?.discountAmount || 0,
-          discountPercentage: couponData?.discountPercentage || 0
+        $push: {
+          paymentInfo: {
+            totalAmount: req.session.payableAmount,
+            paymentMethod: req.session.selectedPaymentType,
+            paymentStatus: req.session.selectedPaymentType === 'COD' ? 'unpaid' : 'paid',
+            transactionId: req.session.selectedPaymentType === 'online' ? req.session.razorpayPaymentId : null
+          }
         }
-      });
+      },
+      { new: true }
+    );
 
-      const savedOrder = await newOrderOnline.save();
+      // const validAddressId = new mongoose.Types.ObjectId(addressId);
+      // const email = req.session.users?.email;
+      // const usersData = await usersSchema.findOne({ email });
+      // const user = usersData._id;
+      // const cartItem = await cartSchema.findOne({ userId: user });
+
+      // const totalAmount = cartItem.items.reduce((sum, item) => {
+      //   return sum + item.price * item.quantity;
+      // }, 0);
+
+      // const discount = Math.floor(totalAmount - req.session.payableAmount);
+
+      // const couponData = await couponSchema.findOne({ code: req.session.couponCode });
+
+      // const newOrderOnline = new ordersSchema({
+      //   orderId,
+      //   userId: user,
+      //   deliveryStatus: 'pending',
+      //   productInfo: cartItem.items.map(item => ({
+      //     productId: item.productId._id,
+      //     quantity: item.quantity,
+      //     price: item.price,
+      //     regularPrice: item.regularPrice,
+      //     color: item.color,
+      //     size: item.size,
+      //   })),
+      //   addressId: validAddressId,
+      //   paymentInfo: {
+      //     totalAmount: req.session.payableAmount,
+      //     paymentMethod: req.session.selectedPaymentType,
+      //     paymentStatus: req.session.selectedPaymentType === 'COD' ? 'unpaid' : 'paid',
+      //     transactionId: req.session.selectedPaymentType === 'online' ? req.session.razorpayPaymentId : null
+      //   },
+      //   couponInfo: {
+      //     couponCode: req.session.couponCode || null,
+      //     discount: discount || 0,
+      //     discountAmount: couponData?.discountAmount || 0,
+      //     discountPercentage: couponData?.discountPercentage || 0
+      //   }
+      // });
+
+      // const savedOrder = await newOrderOnline.save();
 
       apiLogger.info('Order created successfully', {
         controller: 'checkout',
-        action: 'getRazorpaySuccess',
-        orderId: savedOrder.orderId,
-        userId: user,
-        couponCode: req.session.couponCode || null,
-        totalAmount: req.session.payableAmount,
-        paymentMethod: req.session.selectedPaymentType
+        action: 'getRazorpaySuccess'
       });
 
 
@@ -618,8 +727,15 @@ const getRazorpaySuccess = async (req, res, next) => {
       delete req.session.payableAmount;
       delete req.session.couponCode;
       delete req.session.shippingCharge;
+      delete req.session.razorpayOrderId;
 
       //update quantity
+
+      const newOrderOnline = await ordersSchema.findOne({orderId: orderNumber});
+
+      if (!newOrderOnline) {
+        throw new Error(`Order not found in DB for orderId: ${orderNumber}`);
+      }
 
       for (const item of newOrderOnline.productInfo) {
         const normalizedColor = String(item.color).replace('#', '').trim().toLowerCase();
@@ -643,16 +759,16 @@ const getRazorpaySuccess = async (req, res, next) => {
 
 
       await transactionSchema.create({
-        userId: user,
-        orderId: orderId,
+        userId: newOrderOnline.userId,
+        orderId: newOrderOnline.orderId,
         paymentMethod: 'online',
         paymentId: req.session.razorpayPaymentId,
-        orderid: req.session.razorpayOrderId,
-        amount: totalAmount,
+        orderid: req.session.razorpayTransactonOrderId,
+        amount: newOrderOnline.paymentInfo?.[0]?.totalAmount,
         status: 'captured'
       });
 
-      await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
+      // await cartSchema.updateOne({ userId: user }, { $set: { items: [] } });
       delete req.session.selectedAddressId;
       delete req.session.selectedPaymentType;
       delete req.session.shippingCharge;
@@ -692,7 +808,12 @@ const getRazorpaySuccess = async (req, res, next) => {
 
 const getRazorpayFailure = (req, res, next) => {
 
-  res.render('orderfailed');
+  const paymentType = req.query.payment;
+  if (paymentType === 'retry') {
+    res.render('orderfailedretry');
+  }else {
+    res.render('orderfailed');
+  }
 
 };
 
@@ -707,5 +828,5 @@ const getSuccess = (req, res, next) => {
 module.exports = {
   getCheckout, postCheckout, getPayment, postPayment,
   getConfirm, postConfirm, createRazorpayOrder, getRazorpaySuccess,
-  getRazorpayFailure, postWallet, getSuccess, removeConfirm
+  getRazorpayFailure, postWallet, getSuccess, removeConfirm, retryRazorpayOrder
 }

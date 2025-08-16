@@ -60,6 +60,78 @@
 
   <!-- Order 1 -->
 {{#each orderData}}
+{{#if (eq this.orderStatus "cancelled")}}
+{{#each this.productInfo}}
+<div class="border-bottom pb-4 mb-4">
+    <div class="row align-items-center mt-5">
+      <div class="col-md-2">
+        <img src="/images/products/{{firstImage this.productId.imageUrl}}" class="img-fluid" alt="Product Image">
+      </div>
+      <div class="col-md-5">
+        <h6 class=""><a href="#" class="text-decoration-none"  data-bs-toggle="modal" data-bs-target="#orderDetails{{this.productId._id}}">{{this.productId.productName}}</a></h6>
+        <p class="mb-1 text-muted"><b>Quantity:</b> {{this.quantity}}</p>        
+        <span class="mb-1 text-muted pe-3"><b>Brand:</b> {{this.productId.brandName}}</span>
+        <span class="mb-1 text-muted pe-3"><b>Color:</b> <button class="btn" style="background-color: {{this.color}};"></button></span>
+        <span class="mb-1 text-muted"><b>Size:</b> {{this.size}} {{this.productId.unitSize}}</span>
+      </div>
+      <div class="col-md-3 text-end">
+        <h6 class="fw-bold fs-5">₹ {{this.price}}.00</h6>
+        <small class="text-muted">Item Ordered By {{formatDateFull ../createdAt}}</small><br>
+        <small class="text-primary fw-bold">Your payment is pending</small>
+      </div>
+    </div>
+
+    <!-- Order Details -->
+    <div class="modal fade" id="orderDetails{{this.productId._id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Payment Pending</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5 class="fw-bold">Product Information</h5>
+        {{#each ../this.productInfo}}
+          <p>{{this.productId.productName}} 
+          <span class="ps-1 fs-5 fw-bold float-end">₹ {{mul this.quantity this.price}}.00</span><br>
+          <span class="">Qty: {{this.quantity}}</span><span class="ps-3">Status: {{this.status}}</span></p>
+        {{/each}}
+        
+        <h5 class="fw-bold mt-3">Address Information</h5>
+        {{../addressId.fullName}} <br>
+        {{../addressId.houseNo}}, {{../addressId.landMark}}<br>
+        {{../addressId.street}}<br>
+        {{../addressId.district}}, {{../addressId.state}}<br>
+        {{../addressId.pinCode}}<br>
+        {{../addressId.mobileNumber}}, {{../addressId.alternate_number}}
+      </div>
+  
+    </div>
+  </div>
+</div>
+
+
+
+{{/each}}
+
+
+
+<div class="p-3 shadow-sm rounded width mt-3">
+  <div class="float-start mt-2">
+    {{#if (ne this.couponInfo.[0].couponCode null)}}
+    <p class="mb-1 text-muted"><b>Applied Coupon:</b> {{this.couponInfo.[0].couponCode}}</p>
+    {{else}}
+    <p class="mb-1 text-muted"><b>Applied Coupon:</b> No Coupon Applied</p>
+    {{/if}}
+  </div>
+  <div class="float-end">
+    <button href="" id="rzp-button-failed"  data-order-id="{{this._id}}" data-order-number="{{this.orderId}}" class="btn btn-outline-dark px-4">
+      Payment Retry
+    </button>
+  </div>
+</div>
+{{/if}}
+{{#if (eq this.orderStatus "confirmed")}}
   {{#each this.productInfo}}
   {{#if (eq this.status "confirmed")}}
   <div class="border-bottom pb-4 mb-4">
@@ -74,7 +146,7 @@
         <span class="mb-1 text-muted pe-3"><b>Color:</b> <button class="btn" style="background-color: {{this.color}};"></button></span>
         <span class="mb-1 text-muted"><b>Size:</b> {{this.size}} {{this.productId.unitSize}}</span>
 
-        <p class="mb-1 text-muted"><b>Order Id:</b> #{{../orderId}}</p>
+        {{!-- <p class="mb-1 text-muted"><b>Order Id:</b> #{{../orderId}}</p> --}}
       </div>
       <div class="col-md-3 text-end">
         <h6 class="fw-bold fs-5">₹ {{this.price}}.00</h6>
@@ -240,6 +312,9 @@
       
       
       <div class="p-3 shadow-sm rounded width mt-3">
+      <div class="float-start mt-2">
+        <p class="mb-1 text-muted"><b>Order Id:</b> #{{this.orderId}}</p>
+      </div>
       <div class="float-end">
       {{#if (eq deliveryStatus "pending")}}
       <button class="btn btn-danger btn-md px-4 me-1" 
@@ -325,6 +400,7 @@
     </div>
     </div>
 
+{{/if}}
 {{/each}}
 
 
@@ -736,6 +812,10 @@
 
     </div>
 </div>
+
+<script>
+    const razorpayKey = '{{razorpayKey}}';
+</script>
 
 {{#section 'scripts'}}
 <script src="/javascripts/yourorders.js"></script>

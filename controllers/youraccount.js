@@ -346,6 +346,7 @@ const getyourorders = async (req, res, next) => {
       })
         .populate('productInfo.productId')
         .populate('addressId')
+        .populate('couponInfo')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -387,7 +388,8 @@ const getyourorders = async (req, res, next) => {
       currentPage1: page1,
       totalPages1: Math.ceil(totalOrders1 / limit1),
       reviewMap,
-      reviewDataMap
+      reviewDataMap,
+      razorpayKey: process.env.RAZORPAY_API_KEY
     });
 
   } catch (error) {
@@ -517,6 +519,20 @@ const cancelorder = async (req, res, next) => {
             }
           }
         );
+
+        // const orderData = await ordersSchema.updateOne({ orderId });
+        // if(orderData.couponInfo?.[0]?.discountAmount) {
+        //   await ordersSchema.updateOne(
+        //     { orderId },
+        //     { $inc: { "couponInfo.0.discount": -difference } }
+        //   );
+        // }else if(orderData.couponInfo?.[0]?.discountPercentage) {
+        //   await ordersSchema.updateOne(
+        //     { orderId },
+        //     { $inc: { "couponInfo.0.discount": -discount } }
+        //   );
+        // }
+
       } else {
         const walletData = new walletSchema({
           userId: usersData._id,

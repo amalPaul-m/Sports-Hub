@@ -72,6 +72,10 @@ const downloadInvoice = async (req, res) => {
 
     const total = items.reduce((sum, item) => sum + (item.qty * item.price), 0);
 
+    const shippingCharges = orderData.productInfo[0].totalAmount > 1000 ? 0 : 40;
+    const discount = orderData.couponInfo ? Number(orderData.couponInfo[0].discount || 0) : 0;
+    const payableAmount = (Number(total) + Number(shippingCharges)) - Number(discount);
+
     const compiledTemplate = hbs.compile(templateContent);
 
     const html = compiledTemplate({
@@ -83,7 +87,10 @@ const downloadInvoice = async (req, res) => {
       customerphone: orderData.addressId.mobileNumber,
 
       items,
-      total
+      total,
+      shippingCharges,
+      discount,
+      payableAmount
     });
 
     const browser = await puppeteer.launch({ headless: true });

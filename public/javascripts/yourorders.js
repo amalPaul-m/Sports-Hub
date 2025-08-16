@@ -287,3 +287,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+
+
+  document.getElementById('rzp-button-failed').onclick = async function () {
+    const order_Id = this.getAttribute('data-order-id');
+    const orderNumber = this.getAttribute('data-order-number');
+    const response = await fetch('/checkout/retry-razorpay-order', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({ orderId: order_Id })
+    });
+    const data = await response.json();
+    
+    const options = {
+        key: razorpayKey,
+        amount: data.amount,
+        currency: "INR",
+        name: "Sports Hub",
+        description: "Order Payment",
+        order_id: data.orderId,
+        handler: async function (response) {
+            window.location.href = `/checkout/razorpay-success?payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&orderId=${orderNumber}`;
+        },
+        modal: {
+            ondismiss: function () {
+                
+                window.location.href = '/checkout/payment-cancelled?payment=retry';
+            }
+        }
+    };
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+};

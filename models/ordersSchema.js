@@ -5,7 +5,7 @@ const ordersSchema = new mongoose.Schema({
 
   orderId: {
     type: String,
-    required: true,
+    required: false,
     unique: true
   },
 
@@ -19,6 +19,12 @@ const ordersSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'shipped', 'outofdelivery','delivered', 'cancelled'],
     default: 'pending'
+  },
+
+  orderStatus: {
+    type: String,
+    enum: ['confirmed','cancelled'],
+    default: 'confirmed'
   },
 
 //   couponId: {

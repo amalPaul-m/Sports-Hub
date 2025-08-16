@@ -32,7 +32,7 @@ document.getElementById('rzp-button').onclick = async function () {
         modal: {
             ondismiss: function () {
                 
-                window.location.href = '/checkout/payment-cancelled';
+                window.location.href = '/checkout/payment-cancelled?payment=first';
             }
         }
     };
