@@ -130,37 +130,52 @@ const getUserProducts = async (req, res, next) => {
 
 const filterUserProducts = async (req, res, next) => {
   try {
-    const { brandFilter, filtermaterial, price, ...pages } = req.query;
+    const { brandFilter, filtermaterial, price, searchItem, ...pages } = req.query;
+
+    const filter = { isActive: true };
 
     const brands = [].concat(brandFilter || []);
     const materials = [].concat(filtermaterial || []);
-    const filter = { isActive: true };
 
-    if (brands.length > 0) filter.brandName = { $in: brands };
-    if (materials.length > 0) filter.material = { $in: materials };
+    if (brands.length > 0) {
+      filter.brandName = { $in: brands };
+    }
+    if (materials.length > 0) {
+      filter.material = { $in: materials };
+    }
+
+    if (searchItem?.trim()) {
+      filter.productName = { $regex: searchItem.trim(), $options: "i" };
+    }
+
 
     let sortOption = {};
     if (price === 'dessending') sortOption.salePrice = -1;
     else if (price === 'assending') sortOption.salePrice = 1;
+    else sortOption.updatedAt = -1; 
 
     const limit = 6;
+
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
+
+    const wishlistProductIds = usersData
+      ? await wishlistSchema.find({ userId: usersData._id }).distinct('productId')
+      : [];
+    const wishlistProductIdStrings = wishlistProductIds.map(id => id.toString());
+
 
     const [categories, allProducts] = await Promise.all([
       productTypesSchema.find({ status: 'active' }).sort({ _id: 1 }),
       productsSchema.find(filter).sort(sortOption).lean()
     ]);
 
-    const wishlistProductIds = await wishlistSchema.find({ userId: usersData._id }).distinct('productId');
-    const wishlistProductIdStrings = wishlistProductIds.map(id => id.toString());
 
     const updatedProducts = allProducts.map(product => ({
       ...product,
       isWishlisted: wishlistProductIdStrings.includes(product._id.toString())
     }));
 
-    // Group by category
     const groupedData = categories.map(cat => {
       const catProducts = updatedProducts.filter(p => p.category === cat.name);
       const catPage = Math.max(parseInt(pages[`page_${cat._id}`]) || 1, 1);
@@ -177,7 +192,7 @@ const filterUserProducts = async (req, res, next) => {
       };
     });
 
-    // All tab
+
     const allPage = Math.max(parseInt(pages.page_all) || 1, 1);
     const allStart = (allPage - 1) * limit;
     const allPaginated = updatedProducts.slice(allStart, allStart + limit);
@@ -194,8 +209,8 @@ const filterUserProducts = async (req, res, next) => {
     const finalData = [allProductsTab, ...groupedData];
 
     const [productMaterial, productBrand, reviewSummary] = await Promise.all([
-      (productsSchema.distinct('material')).sort(),
-      (productsSchema.distinct('brandName')).sort(),
+      productsSchema.distinct('material').then(arr => arr.sort()),
+      productsSchema.distinct('brandName').then(arr => arr.sort()),
       reviewSchema.aggregate([
         {
           $group: {
@@ -213,7 +228,7 @@ const filterUserProducts = async (req, res, next) => {
       ])
     ]);
 
-    // Retain all queryParams except pages
+
     const queryObj = { ...req.query };
     Object.keys(queryObj).forEach(k => {
       if (k.startsWith("page_") || k === "page") delete queryObj[k];
@@ -225,19 +240,21 @@ const filterUserProducts = async (req, res, next) => {
       productMaterial,
       productBrand,
       reviewSummary,
-      queryParams
+      queryParams,
+      query: searchItem || '' 
     });
 
   } catch (error) {
-    errorLogger.error('Failed to filter user products', {
+    errorLogger.error('Failed to filter/search user products', {
       originalMessage: error.message,
       stack: error.stack,
       controller: 'userproducts',
-      action: 'filterUserProducts'
+      action: 'filterAndSearchUserProducts'
     });
     next(error);
   }
 };
+
 
 
 const searchUserProducts = async (req, res, next) => {

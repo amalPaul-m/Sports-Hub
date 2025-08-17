@@ -13,14 +13,14 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
       <a class="navbar-brand pe-5" href="/home"><img src="/images/logo.png" alt="logo"></a>
 
-      <form role="search" action="/userproducts/search" method="get" class="d-flex gap-2 me-5">
-          <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px;"
-            name="searchItem" value="{{query}}" required>
+      <form role="search" action="/userproducts/filter" method="get" class="d-flex gap-2 me-2">
+          <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search..." style="width: 200px; height: 40px;"
+            name="searchItem" value="{{query}}">
             <a href="/userproducts" type="button" class="btn bg-transparent" style="margin-left: -40px; z-index: 100;">
             <i class="bi bi-x"></i>
             </a>
-          <button class="btn btn-outline-secondary btn-sm " type="submit">Search</button>
-      </form>
+          <button class="btn btn-outline-secondary btn-sm me-5" style="height: 40px;" type="submit">Search</button>
+      
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
@@ -32,7 +32,7 @@
         </li>
       </ul>
 
-      <ul class="navbar-nav mb-2 mb-lg-0 ">
+      <ul class="navbar-nav mb-2 mb-lg-0 ms-4">
       <li class="nav-item pe-4">
           <a type="submit" class="nav-link position-relative" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist">
           <span id="home-badge-wishlist"  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
@@ -63,10 +63,12 @@
   <div class="row">
     <div class="col col-md-3 col-lg-3">
 
-      <form action="/userproducts/filter" method="get">
+      <div class="mt-5 pt-5  p-2 filter-text-size">
 
-      <div class="mt-5 pt-5  p-2 filter-text-size"><span class="float-left">Filter</span><a
-          href="/userproducts" class="btn float-end btn-outline-dark px-3 py-0">Clear</a></div>
+        
+        <span class="float-left">Filter</span><a
+          href="/userproducts" class="btn float-end btn-outline-dark px-3 py-0"><i class="bi bi-arrow-clockwise"></i></a></div>
+
 
       <button type="button" class="btn btn-white ps-1 border-top border-2 px-5 mt-1 py-3 filter-text-size" data-bs-toggle="collapse"
         href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Brand <i
@@ -141,7 +143,7 @@
       </div><br> --}}
 
       <div class="text-center">
-        <button type="submit" class="btn btn-outline-dark mt-4 px-5 text-center">Show Maches</button>
+        <button type="submit" name="actionType" value="filter" class="btn btn-outline-dark mt-4 px-5 text-center">Show Maches</button>
         </form>
       </div>
 
