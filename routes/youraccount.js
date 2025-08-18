@@ -19,7 +19,7 @@ router.get('/get-pincode-info/:pincode',checkBlockedUser, userAuthantication, ac
 
 
 router.get('/yourorders',checkBlockedUser, userAuthantication, accountController.getyourorders);
-router.patch('/cancelorder/:orderId/:productId',checkBlockedUser, userAuthantication, accountController.cancelorder);
+router.patch('/cancelorder/:orderId/:productId/:size',checkBlockedUser, userAuthantication, accountController.cancelorder);
 router.patch('/cancelEntairOrder/:orderId',checkBlockedUser, userAuthantication, accountController.cancelEntairOrder);
 
 router.post('/return',checkBlockedUser, userAuthantication, accountController.postReturn);

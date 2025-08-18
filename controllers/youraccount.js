@@ -409,10 +409,11 @@ const cancelorder = async (req, res, next) => {
 
   try {
     const orderId = String(req.params.orderId);
+    const productSize = req.params.size;
     const productId = new mongoose.Types.ObjectId(req.params.productId);
     const reason = req.body?.reason === 'Others' ? req.body?.otherReason : req.body?.reason;
     const order = await ordersSchema.findOneAndUpdate(
-      { orderId: orderId, "productInfo.productId": productId },
+      { orderId: orderId, "productInfo.productId": productId, "productInfo.size": productSize },
       {
         $set: {
           "productInfo.$.status": "cancelled",
@@ -481,12 +482,15 @@ const cancelorder = async (req, res, next) => {
       const couponInfo = order.couponInfo?.[0];
       const discountAmount = couponInfo?.discountAmount;
       const discountPercentage = couponInfo?.discountPercentage;
+      let discountDataAmount = 0;
+      let discountDataPer = 0;
 
       if (discountAmount) {
 
         const discount = order.couponInfo?.[0]?.discountAmount;
         const count = order.productInfo?.length;
         const difference = discount / count;
+        discountDataAmount = difference;
         returnAmount = Math.ceil(totalAmount - difference);
 
 
@@ -494,6 +498,7 @@ const cancelorder = async (req, res, next) => {
 
         const discountPer = order.couponInfo?.[0]?.discountPercentage;
         const discount = totalAmount * (discountPer / 100);
+        discountDataPer = discount;
         returnAmount = Math.ceil(totalAmount - discount);
 
       } else {
@@ -501,6 +506,11 @@ const cancelorder = async (req, res, next) => {
         returnAmount = totalAmount;
 
       }
+
+      await ordersSchema.updateOne(
+          { orderId },
+          { $inc: { "paymentInfo.0.totalAmount": -returnAmount } }
+        );
 
 
       const existingWallet = await walletSchema.findOne({ userId: usersData._id });
@@ -520,18 +530,19 @@ const cancelorder = async (req, res, next) => {
           }
         );
 
-        // const orderData = await ordersSchema.updateOne({ orderId });
-        // if(orderData.couponInfo?.[0]?.discountAmount) {
-        //   await ordersSchema.updateOne(
-        //     { orderId },
-        //     { $inc: { "couponInfo.0.discount": -difference } }
-        //   );
-        // }else if(orderData.couponInfo?.[0]?.discountPercentage) {
-        //   await ordersSchema.updateOne(
-        //     { orderId },
-        //     { $inc: { "couponInfo.0.discount": -discount } }
-        //   );
-        // }
+        const orderData = await ordersSchema.findOne({ orderId });
+        if(orderData.couponInfo?.[0]?.discountAmount) {
+          await ordersSchema.updateOne(
+            { orderId },
+            { $inc: { "couponInfo.0.discount": -discountDataAmount } }
+          );
+
+        }else if(orderData.couponInfo?.[0]?.discountPercentage) {
+          await ordersSchema.updateOne(
+            { orderId },
+            { $inc: { "couponInfo.0.discount": -discountDataPer } }
+          );
+        }
 
       } else {
         const walletData = new walletSchema({
@@ -545,6 +556,24 @@ const cancelorder = async (req, res, next) => {
         });
 
         await walletData.save();
+
+        const orderData = await ordersSchema.findOne({ orderId });
+        if(orderData.couponInfo?.[0]?.discountAmount) {
+          await ordersSchema.updateOne(
+            { orderId },
+            { $inc: { "couponInfo.0.discount": -discountDataAmount } }
+          );
+        }else if(orderData.couponInfo?.[0]?.discountPercentage) {
+          await ordersSchema.updateOne(
+            { orderId },
+            { $inc: { "couponInfo.0.discount": -discountDataPer } }
+          );
+        }
+
+        await ordersSchema.updateOne(
+            { orderId },
+            { $inc: { "paymentInfo.0.totalAmount": -totalAmount } }
+          );
 
       }
     }

@@ -158,7 +158,7 @@ const getConfirm = async (req, res, next) => {
       totalAmount = totalAmount + shipping;
 
     } else {
-      shipping = '0.00';
+      shipping = '0';
     }
     req.session.payableAmount = payableAmount;
 

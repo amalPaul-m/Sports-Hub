@@ -529,14 +529,18 @@ const checkCoupon = async (req, res, next) => {
       if (couponList.discountAmount !== null) {
         couponAmount = couponList.discountAmount;
       } else if (couponList.discountPercentage !== null) {
-        couponAmount = req.session.totalAmount * (couponList.discountPercentage / 100);
+        if( req.session.totalAmount < 1000) {
+          couponAmount = (req.session.totalAmount - 40) * (couponList.discountPercentage / 100);
+        } else {
+          couponAmount = req.session.totalAmount * (couponList.discountPercentage / 100);
+        }
       }
 
-      let payable = req.session.totalAmount - couponAmount;
+      const payable = req.session.totalAmount - couponAmount;
 
-      if (req.session.totalAmount < 1000) {
-        payable = payable + req.session.shippingCharge;
-      }
+      // if (req.session.totalAmount < 1000) {
+      //   payable = payable + req.session.shippingCharge;
+      // }
 
       req.session.couponCode = couponCode;
 

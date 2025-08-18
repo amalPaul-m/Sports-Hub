@@ -82,7 +82,7 @@
     </div>
 
     <!-- Order Details -->
-    <div class="modal fade" id="orderDetails{{this.productId._id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="orderDetails{{this.productId._id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -188,9 +188,11 @@
       <div class="modal-body">
         <h5 class="fw-bold">Product Information</h5>
         {{#each ../this.productInfo}}
+        {{#if (eq this.status "confirmed")}}
           <p>{{this.productId.productName}} 
           <span class="ps-1 fs-5 fw-bold float-end">₹ {{mul this.quantity this.price}}.00</span><br>
           <span class="">Qty: {{this.quantity}}</span><span class="ps-3">Status: {{this.status}}</span></p>
+        {{/if}}
         {{/each}}
 
         <h5 class="fw-bold mt-5">Payment Information</h5>
@@ -200,8 +202,17 @@
           Net Amount  <span class="float-end">₹ {{netAmount (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
           Gst Amount (18%) <span class="float-end">₹ {{gst (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
           Total Amount <span class="float-end">₹ {{add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount}}.00</span>
+          {{#if (gt ../paymentInfo.[0].totalAmount 1000)}}
+          <br>Shipping Charge <span class="float-end">₹ 0.00</span>
+          {{else}}
+          <br>Shipping Charge <span class="float-end">₹ 40.00</span>
+          {{/if}}
         </p>
+        {{#if (gt ../paymentInfo.[0].totalAmount 1000)}}
         <p>Discount Amount <span class="float-end">- ₹ {{ ../couponInfo.[0].discount}}</span>
+        {{else}}
+        <p>Discount Amount <span class="float-end">- ₹ {{add ../couponInfo.[0].discount 40}}</span>
+        {{/if}}
         <h5 class="fw-bold">Payable Amount <span class="float-end">₹ {{../paymentInfo.[0].totalAmount}}</span></h5>
         </p> <hr>
         
@@ -256,7 +267,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="/youraccount/cancelorder/{{../orderId}}/{{this.productId._id}}?_method=PATCH" method="POST">
+        <form action="/youraccount/cancelorder/{{../orderId}}/{{this.productId._id}}/{{this.size}}?_method=PATCH" method="POST">
 
           <div class="form-check">
             <input class="form-check-input reason-radio-cancel" type="radio" name="reason" 
@@ -487,9 +498,11 @@
       <div class="modal-body">
         <h5 class="fw-bold">Product Information</h5>
         {{#each ../this.productInfo}}
+        {{#if (eq this.status "confirmed")}}
           <p>{{this.productId.productName}} 
           <span class="ps-1 fs-5 fw-bold float-end">₹ {{mul this.quantity this.price}}.00</span><br>
           <span class="">Qty: {{this.quantity}}</span><span class="ps-3">Status: {{this.status}}</span></p>
+        {{/if}}
         {{/each}}
 
         <h5 class="fw-bold mt-5">Payment Information</h5>
@@ -499,8 +512,17 @@
           Net Amount  <span class="float-end">₹ {{netAmount (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
           Gst Amount (18%) <span class="float-end">₹ {{gst (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
           Total Amount <span class="float-end">₹ {{add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount}}.00</span>
+        {{#if (gt ../paymentInfo.[0].totalAmount 1000)}}
+          <br>Shipping Charge <span class="float-end">₹ 0.00</span>
+          {{else}}
+          <br>Shipping Charge <span class="float-end">₹ 40.00</span>
+          {{/if}}
         </p>
+        {{#if (gt ../paymentInfo.[0].totalAmount 1000)}}
         <p>Discount Amount <span class="float-end">- ₹ {{ ../couponInfo.[0].discount}}</span>
+        {{else}}
+        <p>Discount Amount <span class="float-end">- ₹ {{add ../couponInfo.[0].discount 40}}</span>
+        {{/if}}
         <h5 class="fw-bold">Payable Amount <span class="float-end">₹ {{../paymentInfo.[0].totalAmount}}</span></h5>
         </p> <hr>
         

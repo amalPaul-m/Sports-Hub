@@ -72,8 +72,13 @@ const downloadInvoice = async (req, res) => {
 
     const total = items.reduce((sum, item) => sum + (item.qty * item.price), 0);
 
-    const shippingCharges = orderData.productInfo[0].totalAmount > 1000 ? 0 : 40;
-    const discount = orderData.couponInfo ? Number(orderData.couponInfo[0].discount || 0) : 0;
+    const shippingCharges = orderData.paymentInfo[0].totalAmount > 1000 ? 0 : 40;   
+    let discount;
+    if( shippingCharges === 0 ) {
+        discount = orderData.couponInfo ? Number(orderData.couponInfo[0].discount || 0) : 0;
+    }else {
+        discount = orderData.couponInfo ? Number(orderData.couponInfo[0].discount || 0) + 40 : 0;
+    }
     const payableAmount = (Number(total) + Number(shippingCharges)) - Number(discount);
 
     const compiledTemplate = hbs.compile(templateContent);
