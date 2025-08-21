@@ -523,7 +523,6 @@ const checkCoupon = async (req, res, next) => {
 
     if (dateCheck && balance && validAmount && status) {
 
-
       let couponAmount = 0;
 
       if (couponList.discountAmount !== null) {
@@ -533,6 +532,10 @@ const checkCoupon = async (req, res, next) => {
           couponAmount = (req.session.totalAmount - 40) * (couponList.discountPercentage / 100);
         } else {
           couponAmount = req.session.totalAmount * (couponList.discountPercentage / 100);
+        }
+
+        if(couponAmount > 5000) {
+          couponAmount = 5000;
         }
       }
 
@@ -546,7 +549,7 @@ const checkCoupon = async (req, res, next) => {
 
       res.json({
         success: true,
-        message: 'Coupon Code Applied Successfully!',
+        message: 'Coupon Code Applied Successfully! get upto 5000 off',
         couponAmount,
         payable
       })

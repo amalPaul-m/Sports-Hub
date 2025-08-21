@@ -142,6 +142,11 @@ const getConfirm = async (req, res, next) => {
       } else if (couponData.discountPercentage !== null) {
 
         discountAmount = Math.floor((couponData.discountPercentage / 100) * totalAmount);
+        if(discountAmount > 5000) {
+          // discountAmount = 5000;
+          const discountPer = Math.floor((5000/totalAmount)*100);
+          discountAmount = Math.floor((discountPer/100)*totalAmount);
+        }
         payableAmount = Math.floor(totalAmount - discountAmount);
       }
 
@@ -365,7 +370,7 @@ const postWallet = async (req, res, next) => {
       return sum + item.price * item.quantity;
     }, 0);
 
-    const discount = Math.floor(totalAmount - req.session.payableAmount);
+    let discount = Math.floor(totalAmount - req.session.payableAmount);
 
 
     if (!wallet || wallet.balance < totalAmount) {
@@ -387,6 +392,13 @@ const postWallet = async (req, res, next) => {
       });
 
     const couponData = await couponSchema.findOne({ code: req.session.couponCode });
+
+    let discountPer = couponData ? couponData.discountPercentage : 0
+    
+    if(discount >= 5000) {
+        discountPer = Math.floor((5000/totalAmount)*100);
+        discount = Math.floor((discountPer/100)*totalAmount);
+    }
 
     const newOrder = new ordersSchema({
       orderId,
@@ -410,7 +422,7 @@ const postWallet = async (req, res, next) => {
         couponCode: req.session.couponCode || null,
         discount: discount || 0,
         discountAmount: couponData?.discountAmount || 0,
-        discountPercentage: couponData?.discountPercentage || 0
+        discountPercentage: discountPer
       }
     });
 
@@ -507,10 +519,6 @@ const createRazorpayOrder = async (req, res, next) => {
     }, 0);
 
 
-
-
-
-
       const rawAddress = req.session.selectedAddressId;
       const addressId = typeof rawAddress === 'object' ? rawAddress.addressId : rawAddress;
 
@@ -520,9 +528,16 @@ const createRazorpayOrder = async (req, res, next) => {
 
       const validAddressId = new mongoose.Types.ObjectId(addressId);
 
-      const discount = Math.floor(totalAmount - req.session.payableAmount);
+      let discount = Math.floor(totalAmount - req.session.payableAmount);
 
       const couponData = await couponSchema.findOne({ code: req.session.couponCode });
+
+      let discountPer = couponData ? couponData.discountPercentage : 0
+    
+      if(discount >= 5000) {
+          discountPer = Math.floor((5000/totalAmount)*100);
+          discount = Math.floor((discountPer/100)*totalAmount);
+      }
 
       const orderId = await generateOrderId();
 
@@ -545,7 +560,7 @@ const createRazorpayOrder = async (req, res, next) => {
           couponCode: req.session.couponCode || null,
           discount: discount || 0,
           discountAmount: couponData?.discountAmount || 0,
-          discountPercentage: couponData?.discountPercentage || 0
+          discountPercentage: discountPer
         }
       });
 

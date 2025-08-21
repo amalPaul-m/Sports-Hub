@@ -14,6 +14,7 @@ const getProductDetails = async function (req, res, next) {
         const usersData = await usersSchema.findOne({ email });
         const userId = usersData._id;
         const id = req.query?.productId;
+        
 
         if (!email) {
             return res.redirect('/login');
@@ -31,7 +32,6 @@ const getProductDetails = async function (req, res, next) {
 
         const productDetails = await productsSchema.findOne({ _id: id });
         const productDetailsId = productDetails.toObject();
-
 
         const cat = productDetails.category;
         const relatedProducts = await productsSchema.find({ _id: { $ne: id }, category: cat }).limit(4);
@@ -108,14 +108,19 @@ const getProductDetails = async function (req, res, next) {
         }
     } catch (error) {
 
-        errorLogger.error('Error in getProductDetails', {
-            message: error.message,
-            stack: error.stack,
-            controller: 'productdetails',
-            action: 'getProductDetails',
-            productId: req.query.productId
-        });
-        next(error);
+        res.render('error', {
+                message: 'Product not found',
+                status: 404
+            });
+
+        // errorLogger.error('Error in getProductDetails', {
+        //     message: error.message,
+        //     stack: error.stack,
+        //     controller: 'productdetails',
+        //     action: 'getProductDetails',
+        //     productId: req.query.productId
+        // });
+        // next(error);
     }
 };
 

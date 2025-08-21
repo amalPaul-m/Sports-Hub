@@ -170,11 +170,11 @@
                           <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
+                          <span class="badge bg-black">{{deliveryStatus}}</span>
                           <div class="container mt-3">
                               <div class="order-box bg-white mb-4">
-
                                   {{#each this.productInfo}}
-                                  {{#or (eq this.status "confirmed") (eq this.status "returned")}}
+                                  {{#if (eq this.status "confirmed")}}
                                   {{!-- {{#if (eq this.status "confirmed")}} --}}
                                   <div class="row bordrer-card">
                                       <div class="col col-md-2">
@@ -183,8 +183,7 @@
                                       <div class="col col-md-8">
                                           <div>
                                               <h6 class="mb-1">{{this.productId.productName}}
-                                                  <span class="badge bg-black">{{../deliveryStatus}}</span></h6>
-                                              </h6>
+                                                  </h6>
           
                                               <p class="mb-1 text-muted">Color: <button class="btn" style="background-color: {{this.color}};"></button>
                                                 <br>Size: {{this.size}} {{this.productId.unitSize}}
@@ -196,13 +195,13 @@
                                           </div>
                                       </div>
                                       <div class="col col-md-2 mt-5">
-                                          <h5 class="fw-bold">₹{{this.productId.salePrice}}.00</h5>
+                                          <h5 class="fw-bold">₹{{this.price}}.00</h5>
                                           {{#unless (eq this.status "cancelled")}}
                                           <a href="/invoice/download-invoice/{{../orderId}}" class="btn btn-outline-dark mt-1">INVOICE</a>
                                           {{/unless}}
                                       </div>
                                   </div>
-                                  {{/or}}
+                                  {{/if}}
                                   {{/each}}
 
 
