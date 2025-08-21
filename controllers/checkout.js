@@ -103,6 +103,46 @@ const getConfirm = async (req, res, next) => {
     const usersData = await usersSchema.findOne({ email });
     const user = usersData._id;
 
+
+
+
+    const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
+    if (!cart || !cart?.items?.length) {
+      return res.redirect('/cart?error=empty_cart');
+    }
+
+    const unavailableItems = [];
+
+    for (const item of cart.items) {
+      const product = item.productId;
+
+      const matchingVariant = product?.variants?.find(variant =>
+        String(variant.size).trim().toLowerCase() === String(item.size).trim().toLowerCase() &&
+        String(variant.color).replace('#', '').trim().toLowerCase() === String(item.color).replace('#', '').trim().toLowerCase() &&
+        Number(variant.stockQuantity) >= Number(item.quantity)
+      );
+
+
+      if (!matchingVariant) {
+        unavailableItems.push({
+          productId: product._id,
+          name: product.name,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity
+        });
+      }
+    }
+
+    if (unavailableItems.length > 0) {
+      return res.redirect('/cart?error=out_of_stock');
+    }
+
+
+
+
+
+
     const [cartItem, orderAddress] = await Promise.all([
 
       cartSchema.findOne({ userId: user }).populate('items.productId'),
@@ -205,6 +245,42 @@ const getPayment = async (req, res, next) => {
 
   const usersData = await usersSchema.findOne({ email });
   if (!usersData) return res.redirect('/login');
+
+  const user = usersData._id;
+
+      const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
+    if (!cart || !cart?.items?.length) {
+      return res.redirect('/cart?error=empty_cart');
+    }
+
+    const unavailableItems = [];
+
+    for (const item of cart.items) {
+      const product = item.productId;
+
+      const matchingVariant = product?.variants?.find(variant =>
+        String(variant.size).trim().toLowerCase() === String(item.size).trim().toLowerCase() &&
+        String(variant.color).replace('#', '').trim().toLowerCase() === String(item.color).replace('#', '').trim().toLowerCase() &&
+        Number(variant.stockQuantity) >= Number(item.quantity)
+      );
+
+
+      if (!matchingVariant) {
+        unavailableItems.push({
+          productId: product._id,
+          name: product.name,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity
+        });
+      }
+    }
+
+    if (unavailableItems.length > 0) {
+      return res.redirect('/cart?error=out_of_stock');
+    }
+
+
 
   const wallet = await walletSchema.findOne({ userId: usersData._id });
   const walletBalance = wallet ? wallet.balance : 0;
