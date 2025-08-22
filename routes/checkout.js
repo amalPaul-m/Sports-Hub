@@ -24,4 +24,6 @@ router.post('/wallet-payment', userAuthantication, checkBlockedUser, checkoutCon
 
 router.get('/success', userAuthantication, checkBlockedUser, checkoutControll.getSuccess);
 
+router.post('/retry-razorpay-order', userAuthantication, checkBlockedUser, checkoutControll.retryRazorpayOrder);
+
 module.exports = router;

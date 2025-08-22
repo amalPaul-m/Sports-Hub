@@ -36,13 +36,44 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
-    document.querySelector('input[name="fromDate"]').max = today;
-    document.querySelector('input[name="toDate"]').max = today;
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0];
+  const fromDateInput = document.querySelector('input[name="fromDate"]');
+  const toDateInput = document.querySelector('input[name="toDate"]');
+  const filterBtn = document.querySelector('button[type="submit"]');
+
+  // Set max date to today
+  fromDateInput.max = today;
+  toDateInput.max = today;
+
+  filterBtn.disabled = true;
+
+  fromDateInput.addEventListener('change', () => {
+    const fromDate = fromDateInput.value;
+    if (fromDate) {
+      toDateInput.min = fromDate;
+      if (toDateInput.value && toDateInput.value < fromDate) {
+        toDateInput.value = '';
+      }
+    } else {
+      toDateInput.min = '';
+    }
+
+    checkDatesFilled();
   });
 
+  toDateInput.addEventListener('change', checkDatesFilled);
 
+  function checkDatesFilled() {
+    if (fromDateInput.value && toDateInput.value) {
+      filterBtn.disabled = false;
+    } else {
+      filterBtn.disabled = true;
+    }
+  }
+});
 
 
 

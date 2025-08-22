@@ -19,8 +19,8 @@
   <a class="nav-link" href="/coupon"><i class="bi bi-ticket-detailed"></i> Coupon</a>
   <a class="nav-link" href="/offers"><i class="bi bi-funnel"></i> Offers</a>
   <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
-  <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
-  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+  {{!-- <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a> --}}
 </div>
 
 <!-- Topbar -->
@@ -84,7 +84,7 @@
       <div>
         <a class="btn btn-outline-dark m-1" href="/orderslist" type="button"><i class="bi bi-arrow-clockwise"></i></a>
         {{!-- <button class="btn btn-outline-secondary me-2">Filters <i class="bi bi-funnel"></i></button> --}}
-        <button class="btn btn-outline-dark">Export <i class="bi bi-download"></i></button>
+        {{!-- <button class="btn btn-outline-dark">Export <i class="bi bi-download"></i></button> --}}
       </div>
     </div>
 
@@ -105,6 +105,7 @@
          
           <!-- Example Rows -->
           {{#each orders}}
+          {{#if (eq this.orderStatus "confirmed")}}
           <tr>
             <td>{{addOne @index}}</td>
             <td><a href="" class="text-decoration-none" data-bs-toggle="modal" 
@@ -169,11 +170,11 @@
                           <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
+                          <span class="badge bg-black">{{deliveryStatus}}</span>
                           <div class="container mt-3">
                               <div class="order-box bg-white mb-4">
-
                                   {{#each this.productInfo}}
-                                  {{#or (eq this.status "confirmed") (eq this.status "returned")}}
+                                  {{#if (eq this.status "confirmed")}}
                                   {{!-- {{#if (eq this.status "confirmed")}} --}}
                                   <div class="row bordrer-card">
                                       <div class="col col-md-2">
@@ -182,8 +183,7 @@
                                       <div class="col col-md-8">
                                           <div>
                                               <h6 class="mb-1">{{this.productId.productName}}
-                                                  <span class="badge bg-black">{{../deliveryStatus}}</span></h6>
-                                              </h6>
+                                                  </h6>
           
                                               <p class="mb-1 text-muted">Color: <button class="btn" style="background-color: {{this.color}};"></button>
                                                 <br>Size: {{this.size}} {{this.productId.unitSize}}
@@ -195,13 +195,13 @@
                                           </div>
                                       </div>
                                       <div class="col col-md-2 mt-5">
-                                          <h5 class="fw-bold">₹{{this.productId.salePrice}}.00</h5>
+                                          <h5 class="fw-bold">₹{{this.price}}.00</h5>
                                           {{#unless (eq this.status "cancelled")}}
                                           <a href="/invoice/download-invoice/{{../orderId}}" class="btn btn-outline-dark mt-1">INVOICE</a>
                                           {{/unless}}
                                       </div>
                                   </div>
-                                  {{/or}}
+                                  {{/if}}
                                   {{/each}}
 
 
@@ -364,7 +364,7 @@
             </div>
           </div>
 
-
+          {{/if}}
           {{/each}}
 
 

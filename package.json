@@ -28,6 +28,7 @@
     "morgan": "^1.10.1",
     "multer": "^2.0.1",
     "nocache": "^4.0.0",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.3",
     "nodemon": "^3.1.10",
     "passport": "^0.7.0",
@@ -36,7 +37,8 @@
     "razorpay": "^2.9.6",
     "sweetalert": "^2.1.2",
     "uuid": "^11.1.0",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "winston": "^2.4.6"
   },
   "main": "app.js",
   "author": "",

@@ -1,3 +1,18 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const homeWishlist = document.getElementById('home-badge-wishlist');
+  const homeCart = document.getElementById('home-badge-cart');
+
+  fetch('/home/home-badge')
+    .then(response => response.json())
+    .then(data => {
+      if (homeWishlist) homeWishlist.innerText = data.wishlistCount || 0;
+      if (homeCart) homeCart.innerText = data.cartCount || 0;
+    })
+    .catch(err => console.error('Error fetching badge counts:', err));
+});
+
+
+
 document.getElementById('rzp-button').onclick = async function () {
     const response = await fetch('/checkout/create-razorpay-order', {
         method: 'POST'
@@ -17,7 +32,7 @@ document.getElementById('rzp-button').onclick = async function () {
         modal: {
             ondismiss: function () {
                 
-                window.location.href = '/checkout/payment-cancelled';
+                window.location.href = '/checkout/payment-cancelled?payment=first';
             }
         }
     };
@@ -44,3 +59,7 @@ document.getElementById('walletPayBtn').addEventListener('click', function () {
     })
     .catch(err => console.error(err));
 });
+
+
+
+

@@ -1,6 +1,7 @@
 const usersSchema = require('../models/usersSchema')
 const generateOtp = require('../authentication/generateotp');
 const sendVerificationEmail = require('../authentication/mailer');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getForgot = (req, res) => {
@@ -10,10 +11,8 @@ const getForgot = (req, res) => {
 };
 
 
-
 const postForgot = async (req, res) => {
   const { email } = req.body;
-
 
   const user = await usersSchema.findOne({ email });
 
@@ -78,9 +77,14 @@ const postResendOtp = async (req, res) => {
       return res.json({ success: false, message: 'Failed to send email' });
     }
 
-  } catch (err) {
-    err.message = 'Error resending OTP';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to resend OTP', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'forgot',
+      action: 'postResendOtp'
+    });
+    next(error);
   }
 };
 

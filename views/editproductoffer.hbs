@@ -18,8 +18,8 @@
   <a class="nav-link" href="/coupon"><i class="bi bi-ticket-detailed"></i> Coupon</a>
   <a class="nav-link" href="/offers"><i class="bi bi-funnel"></i> Offers</a>
   <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
-  <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
-  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+  {{!-- <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a> --}}
 </div>
 
 <!-- Topbar -->
@@ -81,14 +81,15 @@
                       <span id="error-msg"></span>
                         <div class="col-md-12">
                             <label class="form-label fw-semibold">Select Product Name</label>
-                            <select class="form-select shadow-none" name="targetName" required>
+                            <input type="text" class="form-control shadow-none" name="targetName" value="{{editData.targetName}}" readonly />
+                            {{!-- <select class="form-select shadow-none" name="targetName" required>
                                 <option value="" selected disabled>Select a product</option>
                                 
                                 <option value="{{editData.targetName}}" selected>{{editData.targetName}}</option>
                                 {{#each productsData}}
                                 <option value="{{this}}">{{this}}</option>
                                 {{/each}}
-                            </select>
+                            </select> --}}
                             <div class="invalid-feedback">Please select a product name.</div>
                         </div>
                         <div class="col-md-6">

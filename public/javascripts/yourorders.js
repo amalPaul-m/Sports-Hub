@@ -226,3 +226,98 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const homeWishlist = document.getElementById('home-badge-wishlist');
+  const homeCart = document.getElementById('home-badge-cart');
+
+  fetch('/home/home-badge')
+    .then(response => response.json())
+    .then(data => {
+      if (homeWishlist) homeWishlist.innerText = data.wishlistCount || 0;
+      if (homeCart) homeCart.innerText = data.cartCount || 0;
+    })
+    .catch(err => console.error('Error fetching badge counts:', err));
+});
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const radios = document.querySelectorAll('.reason-radio');
+
+    radios.forEach(radio => {
+      radio.addEventListener('change', function () {
+        const textareaId = this.dataset.textareaId;
+        const showTextarea = this.dataset.showTextarea === 'true';
+        const textarea = document.getElementById(textareaId);
+
+        if (textarea) {
+          const allRelated = document.querySelectorAll(`#${textareaId}`);
+          allRelated.forEach(t => t.style.display = 'none');
+
+          if (showTextarea) {
+            textarea.style.display = 'block';
+          }
+        }
+      });
+    });
+  });
+
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const allRadios = document.querySelectorAll('.reason-radio-cancel');
+
+    allRadios.forEach(radio => {
+      radio.addEventListener('change', function () {
+        const textareaId = this.dataset.textareaId;
+        const showTextarea = this.dataset.showTextarea === 'true';
+
+        const textarea = document.getElementById(textareaId);
+        if (!textarea) return;
+
+        document.querySelectorAll(`#${textareaId}`).forEach(el => el.style.display = 'none');
+
+        if (showTextarea) {
+          textarea.style.display = 'block';
+        }
+      });
+    });
+  });
+
+
+
+  document.getElementById('rzp-button-failed').onclick = async function () {
+    const order_Id = this.getAttribute('data-order-id');
+    const orderNumber = this.getAttribute('data-order-number');
+    const response = await fetch('/checkout/retry-razorpay-order', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({ orderId: order_Id })
+    });
+    const data = await response.json();
+    
+    const options = {
+        key: razorpayKey,
+        amount: data.amount,
+        currency: "INR",
+        name: "Sports Hub",
+        description: "Order Payment",
+        order_id: data.orderId,
+        handler: async function (response) {
+            window.location.href = `/checkout/razorpay-success?payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&orderId=${orderNumber}`;
+        },
+        modal: {
+            ondismiss: function () {
+                
+                window.location.href = '/checkout/payment-cancelled?payment=retry';
+            }
+        }
+    };
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+};

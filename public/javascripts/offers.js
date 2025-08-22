@@ -21,6 +21,7 @@
 
 
 
+
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('collapsed');
     document.getElementById('topbar').classList.toggle('collapsed');

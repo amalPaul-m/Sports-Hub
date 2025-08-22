@@ -1,5 +1,6 @@
 const usersSchema = require('../models/usersSchema')
 const bcrypt = require('bcrypt');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getLogin = function (req, res, next) {
@@ -16,24 +17,24 @@ const postLogin = async (req, res) => {
 
   try {
     const { email, password } = req.body;
-    const status = "active"; 
+    const status = "active";
     const user = await usersSchema.findOne({ email });
 
     if (!user) {
-      return res.render('login', 
-      { message: 'Invalid email or password' });
+      return res.render('login',
+        { message: 'Invalid email or password' });
     }
 
     if (user.status !== status) {
-      return res.render('login', 
-      { message: 'Admin Blocked your profile, please connect to customer service' });
+      return res.render('login',
+        { message: 'Admin Blocked your profile, please connect to customer service' });
     }
 
-  const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.render('login', 
-      { message: 'Invalid email or password' });
+      return res.render('login',
+        { message: 'Invalid email or password' });
     }
     // Login success
 
@@ -49,9 +50,15 @@ const postLogin = async (req, res) => {
 
     res.redirect('/home');
 
-  } catch (err) {
-    err.message = 'Login error';
-    next(err);
+  } catch (error) {
+
+    errorLogger.error('Login error', {
+      controller: 'login',
+      action: 'postLogin',
+      error: error.message
+    });
+    next(error);
+
   }
 };
 

@@ -28,10 +28,20 @@
 
       <ul class="navbar-nav mb-2 mb-lg-0 ">
         <li class="nav-item pe-4">
-          <a class="nav-link" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist"></a>
+            <a type="submit" class="nav-link position-relative" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist">
+            <span id="home-badge-wishlist"  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                0
+                <span class="visually-hidden">unread messages</span>
+            </span>
+            </a>
         </li>
         <li class="nav-item pe-4">
-          <a class="nav-link" href="#"><img src="/images/cart.png" alt="cart"></a>
+            <a type="submit" class="nav-link position-relative" href="/cart"><img src="/images/cart.png" alt="cart">
+            <span id="home-badge-cart" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                0
+                <span class="visually-hidden">unread messages</span>
+            </span>
+            </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/youraccount"><img src="/images/user.png" alt="profile"></a>
@@ -95,6 +105,10 @@
               <input type="hidden" name="addressId" value="{{this._id}}" />
               <div class="row g-3">
 
+                <div class="alert alert-danger" style="display:none;" id="error-popup1" role="alert">
+                  Invalid pincode.. try with correct pincode
+                </div>
+
                 <div class="col-md-6">
                   <label class="form-label"><b>Full Name</b></label>
                   <input type="text" class="form-control shadow-none py-2" value="{{this.fullName}}"
@@ -104,9 +118,13 @@
 
                 <div class="col-md-6">
                   <label class="form-label"><b>Mobile Number</b></label>
+                  <div class="input-group ">
+                  <span class="input-group-text" id="basic-addon3">+91</span>
                   <input type="tel" class="form-control shadow-none py-2" value="{{this.mobileNumber}}"
-                    placeholder="May be used to assist delivery" required pattern="[0-9]{10}" name="mobileNumber" />
+                    placeholder="May be used to assist delivery" required pattern="[0-9]{10}" name="mobileNumber" 
+                    aria-describedby="basic-addon3"/>
                   <div class="invalid-feedback">Enter a valid 10-digit phone number.</div>
+                </div>
                 </div>
 
                 <div class="col-md-6">
@@ -114,6 +132,11 @@
                   <input type="text" class="form-control shadow-none py-2" value="{{this.pinCode}}"
                     placeholder="6 digits [0-9] pincode" required pattern="\d{6}" name="pinCode" />
                   <div class="invalid-feedback">Enter a 6-digit pincode.</div>
+
+                  <div id="loader1" style="display:none;" class="float-end">
+                    <span class="spinner-border spinner-border-sm text-success" role="status"></span>
+                    <small>Checking...</small>
+                  </div>
                 </div>
 
                 <div class="col-md-6">
@@ -132,23 +155,13 @@
 
                 <div class="col-md-3">
                   <label class="form-label"><b>District</b></label>
-                  <select class="form-select  shadow-none py-2" name="district" required>
-                    <option value="" disabled selected>{{this.district}}</option>
-                    <option value="Ernakulam">Ernakulam</option>
-                    <option value="Thrissur">Thrissur</option>
-                    <option value="Kozhikode">Kozhikode</option>
-                  </select>
+                  <input type="text" class="form-control shadow-none py-2" name="district" value="{{this.district}}" readonly />
                   <div class="invalid-feedback">Please select a district.</div>
                 </div>
 
                 <div class="col-md-3">
                   <label class="form-label"><b>State</b></label>
-                  <select class="form-select  shadow-none py-2" name="state" required>
-                    <option value="" disabled selected>{{this.state}}</option>
-                    <option value="Kerala">Kerala</option>
-                    <option value="Tamil Nadu">Tamil Nadu</option>
-                    <option value="Karnataka">Karnataka</option>
-                  </select>
+                  <input type="text" class="form-control shadow-none py-2" name="state" value="{{this.state}}" readonly />
                   <div class="invalid-feedback">Please select a state.</div>
                 </div>
 
@@ -161,10 +174,13 @@
 
                 <div class="col-md-6">
                   <label class="form-label"><b>Alternate Mobile Number</b></label>
+                  <div class="input-group ">
+                  <span class="input-group-text" id="basic-addon4">+91</span>
                   <input type="tel" class="form-control shadow-none py-2" value="{{alternate_number}}"
                     placeholder="Enter your alternate mobile number (Optional)" pattern="[0-9]{10}"
-                    name="alternate_number" />
+                    name="alternate_number" aria-describedby="basic-addon4" />
                   <div class="invalid-feedback">Enter a valid 10-digit alternate number (optional).</div>
+                </div>
                 </div>
 
                 <div class="col-md-12 pt-3">
@@ -221,10 +237,7 @@
       </div>
     </div>
 
-
     {{/each}}
-
-
 
   </div>
 </div>
@@ -246,6 +259,10 @@
         <form action="/youraccount/address" method="post" class="needs-validation" novalidate>
           <div class="row g-3">
 
+        <div class="alert alert-danger" style="display:none;" id="error-popup" role="alert">
+          Invalid pincode.. try with correct pincode
+        </div>
+
             <div class="col-md-6">
               <label class="form-label"><b>Full Name</b></label>
               <input type="text" class="form-control shadow-none py-2" placeholder="Enter your name" required
@@ -255,16 +272,24 @@
 
             <div class="col-md-6">
               <label class="form-label"><b>Mobile Number</b></label>
+              <div class="input-group ">
+              <span class="input-group-text" id="basic-addon1">+91</span>
               <input type="tel" class="form-control shadow-none py-2" placeholder="May be used to assist delivery"
-                required pattern="[0-9]{10}" name="mobileNumber" />
+                required pattern="[0-9]{10}" name="mobileNumber" aria-describedby="basic-addon1" />
               <div class="invalid-feedback">Enter a valid 10-digit phone number.</div>
+            </div>
             </div>
 
             <div class="col-md-6">
               <label class="form-label"><b>Pincode</b></label>
               <input type="text" class="form-control shadow-none py-2" placeholder="6 digits [0-9] pincode" required
-                pattern="\d{6}" name="pinCode" />
+                pattern="\d{6}" name="pinCode" id="pinCode" />
               <div class="invalid-feedback">Enter a 6-digit pincode.</div>
+
+              <div id="loader" style="display:none;" class="float-end">
+                <span class="spinner-border spinner-border-sm text-success" role="status"></span>
+                <small>Checking...</small>
+              </div>
             </div>
 
             <div class="col-md-6">
@@ -283,23 +308,13 @@
 
             <div class="col-md-3">
               <label class="form-label"><b>District</b></label>
-              <select class="form-select  shadow-none py-2" name="district" required>
-                <option value="" disabled selected>----- District -----</option>
-                <option value="Ernakulam">Ernakulam</option>
-                <option value="Thrissur">Thrissur</option>
-                <option value="Kozhikode">Kozhikode</option>
-              </select>
+                <input type="text" class="form-control shadow-none py-2" name="district" id="district" placeholder="Auto Fill District" readonly />
               <div class="invalid-feedback">Please select a district.</div>
             </div>
 
             <div class="col-md-3">
               <label class="form-label"><b>State</b></label>
-              <select class="form-select  shadow-none py-2" name="state" required>
-                <option value="" disabled selected>------- State -------</option>
-                <option value="Kerala">Kerala</option>
-                <option value="Tamil Nadu">Tamil Nadu</option>
-                <option value="Karnataka">Karnataka</option>
-              </select>
+                <input type="text" class="form-control shadow-none py-2" name="state" id="state" placeholder="Auto Fill State" readonly />
               <div class="invalid-feedback">Please select a state.</div>
             </div>
 
@@ -312,10 +327,13 @@
 
             <div class="col-md-6">
               <label class="form-label"><b>Alternate Mobile Number</b></label>
+              <div class="input-group ">
+                <span class="input-group-text" id="basic-addon2">+91</span>
               <input type="tel" class="form-control shadow-none py-2"
-                placeholder="Enter your alternate mobile number (Optional)" pattern="[0-9]{10}"
-                name="alternate_number" />
+                placeholder="Alternate mobile number (Optional)" pattern="[0-9]{10}"
+                name="alternate_number" aria-describedby="basic-addon2" />
               <div class="invalid-feedback">Enter a valid 10-digit alternate number (optional).</div>
+            </div>
             </div>
 
             <div class="col-md-12 pt-3">
@@ -400,3 +418,6 @@
 {{#section 'scripts'}}
 <script src="/javascripts/address.js"></script>
 {{/section}}
+
+
+

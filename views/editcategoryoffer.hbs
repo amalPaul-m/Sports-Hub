@@ -19,8 +19,8 @@
   <a class="nav-link" href="/coupon"><i class="bi bi-ticket-detailed"></i> Coupon</a>
   <a class="nav-link" href="/offers"><i class="bi bi-funnel"></i> Offers</a>
   <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
-  <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
-  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+  {{!-- <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a> --}}
 </div>
 
 <!-- Topbar -->
@@ -82,13 +82,14 @@
                       <span id="error-msg"></span>
                         <div class="col-md-12">
                             <label class="form-label fw-semibold">Select Catrgory Name</label>
-                            <select class="form-select shadow-none" name="targetName" required>
+                            <input type="text" class="form-control shadow-none" name="targetName" value="{{editData.targetName}}" readonly />
+                            {{!-- <select class="form-select shadow-none" name="targetName" required>
                                 <option value="" disabled>Select a category</option>
                                 <option value="{{editData.targetName}}" selected>{{editData.targetName}}</option>
                                 {{#each productTypesData}}
                                 <option value="{{this}}">{{this}}</option>
                                 {{/each}}
-                            </select>
+                            </select> --}}
                             <div class="invalid-feedback">Please select a category name.</div>
                         </div>
                         <div class="col-md-6">
@@ -108,12 +109,12 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Active Date</label>
-                            <input type="date" id="activeDate1" class="form-control shadow-none" name="startDate" required>
+                            <input type="date" id="activeDate1" class="form-control shadow-none" name="startDate" value="{{formatDate editData.startDate}}" required>
                             <div class="invalid-feedback">Please check active date.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Expire Date</label>
-                            <input type="date" id="activeDate2" class="form-control shadow-none" name="endDate" required>
+                            <input type="date" id="activeDate2" class="form-control shadow-none" name="endDate" value="{{formatDate editData.endDate}}" required>
                             <div class="invalid-feedback">Active date must be before or same as expiry date.</div>
                         </div>
                     </div>

@@ -30,10 +30,20 @@
 
             <ul class="navbar-nav mb-2 mb-lg-0 ">
                 <li class="nav-item pe-4">
-                    <a class="nav-link" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist"></a>
+                    <a type="submit" class="nav-link position-relative" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist">
+                    <span id="home-badge-wishlist"  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                        0
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    </a>
                 </li>
                 <li class="nav-item pe-4">
-                    <a class="nav-link" href="/cart"><img src="/images/cart.png" alt="cart"></a>
+                    <a type="submit" class="nav-link position-relative" href="/cart"><img src="/images/cart.png" alt="cart">
+                    <span id="home-badge-cart" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                        0
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/youraccount"><img src="/images/user.png" alt="profile"></a>
@@ -50,6 +60,78 @@
 
   <!-- Order 1 -->
 {{#each orderData}}
+{{#if (eq this.orderStatus "cancelled")}}
+{{#each this.productInfo}}
+<div class="border-bottom pb-4 mb-4">
+    <div class="row align-items-center mt-5">
+      <div class="col-md-2">
+        <img src="/images/products/{{firstImage this.productId.imageUrl}}" class="img-fluid" alt="Product Image">
+      </div>
+      <div class="col-md-5">
+        <h6 class=""><a href="#" class="text-decoration-none"  data-bs-toggle="modal" data-bs-target="#orderDetails{{this.productId._id}}">{{this.productId.productName}}</a></h6>
+        <p class="mb-1 text-muted"><b>Quantity:</b> {{this.quantity}}</p>        
+        <span class="mb-1 text-muted pe-3"><b>Brand:</b> {{this.productId.brandName}}</span>
+        <span class="mb-1 text-muted pe-3"><b>Color:</b> <button class="btn" style="background-color: {{this.color}};"></button></span>
+        <span class="mb-1 text-muted"><b>Size:</b> {{this.size}} {{this.productId.unitSize}}</span>
+      </div>
+      <div class="col-md-3 text-end">
+        <h6 class="fw-bold fs-5">₹ {{this.price}}.00</h6>
+        <small class="text-muted">Item Ordered By {{formatDateFull ../createdAt}}</small><br>
+        <small class="text-primary fw-bold">Your payment is pending</small>
+      </div>
+    </div>
+
+    <!-- Order Details -->
+  <div class="modal fade" id="orderDetails{{this.productId._id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Payment Pending</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5 class="fw-bold">Product Information</h5>
+        {{#each ../this.productInfo}}
+          <p>{{this.productId.productName}} 
+          <span class="ps-1 fs-5 fw-bold float-end">₹ {{mul this.quantity this.price}}.00</span><br>
+          <span class="">Qty: {{this.quantity}}</span><span class="ps-3">Status: {{this.status}}</span></p>
+        {{/each}}
+        
+        <h5 class="fw-bold mt-3">Address Information</h5>
+        {{../addressId.fullName}} <br>
+        {{../addressId.houseNo}}, {{../addressId.landMark}}<br>
+        {{../addressId.street}}<br>
+        {{../addressId.district}}, {{../addressId.state}}<br>
+        {{../addressId.pinCode}}<br>
+        {{../addressId.mobileNumber}}, {{../addressId.alternate_number}}
+      </div>
+  
+    </div>
+  </div>
+</div>
+
+
+
+{{/each}}
+
+
+
+<div class="p-3 shadow-sm rounded width mt-3">
+  <div class="float-start mt-2">
+    {{#if (ne this.couponInfo.[0].couponCode null)}}
+    <p class="mb-1 text-muted"><b>Applied Coupon:</b> {{this.couponInfo.[0].couponCode}}</p>
+    {{else}}
+    <p class="mb-1 text-muted"><b>Applied Coupon:</b> No Coupon Applied</p>
+    {{/if}}
+  </div>
+  <div class="float-end">
+    <button href="" id="rzp-button-failed"  data-order-id="{{this._id}}" data-order-number="{{this.orderId}}" class="btn btn-outline-dark px-4">
+      Payment Retry
+    </button>
+  </div>
+</div>
+{{/if}}
+{{#if (eq this.orderStatus "confirmed")}}
   {{#each this.productInfo}}
   {{#if (eq this.status "confirmed")}}
   <div class="border-bottom pb-4 mb-4">
@@ -64,7 +146,7 @@
         <span class="mb-1 text-muted pe-3"><b>Color:</b> <button class="btn" style="background-color: {{this.color}};"></button></span>
         <span class="mb-1 text-muted"><b>Size:</b> {{this.size}} {{this.productId.unitSize}}</span>
 
-        <p class="mb-1 text-muted"><b>Order Id:</b> #{{../orderId}}</p>
+        {{!-- <p class="mb-1 text-muted"><b>Order Id:</b> #{{../orderId}}</p> --}}
       </div>
       <div class="col-md-3 text-end">
         <h6 class="fw-bold fs-5">₹ {{this.price}}.00</h6>
@@ -73,14 +155,15 @@
       </div>
       <div class="col-md-2 text-end">
         {{#if (eq ../deliveryStatus "pending")}}
-        <button class="btn btn-outline-danger btn-md px-4" 
+        <button class="btn btn-outline-danger btn-md px-4 me-3" 
         data-bs-toggle="modal" data-bs-target="#cancel{{../_id}}{{this._id}}">Cancel Item</button>
         {{/if}}
-        <a href="/invoice/download-invoice/{{../orderId}}" class="btn btn-outline-dark px-4 mt-2">
+        {{!-- <a href="/invoice/download-invoice/{{../orderId}}" class="btn btn-outline-dark px-4 mt-2">
           <i class="bi bi-download pe-2"></i> Invoice
-        </a>
+        </a> --}}
       </div>
     </div>
+
 
     {{!-- <!-- Order Progress Bar -->
     <div class="order-progress mx-5 mb-5">
@@ -105,9 +188,11 @@
       <div class="modal-body">
         <h5 class="fw-bold">Product Information</h5>
         {{#each ../this.productInfo}}
+        {{#if (eq this.status "confirmed")}}
           <p>{{this.productId.productName}} 
           <span class="ps-1 fs-5 fw-bold float-end">₹ {{mul this.quantity this.price}}.00</span><br>
           <span class="">Qty: {{this.quantity}}</span><span class="ps-3">Status: {{this.status}}</span></p>
+        {{/if}}
         {{/each}}
 
         <h5 class="fw-bold mt-5">Payment Information</h5>
@@ -117,8 +202,17 @@
           Net Amount  <span class="float-end">₹ {{netAmount (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
           Gst Amount (18%) <span class="float-end">₹ {{gst (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
           Total Amount <span class="float-end">₹ {{add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount}}.00</span>
+          {{#if (gt ../paymentInfo.[0].totalAmount 1000)}}
+          <br>Shipping Charge <span class="float-end">₹ 0.00</span>
+          {{else}}
+          <br>Shipping Charge <span class="float-end">₹ 40.00</span>
+          {{/if}}
         </p>
+        {{#if (gt ../paymentInfo.[0].totalAmount 1000)}}
         <p>Discount Amount <span class="float-end">- ₹ {{ ../couponInfo.[0].discount}}</span>
+        {{else}}
+        <p>Discount Amount <span class="float-end">- ₹ {{add ../couponInfo.[0].discount 40}}</span>
+        {{/if}}
         <h5 class="fw-bold">Payable Amount <span class="float-end">₹ {{../paymentInfo.[0].totalAmount}}</span></h5>
         </p> <hr>
         
@@ -165,43 +259,128 @@
 
 
 
-    <div class="modal fade bg-setting" id="cancel{{../_id}}{{this._id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade bg-setting" id="cancel{{../_id}}{{this._id}}" tabindex="-1" aria-labelledby="exampleModalLabelCancel{{../_id}}{{this._id}}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabelCancel{{../_id}}{{this._id}}">Reason for Cancel</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/youraccount/cancelorder/{{../orderId}}/{{this.productId._id}}/{{this.size}}?_method=PATCH" method="POST">
+
+          <div class="form-check">
+            <input class="form-check-input reason-radio-cancel" type="radio" name="reason" 
+              id="cancelReason1-{{../_id}}{{this._id}}" value="Change my mind" data-textarea-id="cancelTextarea-{{../_id}}{{this._id}}">
+            <label class="form-check-label" for="cancelReason1-{{../_id}}{{this._id}}">
+              Change my mind
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input reason-radio-cancel" type="radio" name="reason" 
+              id="cancelReason2-{{../_id}}{{this._id}}" value="Payment issues" checked data-textarea-id="cancelTextarea-{{../_id}}{{this._id}}">
+            <label class="form-check-label" for="cancelReason2-{{../_id}}{{this._id}}">
+              Payment issues
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input reason-radio-cancel" type="radio" name="reason" 
+              id="cancelReason3-{{../_id}}{{this._id}}" value="Wrong item was booked" data-textarea-id="cancelTextarea-{{../_id}}{{this._id}}">
+            <label class="form-check-label" for="cancelReason3-{{../_id}}{{this._id}}">
+              Wrong item was booked
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input reason-radio-cancel" type="radio" name="reason" 
+              id="cancelReason4-{{../_id}}{{this._id}}" value="Others" data-textarea-id="cancelTextarea-{{../_id}}{{this._id}}" data-show-textarea="true">
+            <label class="form-check-label" for="cancelReason4-{{../_id}}{{this._id}}">
+              Others
+            </label>
+          </div>
+
+          <!-- Textarea for 'Others' -->
+          <div class="mt-3" id="cancelTextarea-{{../_id}}{{this._id}}" style="display: none;">
+            <label for="cancelTextareaField-{{../_id}}{{this._id}}" class="form-label">Please specify:</label>
+            <textarea class="form-control" name="otherReason" id="cancelTextareaField-{{../_id}}{{this._id}}" rows="3"></textarea>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-outline-dark">Confirm</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+    {{/if}}
+  {{/each}}
+      
+      
+      <div class="p-3 shadow-sm rounded width mt-3">
+      <div class="float-start mt-2">
+        <p class="mb-1 text-muted"><b>Order Id:</b> #{{this.orderId}}</p>
+      </div>
+      <div class="float-end">
+      {{#if (eq deliveryStatus "pending")}}
+      <button class="btn btn-danger btn-md px-4 me-1" 
+      data-bs-toggle="modal" data-bs-target="#cancel-order{{_id}}{{this._id}}">Cancel Order</button>
+      {{/if}}
+
+
+      <div class="modal fade bg-setting" id="cancel-order{{_id}}{{this._id}}" tabindex="-1" aria-labelledby="exampleModalLabelCancel{{../_id}}{{this._id}}" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Reason for Cancel</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabelCancel{{_id}}{{this._id}}">Reason for Cancel</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="/youraccount/cancelorder/{{../orderId}}/{{this.productId._id}}?_method=PATCH" method="POST">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="reason" 
-              id="flexRadioDefault1" value="Item defective or damaged">
-              <label class="form-check-label" for="flexRadioDefault1">
-                Change my mind
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="reason" 
-              id="flexRadioDefault2" checked value="Description does not match the product">
-              <label class="form-check-label" for="flexRadioDefault2">
-                payment issues
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="reason" 
-              id="flexRadioDefault1" value="Wrong item was sent">
-              <label class="form-check-label" for="flexRadioDefault1">
-                Wrong item was booked
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="reason" 
-              id="flexRadioDefault2" value="Others">
-              <label class="form-check-label" for="flexRadioDefault2">
-                Others
-              </label>
-            </div>
+            <form action="/youraccount/cancelEntairOrder/{{orderId}}?_method=PATCH" method="POST">
+
+              <div class="form-check">
+                <input class="form-check-input reason-radio-cancel" type="radio" name="reason" 
+                  id="cancelReason1-{{_id}}{{this._id}}" value="Change my mind" data-textarea-id="cancelTextarea-{{_id}}{{this._id}}">
+                <label class="form-check-label" for="cancelReason1-{{_id}}{{this._id}}">
+                  Change my mind
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input reason-radio-cancel" type="radio" name="reason" 
+                  id="cancelReason2-{{_id}}{{this._id}}" value="Payment issues" checked data-textarea-id="cancelTextarea-{{_id}}{{this._id}}">
+                <label class="form-check-label" for="cancelReason2-{{_id}}{{this._id}}">
+                  Payment issues
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input reason-radio-cancel" type="radio" name="reason" 
+                  id="cancelReason3-{{_id}}{{this._id}}" value="Wrong item was booked" data-textarea-id="cancelTextarea-{{_id}}{{this._id}}">
+                <label class="form-check-label" for="cancelReason3-{{_id}}{{this._id}}">
+                  Wrong item was booked
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input reason-radio-cancel" type="radio" name="reason" 
+                  id="cancelReason4-{{_id}}{{this._id}}" value="Others" data-textarea-id="cancelTextarea-{{_id}}{{this._id}}" data-show-textarea="true">
+                <label class="form-check-label" for="cancelReason4-{{_id}}{{this._id}}">
+                  Others
+                </label>
+              </div>
+
+              <!-- Textarea for 'Others' -->
+              <div class="mt-3" id="cancelTextarea-{{_id}}{{this._id}}" style="display: none;">
+                <label for="cancelTextareaField-{{_id}}{{this._id}}" class="form-label">Please specify:</label>
+                <textarea class="form-control" name="otherReason" id="cancelTextareaField-{{_id}}{{this._id}}" rows="3"></textarea>
+              </div>
+
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
@@ -212,10 +391,17 @@
       </div>
     </div>
 
-    {{/if}}
-  {{/each}}
+      
+      <a href="/invoice/download-invoice/{{orderId}}" class="btn btn-dark px-4">
+          <i class="bi bi-download pe-2"></i> Invoice
+      </a>
+      </div>
+      </div>
+      
+
+
   <!-- Order Progress Bar -->
-    <div class="order-progress mx-5 mb-5">
+    <div class="order-progress mx-5 mb-5 pt-3">
       <div class="progress-line">
         <div class="step {{#if (eq this.deliveryStatus 'pending')}}completed{{/if}}" data-title="order Placed" data-step="1"></div>
         <div class="step {{#if (eq this.deliveryStatus 'shipped')}}completed{{/if}}" data-title="shipped" data-step="2"></div>
@@ -224,6 +410,8 @@
       </div>
     </div>
     </div>
+
+{{/if}}
 {{/each}}
 
 
@@ -268,7 +456,7 @@
         <img src="/images/products/{{firstImage this.productId.imageUrl}}" class="img-fluid" alt="Product Image">
       </div>
       <div class="col-md-5">
-        <h6 class="">{{this.productId.productName}}</h6>
+        <h6 class=""><a href="#" class="text-decoration-none"  data-bs-toggle="modal" data-bs-target="#orderDetailsDelivered{{this.productId._id}}">{{this.productId.productName}}</a></h6>
         <p class="mb-1 text-muted">Brand: {{this.productId.brandName}}</p>
         <p class="mb-1 text-muted">Color: <button class="btn" style="background-color: {{this.color}};"></button></p>
         <p class="mb-1 text-muted">Size: {{this.size}} {{this.productId.unitSize}}</p>
@@ -297,6 +485,59 @@
     </div>
   </div>  
 
+
+
+<!-- Order Details -->
+    <div class="modal fade" id="orderDetailsDelivered{{this.productId._id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Order Id : #{{../this.orderId}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5 class="fw-bold">Product Information</h5>
+        {{#each ../this.productInfo}}
+        {{#if (eq this.status "confirmed")}}
+          <p>{{this.productId.productName}} 
+          <span class="ps-1 fs-5 fw-bold float-end">₹ {{mul this.quantity this.price}}.00</span><br>
+          <span class="">Qty: {{this.quantity}}</span><span class="ps-3">Status: {{this.status}}</span></p>
+        {{/if}}
+        {{/each}}
+
+        <h5 class="fw-bold mt-5">Payment Information</h5>
+        <p>Payment Method <span class="float-end">{{../paymentInfo.[0].paymentMethod}}</span><br>
+        Payment Status <span class="float-end">{{../paymentInfo.[0].paymentStatus}}</span></p>
+        <p>
+          Net Amount  <span class="float-end">₹ {{netAmount (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
+          Gst Amount (18%) <span class="float-end">₹ {{gst (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
+          Total Amount <span class="float-end">₹ {{add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount}}.00</span>
+        {{#if (gt ../paymentInfo.[0].totalAmount 1000)}}
+          <br>Shipping Charge <span class="float-end">₹ 0.00</span>
+          {{else}}
+          <br>Shipping Charge <span class="float-end">₹ 40.00</span>
+          {{/if}}
+        </p>
+        {{#if (gt ../paymentInfo.[0].totalAmount 1000)}}
+        <p>Discount Amount <span class="float-end">- ₹ {{ ../couponInfo.[0].discount}}</span>
+        {{else}}
+        <p>Discount Amount <span class="float-end">- ₹ {{add ../couponInfo.[0].discount 40}}</span>
+        {{/if}}
+        <h5 class="fw-bold">Payable Amount <span class="float-end">₹ {{../paymentInfo.[0].totalAmount}}</span></h5>
+        </p> <hr>
+        
+        <h5 class="fw-bold mt-3">Address Information</h5>
+        {{../addressId.fullName}} <br>
+        {{../addressId.houseNo}}, {{../addressId.landMark}}<br>
+        {{../addressId.street}}<br>
+        {{../addressId.district}}, {{../addressId.state}}<br>
+        {{../addressId.pinCode}}<br>
+        {{../addressId.mobileNumber}}, {{../addressId.alternate_number}}
+      </div>
+  
+    </div>
+  </div>
+</div>
 
 
 <!-- Dispaly Error Modal -->
@@ -447,54 +688,66 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal{{this._id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal{{this._id}}" tabindex="-1" aria-labelledby="exampleModalLabel{{this._id}}" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Reason for Return</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel{{this._id}}">Reason for Return</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form action="/youraccount/return" method="post">
-        <input type="hidden" name="orderId" value="{{../this._id}}">
-        <input type="hidden" name="productId" value="{{this.productId._id}}">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="reason" 
-          id="flexRadioDefault1" value="Item defective or damaged">
-          <label class="form-check-label" for="flexRadioDefault1">
-            Item defective or damaged
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="reason" 
-          id="flexRadioDefault2" checked value="Description does not match the product">
-          <label class="form-check-label" for="flexRadioDefault2">
-            Description does not match the product
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="reason" 
-          id="flexRadioDefault1" value="Wrong item was sent">
-          <label class="form-check-label" for="flexRadioDefault1">
-            Wrong item was sent
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="reason" 
-          id="flexRadioDefault2" value="Others">
-          <label class="form-check-label" for="flexRadioDefault2">
-            Others
-          </label>
-        </div>
+          <input type="hidden" name="orderId" value="{{../this._id}}">
+          <input type="hidden" name="productId" value="{{this.productId._id}}">
+
+          <div class="form-check">
+            <input class="form-check-input reason-radio" type="radio" name="reason" 
+            id="reason1-{{this._id}}" value="Item defective or damaged" data-textarea-id="otherReasonBox-{{this._id}}">
+            <label class="form-check-label" for="reason1-{{this._id}}">
+              Item defective or damaged
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input reason-radio" type="radio" name="reason" 
+            id="reason2-{{this._id}}" value="Description does not match the product" checked data-textarea-id="otherReasonBox-{{this._id}}">
+            <label class="form-check-label" for="reason2-{{this._id}}">
+              Description does not match the product
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input reason-radio" type="radio" name="reason" 
+            id="reason3-{{this._id}}" value="Wrong item was sent" data-textarea-id="otherReasonBox-{{this._id}}">
+            <label class="form-check-label" for="reason3-{{this._id}}">
+              Wrong item was sent
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input reason-radio" type="radio" name="reason" 
+            id="reason4-{{this._id}}" value="Others" data-textarea-id="otherReasonBox-{{this._id}}" data-show-textarea="true">
+            <label class="form-check-label" for="reason4-{{this._id}}">
+              Others
+            </label>
+          </div>
+
+          <!-- Hidden textarea shown only if 'Others' is selected -->
+          <div class="mt-3" id="otherReasonBox-{{this._id}}" style="display: none;">
+            <label for="otherReasonText-{{this._id}}" class="form-label">Please specify:</label>
+            <textarea class="form-control" name="otherReason" id="otherReasonText-{{this._id}}" rows="3"></textarea>
+          </div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-outline-dark">Save changes</button>
+        <button type="submit" class="btn btn-outline-dark">Confirm</button>
       </div>
       </form>
     </div>
   </div>
 </div>
+
 
   {{/if}}
   {{/each}}
@@ -582,6 +835,12 @@
     </div>
 </div>
 
+<script>
+    const razorpayKey = '{{razorpayKey}}';
+</script>
+
 {{#section 'scripts'}}
 <script src="/javascripts/yourorders.js"></script>
 {{/section}}
+
+

@@ -1,4 +1,4 @@
-
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getReturn = async (req, res) => {
 
@@ -8,11 +8,16 @@ const getReturn = async (req, res) => {
             return res.redirect('/login');
         }
 
-        res.render('return', {  });
+        res.render('return', {});
 
     } catch (error) {
 
-        err.message = 'Error inserting return item';
+        errorLogger.error('Error in getReturn controller', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'return',
+            action: 'getReturn'
+        });
         next(error);
     }
 }

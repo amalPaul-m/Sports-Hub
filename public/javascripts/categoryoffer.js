@@ -25,7 +25,7 @@
   const error = params.get('error');
   if (error === '1' || error === '2') {
     Swal.fire({
-      title: error === '1' ? 'Coupon Exist!' : 'Coupon Updated!',
+      title: error === '1' ? 'offer Exist!' : 'offer Updated!',
       text: 'Redirecting to coupon list...',
       icon: 'error',
       showConfirmButton: false,
@@ -36,7 +36,7 @@
         icon: 'swal-icon',
         confirmButton: 'swal-button'
       }
-    }).then(() => window.location.href = "/coupon/add");
+    }).then(() => window.location.href = "/offers");
   }
 });
 

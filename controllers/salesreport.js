@@ -2,6 +2,7 @@ const ordersSchema = require('../models/ordersSchema');
 const ExcelJS = require('exceljs');
 const puppeteer = require('puppeteer');
 const hbs = require('handlebars');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const SHIPPING_CHARGE = Number(process.env.SHIPPING_CHARGE) || 0;
 
@@ -10,7 +11,7 @@ const getSalesReport = async (req, res, next) => {
     try {
 
         const page = parseInt(req.query.page) || 1;
-        const limit = 10;  
+        const limit = 10;
         const skip = (page - 1) * limit;
 
 
@@ -24,10 +25,10 @@ const getSalesReport = async (req, res, next) => {
         }
 
         const [totalCoupons, ordersData] = await Promise.all([
-            ordersSchema.countDocuments(query),
-            ordersSchema.find(query).sort({createdAt: -1})
-            .skip(skip).limit(limit)                   
-            .populate('userId')
+            ordersSchema.countDocuments({ ...query, deliveryStatus: 'delivered' }),
+            ordersSchema.find({...query, deliveryStatus:'delivered'}).sort({ createdAt: -1 })
+                .skip(skip).limit(limit)
+                .populate('userId')
         ]);
 
         const totalPages = Math.ceil(totalCoupons / limit);
@@ -51,9 +52,9 @@ const getSalesReport = async (req, res, next) => {
                 }
             });
             const discount = regularTotal - order.paymentInfo[0]?.totalAmount;
-            if (!isNaN(discount) && regularTotal>1000) {
+            if (!isNaN(discount) && regularTotal > 1000) {
                 totalDiscountSum += discount;
-            }else {
+            } else {
                 totalDiscountSum += Number(discount + SHIPPING_CHARGE);
             }
         });
@@ -71,14 +72,19 @@ const getSalesReport = async (req, res, next) => {
             totalCoupons,
             grandTotalRegularPrice,
             totalDiscountSum,
-            shippingCharge: SHIPPING_CHARGE,
+            shippingCharge: grandTotalRegularPrice<1000 ? SHIPPING_CHARGE : 0,
             fromDate: req.query.fromDate || '',
             toDate: req.query.toDate || ''
         })
 
-    }catch (error) {
-        error.message = 'Error get orders report';
-        console.log('error');
+    } catch (error) {
+        errorLogger.error('Error in getSalesReport', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'salesreport',
+            action: 'getSalesReport',
+            query: req.query
+        });
         next(error);
     }
 };
@@ -88,7 +94,7 @@ const getSalesReport = async (req, res, next) => {
 
 const exportExcelSalesReport = async (req, res, next) => {
     try {
-        const ordersData = await ordersSchema.find(req.session.query)
+        const ordersData = await ordersSchema.find({...req.session.query, deliveryStatus:'delivered'})
             .sort({ createdAt: -1 })
             .populate('userId');
 
@@ -109,7 +115,7 @@ const exportExcelSalesReport = async (req, res, next) => {
         let slNo = 1;
         ordersData.forEach(order => {
             const totalRegularPrice = order.productInfo.reduce(
-                (sum, item) => sum + (item.regularPrice * item.quantity || 0), 
+                (sum, item) => sum + (item.regularPrice * item.quantity || 0),
                 0
             );
 
@@ -145,8 +151,13 @@ const exportExcelSalesReport = async (req, res, next) => {
         await workbook.xlsx.write(res);
         res.end();
     } catch (error) {
-        console.error("Excel Export Error:", error);
-        error.message = 'Error export excel';
+        errorLogger.error('Error in exportExcelSalesReport', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'salesreport',
+            action: 'exportExcelSalesReport',
+            query: req.session.query
+        });
         next(error);
     }
 };
@@ -155,10 +166,10 @@ const exportExcelSalesReport = async (req, res, next) => {
 
 
 
-const getSalesReportExport =  async (req, res, next) => {
+const getSalesReportExport = async (req, res, next) => {
     try {
 
-        const ordersData = await ordersSchema.find(req.session.query)
+        const ordersData = await ordersSchema.find({...req.session.query, deliveryStatus:'delivered'})
             .sort({ createdAt: -1 })
             .populate('userId');
 
@@ -169,21 +180,27 @@ const getSalesReportExport =  async (req, res, next) => {
         });
 
     } catch (error) {
-        error.message = 'Error export pdf';
-        console.log('error');
+        errorLogger.error('Error in getSalesReportExport', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'salesreport',
+            action: 'getSalesReportExport',
+            query: req.session.query
+        });
         next(error);
     }
 };
 
 const exportPdfSalesReport = async (req, res, next) => {
     try {
-         const ordersData = await ordersSchema.find(req.session.query).populate('userId');
+        const ordersData = await ordersSchema.find({...req.session.query, deliveryStatus:'delivered'}).populate('userId')
+        .sort({ createdAt: -1 });
 
-         const saleCount = req.session.salescount;
-         const totalOrderAmount = req.session.totalOrderAmount;
-         const totalDiscount = req.session.totaldiscount;
-         const html = await new Promise((resolve, reject) => {
-            res.render('salesreport-export', { layout: false, ordersData, saleCount, totalOrderAmount, totalDiscount  }, (err, html) => {
+        const saleCount = req.session.salescount;
+        const totalOrderAmount = req.session.totalOrderAmount;
+        const totalDiscount = req.session.totaldiscount;
+        const html = await new Promise((resolve, reject) => {
+            res.render('salesreport-export', { layout: false, ordersData, saleCount, totalOrderAmount, totalDiscount }, (err, html) => {
                 if (err) reject(err);
                 else resolve(html);
             });
@@ -208,12 +225,20 @@ const exportPdfSalesReport = async (req, res, next) => {
 
         res.end(pdfBuffer);
     } catch (error) {
-        console.error('PDF Export Error:', error);
+        errorLogger.error('Error in exportPdfSalesReport', {
+            message: error.message,
+            stack: error.stack,
+            controller: 'salesreport',
+            action: 'exportPdfSalesReport',
+            query: req.session.query
+        });
         next(error);
     }
 };
 
 
 
-module.exports = { getSalesReport, exportExcelSalesReport, 
-     getSalesReportExport , exportPdfSalesReport }
+module.exports = {
+    getSalesReport, exportExcelSalesReport,
+    getSalesReportExport, exportPdfSalesReport
+}
