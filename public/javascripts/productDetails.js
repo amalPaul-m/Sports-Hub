@@ -1,3 +1,76 @@
+
+document.getElementById('addToCartForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  const submitBtn = form.querySelector('button[type="submit"]');
+  // submitBtn.disabled = true;                   
+  // submitBtn.textContent = 'In Cart';         
+
+  const data = {
+    productId: formData.get('productId'),
+    selectedColor: formData.get('selectedColor'),
+    selectedSize: formData.get('selectedVariant'),
+    action: formData.get('action')
+  };
+
+  try {
+    const res = await fetch('/cart/add-buy-cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    const toastTrigger = document.getElementById('liveToastBtn');
+    if(result.message==='Added to Cart'){
+    const toastLiveExample = document.getElementById('liveToast');
+    const toastBody = document.getElementById('toast-body');
+    if (toastTrigger) {
+        const toast = new bootstrap.Toast(toastLiveExample);
+        toastBody.innerText = result.message;
+        toast.show()
+    }
+    } else {
+
+    const toastLiveExample = document.getElementById('liveToastError');
+    const toastBody = document.getElementById('toast-body-error');
+    if (toastTrigger) {
+        const toast = new bootstrap.Toast(toastLiveExample);
+        toastBody.innerText = result.message;
+        toast.show()
+    }
+
+    }
+
+
+    if (result.success) {
+      window.location.href = '/cart';
+    } else {
+
+      showToast('Failed to add to cart.', true);
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Add to Cart';
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast('Error occurred', true);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Add to Cart';
+  }
+});
+
+
+
+
+
+
 //product zooming
 
 const zoom = document.getElementById("mainImage");
@@ -42,16 +115,16 @@ document.querySelectorAll('.wishlist-btn').forEach(button => {
 
 // Add to cart button
 
-const cartButtons = document.querySelectorAll('.btn-addCart');
+// const cartButtons = document.querySelectorAll('.btn-addCart');
 
-    cartButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        button.classList.add('clicked');
-        setTimeout(() => {
-          button.classList.remove('clicked');
-        }, 2000); // Reset after 2 seconds
-      });
-    });
+//     cartButtons.forEach(button => {
+//       button.addEventListener('click', () => {
+//         button.classList.add('clicked');
+//         setTimeout(() => {
+//           button.classList.remove('clicked');
+//         }, 2000); // Reset after 2 seconds
+//       });
+//     });
 
 
 // review image hover
@@ -100,48 +173,16 @@ const cartButtons = document.querySelectorAll('.btn-addCart');
 
 
 
+document.addEventListener('DOMContentLoaded', () => {
+  const homeWishlist = document.getElementById('home-badge-wishlist');
+  const homeCart = document.getElementById('home-badge-cart');
 
-document.getElementById('addToCartForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const form = e.target;
-  const formData = new FormData(form);
-
-  const submitBtn = form.querySelector('button[type="submit"]');
-  submitBtn.disabled = true;                   
-  submitBtn.textContent = 'In Cart';         
-
-  const data = {
-    productId: formData.get('productId'),
-    selectedColor: formData.get('selectedColor'),
-    selectedSize: formData.get('selectedVariant'),
-    action: formData.get('action')
-  };
-
-  try {
-    const res = await fetch('/cart/add-buy-cart', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-
-    const result = await res.json();
-
-    if (result.success) {
-      window.location.href = '/cart';
-    } else {
-
-      showToast('Failed to add to cart.', true);
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Add to Cart';
-    }
-
-  } catch (err) {
-    console.error(err);
-    showToast('Error occurred', true);
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Add to Cart';
-  }
+  fetch('/home/home-badge')
+    .then(response => response.json())
+    .then(data => {
+      if (homeWishlist) homeWishlist.innerText = data.wishlistCount || 0;
+      if (homeCart) homeCart.innerText = data.cartCount || 0;
+    })
+    .catch(err => console.error('Error fetching badge counts:', err));
 });
+

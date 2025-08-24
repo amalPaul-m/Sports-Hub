@@ -1,3 +1,9 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/orderslist.css">
+{{/section}}
+
+
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="px-4 mb-3">
@@ -8,13 +14,13 @@
   <a class="nav-link" href="/dashboard"><i class="bi bi-house-door"></i> Dashboard</a>
   <a class="nav-link active" href="#"><i class="bi bi-file-earmark"></i> Order List</a>
   <a class="nav-link" href="/products"><i class="bi bi-inboxes"></i> All Products</a>
-  <a class="nav-link" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
+  <a class="nav-link" href="/salesreport"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
   <a class="nav-link" href="/customers"><i class="bi bi-people"></i> Customers</a>
-  <a class="nav-link" href="#"><i class="bi bi-ticket-detailed"></i> Coupon</a>
-  <a class="nav-link" href="#"><i class="bi bi-funnel"></i> Filter</a>
+  <a class="nav-link" href="/coupon"><i class="bi bi-ticket-detailed"></i> Coupon</a>
+  <a class="nav-link" href="/offers"><i class="bi bi-funnel"></i> Offers</a>
   <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
-  <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
-  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+  {{!-- <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a> --}}
 </div>
 
 <!-- Topbar -->
@@ -78,7 +84,7 @@
       <div>
         <a class="btn btn-outline-dark m-1" href="/orderslist" type="button"><i class="bi bi-arrow-clockwise"></i></a>
         {{!-- <button class="btn btn-outline-secondary me-2">Filters <i class="bi bi-funnel"></i></button> --}}
-        <button class="btn btn-outline-dark">Export <i class="bi bi-download"></i></button>
+        {{!-- <button class="btn btn-outline-dark">Export <i class="bi bi-download"></i></button> --}}
       </div>
     </div>
 
@@ -99,6 +105,7 @@
          
           <!-- Example Rows -->
           {{#each orders}}
+          {{#if (eq this.orderStatus "confirmed")}}
           <tr>
             <td>{{addOne @index}}</td>
             <td><a href="" class="text-decoration-none" data-bs-toggle="modal" 
@@ -163,11 +170,11 @@
                           <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
+                          <span class="badge bg-black">{{deliveryStatus}}</span>
                           <div class="container mt-3">
                               <div class="order-box bg-white mb-4">
-
                                   {{#each this.productInfo}}
-                                  {{#or (eq this.status "confirmed") (eq this.status "returned")}}
+                                  {{#if (eq this.status "confirmed")}}
                                   {{!-- {{#if (eq this.status "confirmed")}} --}}
                                   <div class="row bordrer-card">
                                       <div class="col col-md-2">
@@ -176,8 +183,7 @@
                                       <div class="col col-md-8">
                                           <div>
                                               <h6 class="mb-1">{{this.productId.productName}}
-                                                  <span class="badge bg-black">{{../deliveryStatus}}</span></h6>
-                                              </h6>
+                                                  </h6>
           
                                               <p class="mb-1 text-muted">Color: <button class="btn" style="background-color: {{this.color}};"></button>
                                                 <br>Size: {{this.size}} {{this.productId.unitSize}}
@@ -189,13 +195,13 @@
                                           </div>
                                       </div>
                                       <div class="col col-md-2 mt-5">
-                                          <h5 class="fw-bold">₹{{this.productId.salePrice}}.00</h5>
+                                          <h5 class="fw-bold">₹{{this.price}}.00</h5>
                                           {{#unless (eq this.status "cancelled")}}
                                           <a href="/invoice/download-invoice/{{../orderId}}" class="btn btn-outline-dark mt-1">INVOICE</a>
                                           {{/unless}}
                                       </div>
                                   </div>
-                                  {{/or}}
+                                  {{/if}}
                                   {{/each}}
 
 
@@ -220,20 +226,29 @@
                               <div class="mb-4">
                                   <div class="d-flex justify-content-between">
                                       <span class="info-label">Net Amount</span>
-                                      <span>₹{{netAmount this.totalAmount}}</span>
+                                      <span>₹{{netAmount (add this.totalAmount ../couponInfo.[0].discount)}}</span>
                                   </div>
                                   <div class="d-flex justify-content-between">
                                       <span class="info-label">GST</span>
-                                      <span>₹{{gst this.totalAmount}}</span>
+                                      <span>₹{{gst (add this.totalAmount ../couponInfo.[0].discount)}}</span>
                                   </div>
                                   <div class="d-flex justify-content-between">
                                       <span class="info-label">Shipping & Handling Fee</span>
                                       <span>₹0.00</span>
                                   </div>
+                                  <div class="d-flex justify-content-between mt-4">
+                                      <span class="fw-bold fs-5">Total Amount</span>
+                                      <span class="fw-bold fs-5">₹{{add this.totalAmount ../couponInfo.[0].discount}}</span>
+                                  </div>
+                              </div>
+
+                              <div class="d-flex justify-content-between">
+                                  <span class="info-label">Discount Amount</span>
+                                  <span>- ₹{{../couponInfo.[0].discount}}.00</span>
                               </div>
           
                               <div class="d-flex justify-content-between border-top pt-3">
-                                  <h5 class="fw-bold">Total Amount</h5>
+                                  <h5 class="fw-bold">Payable Amount</h5>
                                   <h5 class="fw-bold">₹{{this.totalAmount}}.00</h5>
                                   {{/each}}
                               </div>
@@ -349,7 +364,7 @@
             </div>
           </div>
 
-
+          {{/if}}
           {{/each}}
 
 
@@ -396,5 +411,7 @@
 
 
 
-
+{{#section 'scripts'}}
+<script src="/javascripts/orderslist.js"></script>
+{{/section}}
 

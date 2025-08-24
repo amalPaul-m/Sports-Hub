@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('otpForm');
 
-    form.addEventListener('submit', async function (e) {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault(); // Prevent default form submit
 
         const otp = [
@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const path1 = window.location.pathname;
-
             const endpoint1 = path1.includes('/forgot') ? '/forgot/verifyOtp' : '/verifyOtp';
 
             const response = await fetch(endpoint1, {
@@ -92,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 Swal.fire({
                     title: result.message || 'Invalid OTP',
                     text: 'Please try again',
-                    icon: 'failure',
+                    icon: 'error',
                     showConfirmButton: false,
                     timer: 2000,
                     customClass: {

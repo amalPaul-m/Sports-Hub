@@ -1,17 +1,20 @@
-const productsSchema = require('../models/productsSchema')
-const productTypesSchema = require('../models/productTypesSchema')
-
+const productsSchema = require('../models/productsSchema');
+const productTypesSchema = require('../models/productTypesSchema');
+const wishlistSchema = require('../models/wishlistSchema');
+const cartSchema = require('../models/cartSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
+const { error } = require('winston');
 
 // get category page
 
 const getCategory = async function (req, res, next) {
 
   try {
-    
-    const page = parseInt(req.query.page) || 1;
+
+    const page = parseInt(req?.query?.page) || 1;
     const limit = 3;
     const skip = (page - 1) * limit;
-    const query = req.query.q ? req.query.q.trim() : '';
+    const query = req?.query?.q ? req.query.q.trim() : '';
 
     // Filter
     const filter = query
@@ -25,15 +28,15 @@ const getCategory = async function (req, res, next) {
       : {};
 
     // Query data
-    const totalUsers = await productTypesSchema.countDocuments(filter);
 
-    const categoryList =
-      await productTypesSchema
+    const [totalUsers, categoryList] = await Promise.all([
+      productTypesSchema.countDocuments(filter),
+      productTypesSchema
         .find()
         .sort({ updatedAt: -1 })
         .skip(skip)
         .limit(limit)
-
+    ]);
 
     const totalPages = Math.ceil(totalUsers / limit);
 
@@ -41,15 +44,17 @@ const getCategory = async function (req, res, next) {
       categoryList,
       currentPage: page,
       totalPages,
-      query,
-      cssFile: '/stylesheets/adminCategory.css',
-      jsFile: '/javascripts/adminCategory.js'
+      query
     });
 
 
-  } catch (err) {
-    err.message = 'not get category data';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error fetching category data', {
+      controller: 'category',
+      action: 'getCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 
@@ -58,12 +63,12 @@ const getCategory = async function (req, res, next) {
 const postCategory = async function (req, res, next) {
 
   try {
-    const input = req.body.name;
+    const input = req.body?.name;
     const name = input.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 
-    const category = new productTypesSchema ( {
+    const category = new productTypesSchema({
       name: name,
-      description: req.body.description
+      description: req.body?.description
     })
 
 
@@ -72,13 +77,24 @@ const postCategory = async function (req, res, next) {
     } else {
 
       await category.save();
-      console.log('category added', category);
+
+      apiLogger.info('Category added successfully', {
+        controller: 'category',
+        action: 'postCategory',
+        categoryId: category._id,
+        categoryName: category.name
+      });
+
       res.redirect('/category?success=1')
     }
 
-  } catch (err) {
-    err.message = 'not gstore category data';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error storing category data', {
+      controller: 'category',
+      action: 'postCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 
@@ -87,21 +103,30 @@ const postCategory = async function (req, res, next) {
 const unblockCategory = async function (req, res, next) {
 
   try {
-    const categoryId = req.params.id;
-    const categoryName = req.params.name;
+    const categoryId = req.params?.id;
+    const categoryName = req.params?.name;
 
-    console.log(categoryId, categoryName)
+    Promise.all([
+      productTypesSchema.findByIdAndUpdate(categoryId, { status: 'active' }),
+      productsSchema.updateMany({ category: categoryName }, { $set: { isActive: true } })
+    ]);
 
-    // status set to active
-    await productTypesSchema.findByIdAndUpdate(categoryId, { status: 'active' });
+    apiLogger.info('Category unblocked successfully', {
+      controller: 'category',
+      action: 'unblockCategory',
+      categoryId,
+      categoryName
+    });
 
-    await productsSchema.updateMany({ category: categoryName }, {$set: { isActive: true}})
-
-    // Redirect back to the customers page
     res.redirect('/category');
-  } catch (err) {
-    err.message = 'Error unblock category';
-    next(err);
+
+  } catch (error) {
+    errorLogger.error('Error unblocking category data', {
+      controller: 'category',
+      action: 'unblockCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 
@@ -110,20 +135,62 @@ const unblockCategory = async function (req, res, next) {
 const blockCategory = async function (req, res, next) {
 
   try {
-    const categoryId = req.params.id;
-    const categoryName = req.params.name;
-    console.log(categoryName)
+    const categoryId = req.params?.id;
+    const categoryName = req.params?.name;
 
-    // status set to blocked
-    await productTypesSchema.findByIdAndUpdate(categoryId, { status: 'blocked' });
+    await Promise.all([
+      productTypesSchema.findByIdAndUpdate(categoryId, { status: 'blocked' }),
+      productsSchema.updateMany({ category: categoryName }, { $set: { isActive: false } })
+    ])
 
-    await productsSchema.updateMany({ category: categoryName }, {$set: { isActive: false}})
+    const wishlistData = await wishlistSchema.find().populate('productId');
 
-    // Redirect back to the customers page
+    for (const wishlist of wishlistData) {
+      const filteredProducts = wishlist.productId.filter(product => product.category !== categoryName);
+
+      if (filteredProducts.length !== wishlist?.productId?.length) {
+        wishlist.productId = filteredProducts.map(p => p._id);
+        await wishlist.save();
+
+        apiLogger.info('Wishlist updated after blocking category', {
+          controller: 'category',
+          action: 'blockCategory',
+          wishlistId: wishlist._id,
+          categoryName
+        });
+
+      }
+    }
+
+
+    const carts = await cartSchema.find().populate('items.productId');
+    for (const cart of carts) {
+      const filteredItems = cart?.items?.filter(item =>
+        item.productId && item.productId?.category !== categoryName
+      );
+
+      if (filteredItems.length !== cart.items?.length) {
+        cart.items = filteredItems;
+        await cart.save();
+
+        apiLogger.info('Cart updated after blocking category', {
+          controller: 'category',
+          action: 'blockCategory',
+          cartId: cart._id,
+          categoryName
+        });
+
+      }
+    }
+
     res.redirect('/category');
-  } catch (err) {
-    err.message = 'Error hide category data';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Error blocking category data', {
+      controller: 'category',
+      action: 'blockCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 
@@ -132,32 +199,42 @@ const blockCategory = async function (req, res, next) {
 const updateCategory = async function (req, res, next) {
 
   try {
-    const categoryId = req.params.id
-    const input = req.body.name;
+    const categoryId = req.params?.id
+    const input = req.body?.name;
     const name = input.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 
     const category = {
       name: name,
-      description: req.body.description
+      description: req.body?.description
     }
-    console.log(categoryId)
 
 
     if (await productTypesSchema.findOne({ name: category.name })) {
       res.redirect('/category?fail=1')
     } else {
-      
+
       await productTypesSchema.findByIdAndUpdate(categoryId, { $set: category });
       // await db.collection('productTypes').updateOne({ _id: new ObjectId(categoryId) }, { $set: category })
-      console.log('category added', category);
+
+      apiLogger.info('Category updated successfully', {
+        controller: 'category',
+        action: 'updateCategory',
+        categoryId,
+        categoryName: category.name
+      });
+
       res.redirect('/category?success=2')
     }
-   
-  } catch (err) {
-    err.message = 'not store category data';  
-    next(err);
+
+  } catch (error) {
+    errorLogger.error('Error updating category data', {
+      controller: 'category',
+      action: 'updateCategory',
+      error: error.message
+    });
+    next(error);
   }
 };
 
 
-module.exports = {getCategory, postCategory, unblockCategory, blockCategory, updateCategory}
+module.exports = { getCategory, postCategory, unblockCategory, blockCategory, updateCategory }

@@ -1,28 +1,23 @@
 const usersSchema = require('../models/usersSchema')
 const generateOtp = require('../authentication/generateotp');
 const sendVerificationEmail = require('../authentication/mailer');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 
 const getForgot = (req, res) => {
-  res.render('forgot', {
-    cssFile: '/stylesheets/forgot.css',
-    jsFile: '/javascripts/forgot.js'
-  });
-};
 
+  res.render('forgot');
+
+};
 
 
 const postForgot = async (req, res) => {
   const { email } = req.body;
 
-
   const user = await usersSchema.findOne({ email });
+
   if (!user) {
-    return res.render('forgot', 
-    { content: 'Email not found', 
-        cssFile: '/stylesheets/forgot.css', 
-        jsFile: '/javascripts/forgot.js' 
-    });
+    return res.render('forgot', { content: 'Email not found' });
   }
 
   const otp = generateOtp();
@@ -46,8 +41,6 @@ const getVerifyOtp = (req, res) => {
   if (!req.session.resetEmail) return res.redirect('/forgot');
 
   res.render('verifyOtp', {
-    cssFile: '/stylesheets/verifyOtp.css',
-    jsFile: '/javascripts/verifyOtp.js',
     content: `OTP sent to ${req.session.resetEmail}`,
     alert: 'mt-5 pt-4'
   });
@@ -84,11 +77,16 @@ const postResendOtp = async (req, res) => {
       return res.json({ success: false, message: 'Failed to send email' });
     }
 
-  } catch (err) {
-    err.message = 'Error resending OTP';
-    next(err);
+  } catch (error) {
+    errorLogger.error('Failed to resend OTP', {
+      originalMessage: error.message,
+      stack: error.stack,
+      controller: 'forgot',
+      action: 'postResendOtp'
+    });
+    next(error);
   }
 };
 
 
-module.exports = {getForgot, postForgot, getVerifyOtp, postVerifyOtp, postResendOtp}
+module.exports = { getForgot, postForgot, getVerifyOtp, postVerifyOtp, postResendOtp }

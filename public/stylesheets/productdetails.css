@@ -567,3 +567,14 @@ h5 {
 .form-check-inline{
   margin-left: -25px;
 }
+
+
+.offer-box {
+  border: 0px solid green;
+  padding: 5px;
+  text-align: center;
+  background-color: #ca9400;
+  color: #fff;
+  width: 100px;
+  margin-bottom: 10px;
+}

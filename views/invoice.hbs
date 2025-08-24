@@ -62,6 +62,14 @@
     .small {
       font-size: 10px;
     }
+
+    .text {
+       font-size: 14px;
+    }
+
+    .text-big {
+       font-size: 18px;
+    }
   </style>
 
     <div class="invoice-box">
@@ -132,16 +140,28 @@
       <div class="section-title">Total Summary</div>
       <table class="summary">
         <tr>
-          <th class="text-right">Total Amount</th>
+          <th class="text-right text">Total Amount</th>
           <td class="text-right">₹{{calcGrandTotal items 18}}</td>
         </tr>
         <tr>
-          <th class="text-right">Total GST (18%)</th>
+          <th class="text-right text">Total GST (18%)</th>
           <td class="text-right">₹{{calcGSTTotal items 18}}</td>
         </tr>
         <tr>
-          <th class="text-right">Grand Total</th>
+          <th class="text-right text">Grand Total</th>
           <td class="text-right">₹{{total}}.00</td>
+        </tr>
+        <tr>
+          <th class="text-right text">Shipping Charge</th>
+          <td class="text-right">₹{{shippingCharges}}.00</td>
+        </tr>
+        <tr>
+          <th class="text-right text">Discount Amount</th>
+          <td class="text-right">₹{{discount}}.00</td>
+        </tr>
+        <tr>
+          <th class="text-right text-big">Payable Amount</th>
+          <td class="text-right text-big"><b>₹{{payableAmount}}.00</b></td>
         </tr>
       </table>
     </div>

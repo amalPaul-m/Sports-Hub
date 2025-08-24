@@ -1,3 +1,8 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/yourprofile.css">
+{{/section}}
+
+
 <nav class="navbar navbar-expand-lg bg-body-white border-bottom bg-white sticky-top">
     <div class="container">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
@@ -25,10 +30,20 @@
 
             <ul class="navbar-nav mb-2 mb-lg-0 ">
                 <li class="nav-item pe-4">
-                    <a class="nav-link" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist"></a>
+                    <a type="submit" class="nav-link position-relative" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist">
+                    <span id="home-badge-wishlist"  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                        0
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    </a>
                 </li>
                 <li class="nav-item pe-4">
-                    <a class="nav-link" href="/cart"><img src="/images/cart.png" alt="cart"></a>
+                    <a type="submit" class="nav-link position-relative" href="/cart"><img src="/images/cart.png" alt="cart">
+                    <span id="home-badge-cart" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                        0
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/youraccount"><img src="/images/user.png" alt="profile"></a>
@@ -139,3 +154,9 @@
 
     </div>
 </div>
+
+
+
+{{#section 'scripts'}}
+<script src="/javascripts/yourprofile.js"></script>
+{{/section}}

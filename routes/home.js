@@ -7,6 +7,7 @@ const homeControllers = require('../controllers/home')
 
 
 router.get('/',userAuthantication, checkSession, checkBlockedUser, homeControllers.getHome); 
+router.get('/home-badge', homeControllers.getHomeBadge);
 
 module.exports = router;
 

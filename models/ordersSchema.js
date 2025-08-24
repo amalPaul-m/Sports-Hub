@@ -5,7 +5,7 @@ const ordersSchema = new mongoose.Schema({
 
   orderId: {
     type: String,
-    required: true,
+    required: false,
     unique: true
   },
 
@@ -19,6 +19,12 @@ const ordersSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'shipped', 'outofdelivery','delivered', 'cancelled'],
     default: 'pending'
+  },
+
+  orderStatus: {
+    type: String,
+    enum: ['confirmed','cancelled'],
+    default: 'confirmed'
   },
 
 //   couponId: {
@@ -46,7 +52,12 @@ const ordersSchema = new mongoose.Schema({
         enum: ['confirmed', 'cancelled','returned'],
         default: 'confirmed'
       },
+      cancelReason: String,
       price: {
+        type: Number,
+        required: true
+      },
+      regularPrice: {
         type: Number,
         required: true
       },
@@ -81,15 +92,26 @@ const ordersSchema = new mongoose.Schema({
         default: null
       }
     }
-  ]
-//   ,
+  ],
+  couponInfo: [{
 
-//   couponInfo: [
-//     {
-//       couponCode: String,
-//       discount: Number
-//     }
-//   ]
+      couponCode: {
+        type: String,
+        default: null
+      },
+      discount: {
+        type: Number,
+        default: 0
+      },
+    discountAmount: {
+        type: Number,
+        default: 0
+    },
+    discountPercentage: {
+        type: Number,
+        default: null
+    }
+  }]
 
 }, { timestamps: true });
 

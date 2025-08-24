@@ -1,3 +1,9 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/confirm.css">
+{{/section}}
+
+
+
 <nav class="navbar navbar-expand-lg bg-body-white border-bottom bg-white sticky-top">
     <div class="container">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
@@ -25,10 +31,20 @@
 
             <ul class="navbar-nav mb-2 mb-lg-0 ">
                 <li class="nav-item pe-4">
-                    <a class="nav-link" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist"></a>
+                    <a type="submit" class="nav-link position-relative" href="/wishlist"><img src="/images/wishlist.png" alt="wishlist">
+                    <span id="home-badge-wishlist"  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                        0
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    </a>
                 </li>
                 <li class="nav-item pe-4">
-                    <a class="nav-link" href="/cart"><img src="/images/cart.png" alt="cart"></a>
+                    <a type="submit" class="nav-link position-relative" href="/cart"><img src="/images/cart.png" alt="cart">
+                    <span id="home-badge-cart" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                        0
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/youraccount"><img src="/images/user.png" alt="profile"></a>
@@ -80,6 +96,21 @@
       <div class="col-md-6 mt-4 mt-md-0">
         <h5 class="mb-4 fw-bold">Confirmation</h5>
 
+
+        
+        <p class="mb-1 text-secondary fw-semibold">Applied Coupon</p>
+                <div class="d-flex align-items-center gap-3 p-2 mt-2 mb-2 border-dotted-success" style="width: fit-content;">
+            <div>
+                <label class="form-label fw-semibold pt-2">{{#if code}} {{code}} {{else}} No Coupon {{/if}}</label>
+            </div>
+            <div class="">
+                <a href="/checkout/remove" type="button" class="btn p-0 border-0 bg-transparent">
+                    <i class="bi bi-x-lg"></i> 
+                </a>
+            </div>
+        </div>
+
+
         <!-- Payment -->
         {{!-- <p class="mb-1 text-secondary fw-semibold">Payment Method</p>
         <div class="d-flex align-items-center mb-3">
@@ -94,11 +125,12 @@
 
         <!-- Pricing -->
         <div class="mb-2"><strong>Subtotal</strong> <span class="float-end fw-bold">₹{{net}}.00</span></div>
-        <div class="mb-2 text-secondary">Estimated Tax <span class="float-end">₹{{tax}}.00 (18%)</span></div>
-        <div class="mb-2 text-secondary">Estimated Shipping & Handling <span class="float-end">₹0</span></div>
+        <div class="mb-2 text-secondary">Estimated Tax <span class="float-end">+ ₹{{tax}}.00 (18%)</span></div>
+        <div class="mb-2 text-secondary">Estimated Shipping & Handling <span class="float-end">+ ₹{{shipping}}.00</span></div>
+        <div class="mb-3 order-total">Total <span class="float-end">₹{{totalAmount}}.00</span></div>
         <hr>
-        <div class="mb-4 order-total">Total <span class="float-end">₹{{totalAmount}}.00</span></div>
-
+        <div class="mb-2 text-secondary">Discounted Amount <span class="float-end">- ₹{{discountAmount}}.00</span></div>
+        <div class="mb-3 fs-4   order-total">Payable Amount <span class="float-end">₹{{payableAmount}}.00</span></div>
         <!-- Terms and Buttons -->
         {{!-- <div class="form-check mb-4">
           <input class="form-check-input" type="checkbox" id="terms">
@@ -164,3 +196,8 @@
 
     </div>
 </div>
+
+
+{{#section 'scripts'}}
+<script src="/javascripts/payment.js"></script>
+{{/section}}

@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const checkBlockedUser = require('../middleware/checkBlockedUser');
 const userAuthantication = require('../middleware/userAuthantication');
-const accountController = require('../controllers/youraccount')
+const upload = require('../middleware/upload');
+const accountController = require('../controllers/youraccount');
 
 router.get('/',checkBlockedUser, userAuthantication, accountController.getyouraccount);
 router.get('/profile',checkBlockedUser, userAuthantication, accountController.getyourprofile);
@@ -14,12 +15,18 @@ router.get('/address',checkBlockedUser, userAuthantication, accountController.ge
 router.post('/address',checkBlockedUser, userAuthantication, accountController.postaddress);
 router.patch('/editaddress',checkBlockedUser, userAuthantication, accountController.editaddress);
 router.delete('/deleteaddress',checkBlockedUser, userAuthantication, accountController.deleteaddress);
+router.get('/get-pincode-info/:pincode',checkBlockedUser, userAuthantication, accountController.checkPinCode);
 
-router.get('/yourorders', userAuthantication, accountController.getyourorders);
-router.patch('/cancelorder/:orderId/:productId', userAuthantication, accountController.cancelorder);
 
-router.post('/return', userAuthantication, accountController.postReturn);
+router.get('/yourorders',checkBlockedUser, userAuthantication, accountController.getyourorders);
+router.patch('/cancelorder/:orderId/:productId/:size',checkBlockedUser, userAuthantication, accountController.cancelorder);
+router.patch('/cancelEntairOrder/:orderId',checkBlockedUser, userAuthantication, accountController.cancelEntairOrder);
 
-router.get('/cancelledorders', userAuthantication, accountController.getCancelledOrders);
+router.post('/return',checkBlockedUser, userAuthantication, accountController.postReturn);
+
+router.get('/cancelledorders',checkBlockedUser, userAuthantication, accountController.getCancelledOrders);
+
+router.post('/review',upload.array('reviewImages', 5), checkBlockedUser, userAuthantication, accountController.postReviews);
+router.post('/review/edit' ,upload.array('reviewImages', 5) , userAuthantication, accountController.postEditReviews);
 
 module.exports = router;

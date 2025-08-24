@@ -15,10 +15,11 @@ passport.use(new GoogleStrategy({
 
         const existingEmailUser = await usersSchema.findOne({ email: profile.emails[0].value });
         if (existingEmailUser) {
-          // Option 1: Link Google account to existing user (recommended)
+
           await usersSchema.findByIdAndUpdate(existingEmailUser._id, 
             { $set: { googleId: profile.id } });
-          user = { ...existingEmailUser, googleId: profile.id };
+          // user = { ...existingEmailUser, googleId: profile.id };
+          user = await usersSchema.findById(existingEmailUser._id);
         } else {
 
           const newUser = new usersSchema({
@@ -28,7 +29,8 @@ passport.use(new GoogleStrategy({
             googleId: profile.id
           });
           const result = await newUser.save();
-          user = { ...newUser, _id: result.insertedId };
+          // user = { ...newUser, _id: result.insertedId };
+          user = result;
 
         }
 

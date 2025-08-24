@@ -1,6 +1,6 @@
  body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f5f7fa;
+      background: #ffffff;
       margin: 0;
     }
 
@@ -123,3 +123,99 @@
   scrollbar-width: thin;             /* "auto" or "thin" */
   scrollbar-color: #e0e0e0 transparent; /* thumb and track */
 }
+
+
+
+
+    .card {
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      animation: fadeInUp 1s ease both;
+    }
+    .dashboard-header {
+      font-weight: 600;
+      font-size: 1.5rem;
+      animation: fadeIn 1s ease-in;
+    }
+    .metric-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 1rem;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+      animation: zoomIn 0.6s ease both;
+    }
+    .metric-box:hover {
+      transform: translateY(-5px);
+    }
+    .metric-title {
+      font-size: 0.9rem;
+      color: #888;
+    }
+    .metric-value {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .top-products img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 0.5rem;
+    }
+    .top-products li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .top-products li:last-child {
+      border-bottom: none;
+    }
+    .chart-container {
+      position: relative;
+      height: 300px;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .filter-buttons button {
+      border-radius: 2rem;
+      margin-right: 10px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes zoomIn {
+      0% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+
+
+    .bg-setup {
+      background-image: linear-gradient(to right top, #4d4d4d, #59595c, #66656b, #73727a, #807f8a);      margin: -25px !important;
+      padding: 20px;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+    }

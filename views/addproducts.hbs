@@ -1,3 +1,9 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/addProduct.css">
+{{/section}}
+
+
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="px-4 mb-3">
@@ -21,13 +27,13 @@
     </div>
   </div>
 
-  <a class="nav-link" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
+  <a class="nav-link" href="/salesreport"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
   <a class="nav-link" href="/customers"><i class="bi bi-people"></i> Customers</a>
-  <a class="nav-link" href="#"><i class="bi bi-ticket-detailed"></i> Coupon</a>
-  <a class="nav-link" href="#"><i class="bi bi-funnel"></i> Filter</a>
-  <a class="nav-link" href="#"><i class="bi bi-grid"></i> Category</a>
-  <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
-  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+  <a class="nav-link" href="/coupon"><i class="bi bi-ticket-detailed"></i> Coupon</a>
+  <a class="nav-link" href="/offers"><i class="bi bi-funnel"></i> Offers</a>
+  <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
+  {{!-- <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+  <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a> --}}
 </div>
 
 <!-- Topbar -->
@@ -100,6 +106,7 @@
             <div class="mb-3">
               <label class="form-label ">Category</label>
               <select class="form-select shadow-none" name="category" required>
+                <option value="">Select Category</option>
                 {{#each category}}
                 <option>{{this.name}}</option>
                 {{/each}}
@@ -147,6 +154,7 @@
               <div class="col-md-6 mb-3">
                 <label class="form-label">Age Range</label>
                 <select class="form-select shadow-none" name="ageRange" required>
+                  <option value="">Select Age Range</option>
                   <option>Kids</option>
                   <option>Adults</option>
                 </select>
@@ -259,3 +267,7 @@
         </div>
       </div>
 
+
+{{#section 'scripts'}}
+<script src="/javascripts/addProduct.js"></script>
+{{/section}}

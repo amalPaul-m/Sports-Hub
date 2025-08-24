@@ -1,3 +1,82 @@
+document.addEventListener('DOMContentLoaded', function () {
+  const char = document.getElementById('salesChart');
+  if (char) {
+    const ctx = char.getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['JAN','FEB','MAR','APR','MAY','JUN','JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+        datasets: [{
+          label: 'Sales',
+          data: monthlySales,
+          borderColor: '#000000',
+          backgroundColor: 'rgba(0,0,0,0.1)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: '#000',
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: function(value) {
+                return '₹' + value;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+});
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0];
+  const fromDateInput = document.querySelector('input[name="fromDate"]');
+  const toDateInput = document.querySelector('input[name="toDate"]');
+  const filterBtn = document.querySelector('button[type="submit"]');
+
+  // Set max date to today
+  fromDateInput.max = today;
+  toDateInput.max = today;
+
+  filterBtn.disabled = true;
+
+  fromDateInput.addEventListener('change', () => {
+    const fromDate = fromDateInput.value;
+    if (fromDate) {
+      toDateInput.min = fromDate;
+      if (toDateInput.value && toDateInput.value < fromDate) {
+        toDateInput.value = '';
+      }
+    } else {
+      toDateInput.min = '';
+    }
+
+    checkDatesFilled();
+  });
+
+  toDateInput.addEventListener('change', checkDatesFilled);
+
+  function checkDatesFilled() {
+    if (fromDateInput.value && toDateInput.value) {
+      filterBtn.disabled = false;
+    } else {
+      filterBtn.disabled = true;
+    }
+  }
+});
+
+
+
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('collapsed');
     document.getElementById('topbar').classList.toggle('collapsed');

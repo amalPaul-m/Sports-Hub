@@ -24,3 +24,73 @@
         .pagination {
             justify-content: center;
         }
+
+
+        .active>.page-link, .page-link.active {
+        color: #ffffff;
+        background-color: #000;
+        border-color: #000;
+        border-radius: 5px;
+        }
+
+
+        .page-link {
+        color: #000;
+        border: none;
+        }
+
+
+
+         /* swal style - success */
+
+  .swal-title {
+    color: #01aa01; /* dark green */
+    font-weight: bold;
+    font-size: 24px;
+    padding: auto;
+  }
+
+  .swal-title-failure {
+    color: #d40000; /* dark green */
+    font-weight: bold;
+    font-size: 24px;
+    padding: auto;
+  }
+
+  .swal-icon {
+    color: #00a008; /* icon color */
+    display: none !important;
+  }
+
+  .swal-button {
+    background-color: #16a34a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+  }
+
+  .swal2-container {
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(10px) !important; /* For Safari */
+  }
+
+
+  .glass-effect {
+    -webkit-backdrop-filter: blur(10px);
+    background-color: transparent !important; /* Light transparent */
+    color: white;
+    box-shadow: none !important;
+}
+
+
+/* Change icon color */
+.custom-icon-color .swal2-success-line-tip,
+.custom-icon-color .swal2-success-line-long,
+.custom-icon-color .swal2-success-ring {
+    border-color: #00ff22 !important;
+}
+
+.custom-error-icon .swal2-x-mark-line {
+    background-color: red !important;
+}

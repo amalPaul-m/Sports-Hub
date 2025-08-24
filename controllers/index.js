@@ -1,35 +1,43 @@
-const productsSchema = require('../models/productsSchema')
-const productTypesSchema = require('../models/productTypesSchema')
+const productsSchema = require('../models/productsSchema');
+const productTypesSchema = require('../models/productTypesSchema');
+const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getIndex = async function (req, res, next) {
 
   try {
 
-    const category = await productTypesSchema.find({ status: "active" }).sort({ _id: 1 });
-    const products = await productsSchema.find({ isActive: true }).sort({ updatedAt: -1 }).limit(4);
-
-    const discountProducts = await productsSchema.find({
+    const activeCategory = productTypesSchema.find({ status: "active" }).sort({ _id: 1 });
+    const latestProducts = productsSchema.find({ isActive: true }).sort({ updatedAt: -1 }).limit(4);
+    const discountProductsQuery = productsSchema.find({
       isActive: true, $expr: {
         $lte: ["$salePrice",
           { $multiply: ["$regularPrice", 0.5] }]
       }
-    }).limit(4);
+    }).limit(4)
+
+    const [category, products, discountProducts] = await Promise.all([
+      activeCategory,
+      latestProducts,
+      discountProductsQuery
+    ]);
 
     res.render('index',
       {
-        cssFile: '/stylesheets/home.css',
-        jsFile: '/javascripts/homeBefore.js',
         category,
         products,
         discountProducts
       });
 
-  } catch (err) {
+  } catch (error) {
 
-    err.message = 'cant access category data';
-    next(err);
+    errorLogger.error('Error fetching index data', {
+      controller: 'index',
+      action: 'getIndex',
+      error: error.message
+    });
+    next(error);
 
   }
 };
 
-module.exports = {getIndex}
+module.exports = { getIndex }

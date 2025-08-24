@@ -1,3 +1,9 @@
+{{#section 'styles'}}
+<link rel="stylesheet" href="/stylesheets/adminProduct.css">
+{{/section}}
+
+
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="px-4 mb-3">
@@ -6,7 +12,7 @@
 
     <h6 class="px-3">Dashboard</h6>
     <a class="nav-link" href="/dashboard"><i class="bi bi-house-door"></i> Dashboard</a>
-    <a class="nav-link" href="#"><i class="bi bi-file-earmark"></i> Order List</a>
+    <a class="nav-link" href="/orderslist"><i class="bi bi-file-earmark"></i> Order List</a>
 
     <a class="nav-link active  filter-text-size" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button"
         aria-expanded="false" aria-controls="multiCollapseExample1" href="/products"><i class="bi bi-inboxes"></i> All
@@ -21,13 +27,13 @@
         </div>
     </div>
 
-    <a class="nav-link" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
+    <a class="nav-link" href="/salesreport"><i class="bi bi-file-earmark-bar-graph"></i> Sales Report</a>
     <a class="nav-link" href="/customers"><i class="bi bi-people"></i> Customers</a>
-    <a class="nav-link" href="#"><i class="bi bi-ticket-detailed"></i> Coupon</a>
-    <a class="nav-link" href="#"><i class="bi bi-funnel"></i> Filter</a>
+    <a class="nav-link" href="/coupon"><i class="bi bi-ticket-detailed"></i> Coupon</a>
+    <a class="nav-link" href="/offers"><i class="bi bi-funnel"></i> Offers</a>
     <a class="nav-link" href="/category"><i class="bi bi-grid"></i> Category</a>
-    <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
-    <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a>
+    {{!-- <a class="nav-link" href="#"><i class="bi bi-arrow-counterclockwise"></i> Refund/Return</a>
+    <a class="nav-link" href="#"><i class="bi bi-tv"></i> Banners</a> --}}
 </div>
 
 <!-- Topbar -->
@@ -90,7 +96,7 @@
             <div class="d-flex gap-2">
               <a class="btn btn-outline-dark m-1" href="/products" type="button"><i class="bi bi-arrow-clockwise"></i></a>
                 {{!-- <button class="btn btn-outline-secondary m-1"><i class="bi bi-sliders"></i> FILTER</button> --}}
-                <button class="btn btn-outline-secondary m-1"> Export <i class="bi bi-download"></i></button>
+                {{!-- <button class="btn btn-outline-secondary m-1"> Export <i class="bi bi-download"></i></button> --}}
                 <a class="btn btn-dark m-1" href="/products/add"><i class="bi bi-plus"></i> ADD NEW PRODUCT</a>
             </div>
         </div>
@@ -124,7 +130,7 @@
                 <tr>
                   <th scope="col">Sl.No</th>
                   <th scope="col" class="ps-4">Product ID</th>
-                  <th scope="col" class="ps-4">Name</th>
+                  <th scope="col" class="ps-4" style="width: 50px;">Name</th>
                   <th class="col" class="ps-4">Sale Price</th>
                   <th scope="col" class="ps-4">Brand</th>
                   <th class="col" class="ps-4">Category</th>
@@ -145,7 +151,7 @@
                   <th scope="row">{{addOne @index}}</th>
                   <td class="ps-4">#{{last8 this._id}}</td>
                   <td class="ps-4">{{this.productName}}</td>
-                  <th class="ps-4">₹{{this.salePrice}}</th>
+                  <th class="ps-4">₹{{this.regularPrice}}</th>
                   <td class="ps-4">{{this.brandName}}</td>
                   <td class="ps-4">{{this.category}}</td>
                   <td class="ps-4">{{this.material}}</td>
@@ -331,7 +337,7 @@
                   <th scope="row">{{addOne @index}}</th>
                   <td class="ps-4">#{{last8 this._id}}</td>
                   <td class="ps-4">{{this.productName}}</td>
-                  <th class="ps-4">₹{{this.salePrice}}</th>
+                  <th class="ps-4">₹{{this.regularPrice}}</th>
                   <td class="ps-4">{{this.brandName}}</td>
                   <td class="ps-4">{{this.category}}</td>
                   <td class="ps-4">{{this.material}}</td>
@@ -475,11 +481,14 @@
       </nav>
     </div>
 
-
-
     </div>
 
 
   </div>
 
 </div>
+
+
+{{#section 'scripts'}}
+<script src="/javascripts/adminProduct.js"></script>
+{{/section}}
