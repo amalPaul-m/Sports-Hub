@@ -288,6 +288,18 @@ hbs.registerHelper('getItem', function (array, index) {
   return array?.[index];
 });
 
+
+app.enable("trust proxy");
+
+app.use((req, res, next) => {
+  if (req.secure) {
+    next();
+  } else {
+    res.redirect("https://" + req.headers.host + req.url);
+  }
+});
+
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -328,7 +340,6 @@ app.use('/offers', offersRouter);
 app.use('/salesreport',salesreportRouter);
 
 app.use(errorHandler);
-app.set('trust proxy', 1);
 
 
 // catch 404 and forward to error handler
