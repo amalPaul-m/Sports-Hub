@@ -22,6 +22,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 const shareLink = referalLink;
 
+window.alert(shareLink)
+
     document.getElementById('shareBtn').addEventListener('click', async () => {
         if (navigator.share) {
             try {
