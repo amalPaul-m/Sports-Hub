@@ -20,7 +20,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 
-const shareLink = referalLink;
+// const shareLink = referalLink;
+const shareLink = "https://sports-hub.shop/signup"
 
     document.getElementById('shareBtn').addEventListener('click', async () => {
         if (navigator.share) {
