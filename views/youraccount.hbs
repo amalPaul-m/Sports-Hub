@@ -198,11 +198,10 @@
 </div>
 
 <script>
-  const referalLink = {{json domainLink}} + "?ref=" + {{json usersData.referal}};
-  alert("Referral link:", referalLink);
+  const referalLink = "{{domainLink}}?ref={{usersData.referal}}"
 </script>
 
 {{#section 'scripts'}}
-<script src="/javascripts/yourAccount.js"></script>
+<script src="Sports-Hub/public/javascripts/yourAccount.js"></script>
 {{/section}}
 
