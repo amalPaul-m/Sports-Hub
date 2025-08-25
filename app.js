@@ -328,6 +328,8 @@ app.use('/offers', offersRouter);
 app.use('/salesreport',salesreportRouter);
 
 app.use(errorHandler);
+app.set('trust proxy', 1);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
