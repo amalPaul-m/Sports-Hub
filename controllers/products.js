@@ -194,7 +194,7 @@ const editGetProducts = async function (req, res, next) {
       productTypesSchema.find({ status: "active" }).sort({ _id: 1 })
     ]);
 
-    res.render('editProducts', {
+    res.render('editproducts', {
       productDetails: [productDetails],
       category
     });
