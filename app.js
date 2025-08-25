@@ -289,6 +289,11 @@ hbs.registerHelper('getItem', function (array, index) {
   return array?.[index];
 });
 
+hbs.registerHelper("json", function(context) {
+  return JSON.stringify(context);
+});
+
+
 
 app.enable("trust proxy");
 

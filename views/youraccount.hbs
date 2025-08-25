@@ -198,8 +198,8 @@
 </div>
 
 <script>
-  const referalLink = "{{{domainLink}}}?ref={{{usersData.referal}}}"
-  alert("Share link:", referalLink);
+  const referalLink = {{json domainLink}} + "?ref=" + {{json usersData.referal}};
+  console.log("Referral link:", referalLink);
 </script>
 
 {{#section 'scripts'}}
