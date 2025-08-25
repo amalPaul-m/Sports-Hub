@@ -46,7 +46,7 @@ hbs.registerHelper('calcGrandTotal', function (items, gstRate) {
 
 
 
-const downloadInvoice = async (req, res) => {
+const downloadInvoice = async (req, res, next) => {
 
   try {
     const orderId = req.params.orderId;
