@@ -66,6 +66,7 @@ app.use(session({
   }
 }))
 
+app.set('trust proxy', 1);
 
 app.use(methodOverride('_method'));
 //cache remove
