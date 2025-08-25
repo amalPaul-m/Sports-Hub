@@ -56,11 +56,11 @@ const app = express();
 
 //session handling
 app.use(session({
-  secret: process.env.GOOGLE_CLIENT_SECRET || process.env.SESSION_SECRET ,
+  secret: process.env.SESSION_SECRET || 'someStrongRandomSecret',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true if using HTTPS
+    secure: true, // Set to true if using HTTPS
     httpOnly: true, // Helps prevent XSS attacks
     maxAge: 1000 * 60 * 60 * 24
   }
