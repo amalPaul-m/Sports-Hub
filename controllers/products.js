@@ -47,7 +47,7 @@ const getAddProducts = async function (req, res, next) {
   try {
     const category = await productTypesSchema.find({ status: "active" }).sort({ _id: 1 });
 
-    res.render('addProducts', { category });
+    res.render('addproducts', { category });
 
   } catch (error) {
     errorLogger.error('Failed to fetch add products data', {
