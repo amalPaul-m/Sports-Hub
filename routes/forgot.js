@@ -6,12 +6,12 @@ const forgotControllers = require('../controllers/forgot')
 
 router.get('/',forgotControllers.getForgot);
 
-router.post('/',userAuthantication, checkBlockedUser, forgotControllers.postForgot);
+router.post('/',forgotControllers.postForgot);
 
-router.get('/verifyOtp',userAuthantication, checkBlockedUser, forgotControllers.getVerifyOtp);
+router.get('/verifyOtp',forgotControllers.getVerifyOtp);
 
-router.post('/verifyOtp',userAuthantication, checkBlockedUser, forgotControllers.postVerifyOtp);
+router.post('/verifyOtp',forgotControllers.postVerifyOtp);
 
-router.post('/resendotp',userAuthantication, checkBlockedUser, forgotControllers.postResendOtp);
+router.post('/resendotp',forgotControllers.postResendOtp);
 
 module.exports = router;
