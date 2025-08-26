@@ -473,11 +473,11 @@ const postWallet = async (req, res, next) => {
     
     if(discount >= 5000) {
         discountPer = Math.floor((5000/totalAmount)*100);
-        alert(`inside loop oooooo ${discountPer}`);
+        console.log(`inside loop oooooo ${discountPer}`);
         discount = Math.floor((discountPer/100)*totalAmount);
     }
     
-alert(`outside loop oooooo ${discountPer}`);
+console.log(`outside loop oooooo ${discountPer}`);
 
     const newOrder = new ordersSchema({
       orderId,
