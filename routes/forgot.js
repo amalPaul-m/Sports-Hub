@@ -4,7 +4,7 @@ const checkBlockedUser = require('../middleware/checkBlockedUser');
 const userAuthantication = require('../middleware/userAuthantication');
 const forgotControllers = require('../controllers/forgot')
 
-router.get('/',userAuthantication, checkBlockedUser, forgotControllers.getForgot);
+router.get('/',forgotControllers.getForgot);
 
 router.post('/',userAuthantication, checkBlockedUser, forgotControllers.postForgot);
 
