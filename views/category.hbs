@@ -145,7 +145,7 @@
 
                             <span data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i
                                     class="bi bi-pencil-square text-success" data-bs-toggle="offcanvas"
-                                    data-bs-target="#canvasRight" aria-controls="offcanvasRight"></i></span>
+                                    data-bs-target="#canvasRight{{this._id}}" aria-controls="offcanvasRight"></i></span>
                         </td>
                     </tr>
 
@@ -158,7 +158,7 @@
                     <form action="/category/update/{{this._id}}?_method=PATCH" method="POST" id="categoryFormUpdate" novalidate>
                         <input type="hidden" name="_method" value="PATCH" />
                         <div class="offcanvas offcanvas-end bg-transparent bg-setting border-0" tabindex="-1"
-                            id="canvasRight" aria-labelledby="offcanvasRightLabel">
+                            id="canvasRight{{this._id}}" aria-labelledby="offcanvasRightLabel">
                             <div class="offcanvas-header">
                                 <h5 class="offcanvas-title text-white" id="offcanvasRightLabel"><strong>Edit
                                         Category</strong></h5>
