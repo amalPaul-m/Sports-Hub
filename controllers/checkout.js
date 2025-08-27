@@ -723,6 +723,10 @@ const getRazorpaySuccess = async (req, res, next) => {
 
     const payment = await razorpayInstance.payments.fetch(payment_id);
 
+    const email = req.session.users?.email;
+    const usersData = await usersSchema.findOne({ email });
+    const user = usersData._id;
+
     if (payment.status === 'captured') {
 
       req.session.selectedPaymentType = 'online';
