@@ -471,7 +471,7 @@ const postWallet = async (req, res, next) => {
 
     let discountPer = couponData ? couponData.discountPercentage : 0
     
-    if(discount >= 4900) {
+    if(discount >= 4500) {
         discountPer = Math.floor((5000/totalAmount)*100);
         discount = Math.floor((discountPer/100)*totalAmount);
     }
