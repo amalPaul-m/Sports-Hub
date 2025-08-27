@@ -447,7 +447,7 @@ const postWallet = async (req, res, next) => {
     }, 0);
 
     let discount = Math.floor(totalAmount - req.session.payableAmount);
-
+    console.log('11111111111111111111111111111111111111111111111111',discount);
 
     if (!wallet || wallet.balance < totalAmount) {
       return res.json({ success: false, message: 'Sorry! Insufficient Wallet Balance' });
@@ -473,11 +473,10 @@ const postWallet = async (req, res, next) => {
     
     if(discount >= 5000) {
         discountPer = Math.floor((5000/totalAmount)*100);
-        console.log(`inside loop oooooo ${discountPer}`);
         discount = Math.floor((discountPer/100)*totalAmount);
     }
     
-console.log(`outside loop oooooo ${discountPer}`);
+
 
     const newOrder = new ordersSchema({
       orderId,
