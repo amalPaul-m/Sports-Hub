@@ -79,7 +79,7 @@
     {{#if (eq this.type "add")}}
     <div class="transaction">
         <div>
-            <div class="label">Added Money <span class="badge badge-add">ADD</span></div>
+            <div class="label">Added Money <span class="badge badge-add">Credit</span></div>
             <small class="text-muted">{{formatDateFull this.createdAt}}  <span class="ms-2">{{splitTime this.createdAt}}</span>
              <small class="text-muted ms-2">( {{this.description}} )</small></small>
         </div>
@@ -88,7 +88,7 @@
     {{else}}
     <div class="transaction">
         <div>
-            <div class="label">Deducted Money <span class="badge badge-ded">DED</span></div>
+            <div class="label">Deducted Money <span class="badge badge-ded">Debit</span></div>
             <small class="text-muted">{{formatDateFull this.createdAt}}  <span class="ms-2">{{splitTime this.createdAt}}</span> 
             <small class="text-muted ms-2">( {{this.description}} )</small></small>
         </div>
