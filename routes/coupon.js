@@ -3,7 +3,7 @@ const router = express.Router();
 const authAdmin = require('../middleware/authAdmin');
 const couponController = require('../controllers/coupon');
 
-router.get('/', authAdmin.checkSessionAdmin, couponController.getCoupon);
+router.get('/', authAdmin.isLogginAdmin, couponController.getCoupon);
 router.get('/add', authAdmin.checkSessionAdmin, couponController.getAddCoupon);
 router.post('/add', authAdmin.checkSessionAdmin, couponController.postAddCoupon);
 
