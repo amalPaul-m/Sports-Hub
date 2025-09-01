@@ -1,15 +1,18 @@
+const HttpStatus = require('../constants/httpStatus');
+
 const checkSessionAdmin = ((req,res,next)=>{
     if(req.session.isAdmin){
-        console.log("hello guys:"+req.session.isAdmin)
-        next()
+        console.log("Admin session Active",req.session.isAdmin);
+        return next();
     }else{
-        next()
+        console.log("Access denied: not admin");
+        return res.status(HttpStatus.UNAUTHORIZED).redirect('/admin');
     }
 })
 
 const isLogginAdmin = ((req,res,next)=>{
     if(req.session.isAdmin){
-        console.log("AMAL PAUL")
+        console.log("admin logged")
         res.redirect('/dashboard')
     }else{
         next()
