@@ -803,13 +803,16 @@ const getCancelledOrders = async (req, res, next) => {
     const returnedOrders = await returnSchema.find({ userId })
       .populate({
         path: 'orderId',
-        populate: {
+        populate: [{
           path: 'productInfo.productId',
           model: 'products'
-        }
+        },
+        {
+        path: 'addressId',              
+        model: 'addresses'            
+      }]
       })
       .populate('productId')
-      .populate('orderId.addressId')
       .sort({ createdAt: -1 })
       .skip((page1 - 1) * perPage1)
       .limit(perPage1);
