@@ -809,7 +809,7 @@ const getCancelledOrders = async (req, res, next) => {
         }
       })
       .populate('productId')
-      .populate('addressId')
+      .populate('orderId.addressId')
       .sort({ createdAt: -1 })
       .skip((page1 - 1) * perPage1)
       .limit(perPage1);
