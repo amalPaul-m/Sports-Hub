@@ -96,7 +96,7 @@
       <div class="modal-body">
         <h5 class="fw-bold">Product Information</h5>
         {{#each ../this.productInfo}}
-        {{#if (eq this.status "confirmed")}}
+        {{#if (eq this.status "cancelled")}}
           <p>{{this.productId.productName}} 
           <span class="ps-1 fs-5 fw-bold float-end">₹ {{mul this.quantity this.price}}.00</span><br>
           <span class="">Qty: {{this.quantity}}</span><span class="ps-3">Status: {{this.status}}</span></p>
