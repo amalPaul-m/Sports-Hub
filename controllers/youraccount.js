@@ -782,6 +782,7 @@ const getCancelledOrders = async (req, res, next) => {
       ]
     })
       .populate('productInfo.productId')
+      .populate('addressId')
       .sort({ createdAt: -1 })
       .skip((page - 1) * perPage)
       .limit(perPage);
@@ -808,6 +809,7 @@ const getCancelledOrders = async (req, res, next) => {
         }
       })
       .populate('productId')
+      .populate('addressId')
       .sort({ createdAt: -1 })
       .skip((page1 - 1) * perPage1)
       .limit(perPage1);
