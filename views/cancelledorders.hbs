@@ -106,7 +106,7 @@
         <h5 class="fw-bold mt-5">Payment Information</h5>
         <p>Payment Method <span class="float-end">{{../paymentInfo.[0].paymentMethod}}</span><br>
         Payment Status <span class="float-end">{{../paymentInfo.[0].paymentStatus}}</span></p>
-        <p>
+        {{!-- <p>
           Net Amount  <span class="float-end">₹ {{netAmount (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
           Gst Amount (18%) <span class="float-end">₹ {{gst (add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount)}}</span><br>
           Total Amount <span class="float-end">₹ {{add ../paymentInfo.[0].totalAmount ../couponInfo.[0].discount}}.00</span>
@@ -122,7 +122,8 @@
         <p>Discount Amount <span class="float-end">- ₹ {{add ../couponInfo.[0].discount 40}}</span>
         {{/if}}
         <h5 class="fw-bold">Payable Amount <span class="float-end">₹ {{../paymentInfo.[0].totalAmount}}</span></h5>
-        </p> <hr>
+        </p>  --}}
+        <hr>
         
         <h5 class="fw-bold mt-3">Address Information</h5>
         {{../addressId.fullName}} <br>
