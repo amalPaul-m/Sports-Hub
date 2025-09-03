@@ -49,6 +49,10 @@ const getCheckout = async (req, res, next) => {
         });
       }
     }
+
+    if (unavailableItems.length > 0) {
+      return res.redirect('/cart?error=out_of_stock');
+    }
     
     // Hold the stock quantity when complete the payment
 
@@ -108,14 +112,6 @@ const getCheckout = async (req, res, next) => {
       }
     }
    }
-
-
-
-
-    if (unavailableItems.length > 0) {
-      return res.redirect('/cart?error=out_of_stock');
-    }
-
 
 
     const addressData = await addressSchema.find({ userId: user });
