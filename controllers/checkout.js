@@ -168,7 +168,7 @@ const getConfirm = async (req, res, next) => {
     if ((!stockHoldData || !stockHoldData.items?.length) && (!cart || !cart.items?.length))  {
     console.log({
       userId: user,
-      stockHoldDataExists: stockHoldData,
+      stockHoldDataExists: !!stockHoldData,
       stockHoldItemsLength: stockHoldData?.items?.length || 0,
       cartExists: !!cart,
       cartItemsLength: cart?.items?.length || 0
