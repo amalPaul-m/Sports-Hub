@@ -4,6 +4,7 @@ const wishlistSchema = require('../models/wishlistSchema');
 const usersSchema = require('../models/usersSchema');
 const offersSchema = require('../models/offersSchema');
 const reviewSchema = require('../models/reviewSchema');
+const stockHoldSchema = require('../models/stockHoldSchema');
 const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getUserProducts = async (req, res, next) => {

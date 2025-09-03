@@ -5,6 +5,7 @@ const productsSchema = require('../models/productsSchema');
 const returnSchema = require('../models/returnSchema');
 const walletSchema = require('../models/walletSchema');
 const reviewSchema = require('../models/reviewSchema');
+const stockHoldSchema = require('../models/stockHoldSchema');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
