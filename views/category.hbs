@@ -75,12 +75,12 @@
                 <label class="form-label">Category Name</label>
                 <input type="text"
                     class="form-control shadow-none"
-                    pattern="^[A-Za-z\s]{3,20}$"
+                    pattern="^[A-Za-z\s]{3,10}$"
                     id="sourceText"
                     name="name"
                     placeholder="Enter category name"
                     required
-                    title="At least 3 characters, only letters and spaces.">
+                    title="At least 3 characters and max length is 10, only letters and spaces.">
                 <div class="invalid-feedback">
                 Category name at least 3 characters,only letters and spaces.
                 </div>
@@ -89,7 +89,7 @@
                 <textarea class="form-control shadow-none"
                         rows="4"
                         name="description"
-                        pattern="^[A-Za-z0-9\s.,'\"()!-]{10,}$"
+                        pattern="^[A-Za-z0-9\s.,'\"()!-]{5,20}$"
                         placeholder="Enter product type description"
                         required
                         title=""></textarea>
