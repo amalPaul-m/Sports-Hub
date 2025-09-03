@@ -10,26 +10,7 @@ const { apiLogger, errorLogger } = require('../middleware/logger');
 const getUserProducts = async (req, res, next) => {
   try {
 
-    const productsList = await productsSchema.find();
-    const currentDate = new Date();
-
-    await Promise.all(
-      productsList.map(async (product) => {
-        const activeFrom = new Date(product.startDate);
-        const expireTo = new Date(product.endDate);
-
-        const dateCheck = currentDate >= activeFrom && currentDate <= expireTo;
-
-        const salePrice = (product.discountPercentage > 0 && dateCheck)
-          ? Math.ceil(product.regularPrice - ((product.regularPrice * product.discountPercentage) / 100))
-          : product.regularPrice;
-
-        await productsSchema.findByIdAndUpdate(product._id, { $set: { salePrice } });
-      })
-    );
-
-
-    const email = req.session.users?.email;
+        const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
 
 
@@ -67,7 +48,25 @@ const getUserProducts = async (req, res, next) => {
       { $set: { items: [] } }
     );
 
+    
 
+    const productsList = await productsSchema.find();
+    const currentDate = new Date();
+
+    await Promise.all(
+      productsList.map(async (product) => {
+        const activeFrom = new Date(product.startDate);
+        const expireTo = new Date(product.endDate);
+
+        const dateCheck = currentDate >= activeFrom && currentDate <= expireTo;
+
+        const salePrice = (product.discountPercentage > 0 && dateCheck)
+          ? Math.ceil(product.regularPrice - ((product.regularPrice * product.discountPercentage) / 100))
+          : product.regularPrice;
+
+        await productsSchema.findByIdAndUpdate(product._id, { $set: { salePrice } });
+      })
+    );
 
 
     const wishlistProductIds = await wishlistSchema.find({ userId: usersData._id }).distinct('productId');
