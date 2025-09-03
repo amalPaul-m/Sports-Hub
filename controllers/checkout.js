@@ -52,7 +52,7 @@ const getCheckout = async (req, res, next) => {
     
     // Hold the stock quantity when complete the payment
 
-    const stockHoldData = await stockHoldSchema.findOne({ userId: user });
+    let stockHoldData = await stockHoldSchema.findOne({ userId: user });
 
     for (const product of cartItem.items) {
       const productId = product.productId;
@@ -88,7 +88,7 @@ const getCheckout = async (req, res, next) => {
         });
         await stockHoldData.save();
       } else {
-        
+
         await stockHoldSchema.updateOne(
           { userId: user },
           {
