@@ -38,8 +38,6 @@ const getCheckout = async (req, res, next) => {
         Number(variant.stockQuantity) >= Number(item.quantity)
       );
 
-      console.log(matchingVariant[0]);
-
       if (!matchingVariant) {
         unavailableItems.push({
           productId: product._id,
@@ -49,9 +47,22 @@ const getCheckout = async (req, res, next) => {
           quantity: item.quantity
         });
       }
-
-
     }
+    
+
+      for (const product of cartItem.items) {
+      const productId = product.productId;
+      const color = product.color;
+      const size  = product.size;
+      const stock = product.quantity;
+
+      await productsSchema.findByOneAndUpdate(
+        {_id:productId, 'variant.color': color, 'variant.size': size},
+        {$inc : {stockQuantity : -stock}}
+      )
+
+      }
+
 
     if (unavailableItems.length > 0) {
       return res.redirect('/cart?error=out_of_stock');
