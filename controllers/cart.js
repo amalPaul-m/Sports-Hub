@@ -5,6 +5,7 @@ const wishlistSchema = require('../models/wishlistSchema');
 const couponSchema = require('../models/couponSchema');
 const couponSessionClr = require('../helpers/couponSessionClr');
 const ordersSchema = require('../models/ordersSchema');
+const stockHoldSchema = require('../models/stockHoldSchema');
 const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getCart = async (req, res, next) => {
@@ -17,6 +18,40 @@ const getCart = async (req, res, next) => {
 
   const user = await usersSchema.findOne({ email });
   if (!user) return res.redirect('/login');
+
+  const userId = user._id;
+  let stockHoldData = await stockHoldSchema.findOne({ userId: userId });
+  
+  if (stockHoldData?.items?.length) {
+  for (const product of stockHoldData.items) {
+    const productId = product.productId;
+    const color = product.color;
+    const size = product.size;
+    const quantity = product.quantity;
+
+    await productsSchema.findOneAndUpdate(
+      {
+        _id: productId,
+        variants: {
+          $elemMatch: {
+            color: color,
+            size: size,
+          },
+        },
+      },
+      {
+        $inc: { "variants.$.stockQuantity": quantity },
+      },
+      { new: true }
+    );
+
+  }
+  }
+
+  await stockHoldSchema.updateOne(
+    { userId: user },
+    { $set: { items: [] } }
+  );
 
 
   //Active offers Checking
