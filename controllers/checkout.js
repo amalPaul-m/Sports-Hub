@@ -166,7 +166,14 @@ const getConfirm = async (req, res, next) => {
 
     const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
     const stockHoldData = await stockHoldSchema.findOne({ userId: user });
-    if (!stockHoldData?.items?.length || !cart || !cart?.items?.length) {
+    if (!stockHoldData || !stockHoldData.items?.length || !cart || !cart?.items?.length) {
+    console.log({
+      userId: user,
+      stockHoldDataExists: !!stockHoldData,
+      stockHoldItemsLength: stockHoldData?.items?.length || 0,
+      cartExists: !!cart,
+      cartItemsLength: cart?.items?.length || 0
+    });
       return res.redirect('/cart?error=empty_cart');
     }
 
