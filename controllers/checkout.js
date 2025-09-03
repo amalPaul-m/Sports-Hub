@@ -56,7 +56,7 @@ const getCheckout = async (req, res, next) => {
       const size  = product.size;
       const stock = product.quantity;
 
-      await productsSchema.findByOneAndUpdate(
+      await productsSchema.findOneAndUpdate(
         {_id:productId, 'variant.color': color, 'variant.size': size},
         {$inc : {stockQuantity : -stock}}
       )
