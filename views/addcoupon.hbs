@@ -81,12 +81,12 @@
                       <span id="error-msg"></span>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Coupon Name</label>
-                            <input type="text" class="form-control shadow-none" name="name" placeholder="Enter coupon name" required>
-                            <div class="invalid-feedback">Please enter coupon name.</div>
+                            <input type="text" class="form-control shadow-none" name="name" pattern="^[A-Za-z\s]{3,15}$" placeholder="Enter coupon name" required>
+                            <div class="invalid-feedback">Please enter coupon name max length is 15</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Coupon Code</label>
-                            <input type="text" class="form-control shadow-none" id="couponCodeInput" name="code" placeholder="Enter coupon code" required>
+                            <input type="text" class="form-control shadow-none" id="couponCodeInput" name="code" pattern="^[A-Za-z\s]{3,8}$" placeholder="Enter coupon code" required>
                             <div class="invalid-feedback">Please enter coupon code.</div>
                         </div>
                         <div class="col-md-6">
