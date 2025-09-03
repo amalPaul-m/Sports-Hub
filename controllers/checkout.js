@@ -176,32 +176,32 @@ const getConfirm = async (req, res, next) => {
       return res.redirect('/cart?error=empty_cart');
     }
 
-    const unavailableItems = [];
+    // const unavailableItems = [];
 
-    for (const item of cart.items) {
-      const product = item.productId;
+    // for (const item of cart.items) {
+    //   const product = item.productId;
 
-      const matchingVariant = product?.variants?.find(variant =>
-        String(variant.size).trim().toLowerCase() === String(item.size).trim().toLowerCase() &&
-        String(variant.color).replace('#', '').trim().toLowerCase() === String(item.color).replace('#', '').trim().toLowerCase() &&
-        Number(variant.stockQuantity) >= Number(item.quantity)
-      );
+    //   const matchingVariant = product?.variants?.find(variant =>
+    //     String(variant.size).trim().toLowerCase() === String(item.size).trim().toLowerCase() &&
+    //     String(variant.color).replace('#', '').trim().toLowerCase() === String(item.color).replace('#', '').trim().toLowerCase() &&
+    //     Number(variant.stockQuantity) >= Number(item.quantity)
+    //   );
 
 
-      if (!matchingVariant) {
-        unavailableItems.push({
-          productId: product._id,
-          name: product.name,
-          size: item.size,
-          color: item.color,
-          quantity: item.quantity
-        });
-      }
-    }
+    //   if (!matchingVariant) {
+    //     unavailableItems.push({
+    //       productId: product._id,
+    //       name: product.name,
+    //       size: item.size,
+    //       color: item.color,
+    //       quantity: item.quantity
+    //     });
+    //   }
+    // }
 
-    if (unavailableItems.length > 0) {
-      return res.redirect('/cart?error=out_of_stock');
-    }
+    // if (unavailableItems.length > 0 ) {
+    //   return res.redirect('/cart?error=out_of_stock');
+    // }
 
 
 
@@ -315,36 +315,36 @@ const getPayment = async (req, res, next) => {
 
     const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
     const stockHoldData = await stockHoldSchema.findOne({ userId: user });
-    if (!stockHoldData?.items?.length || !cart || !cart?.items?.length) {
+    if ((!stockHoldData || !stockHoldData.items?.length) && (!cart || !cart.items?.length))  {
       return res.redirect('/cart?error=empty_cart');
     }
 
-    const unavailableItems = [];
+    // const unavailableItems = [];
 
-    for (const item of cart.items) {
-      const product = item.productId;
+    // for (const item of cart.items) {
+    //   const product = item.productId;
 
-      const matchingVariant = product?.variants?.find(variant =>
-        String(variant.size).trim().toLowerCase() === String(item.size).trim().toLowerCase() &&
-        String(variant.color).replace('#', '').trim().toLowerCase() === String(item.color).replace('#', '').trim().toLowerCase() &&
-        Number(variant.stockQuantity) >= Number(item.quantity)
-      );
+    //   const matchingVariant = product?.variants?.find(variant =>
+    //     String(variant.size).trim().toLowerCase() === String(item.size).trim().toLowerCase() &&
+    //     String(variant.color).replace('#', '').trim().toLowerCase() === String(item.color).replace('#', '').trim().toLowerCase() &&
+    //     Number(variant.stockQuantity) >= Number(item.quantity)
+    //   );
 
 
-      if (!matchingVariant) {
-        unavailableItems.push({
-          productId: product._id,
-          name: product.name,
-          size: item.size,
-          color: item.color,
-          quantity: item.quantity
-        });
-      }
-    }
+    //   if (!matchingVariant) {
+    //     unavailableItems.push({
+    //       productId: product._id,
+    //       name: product.name,
+    //       size: item.size,
+    //       color: item.color,
+    //       quantity: item.quantity
+    //     });
+    //   }
+    // }
 
-    if (unavailableItems.length > 0) {
-      return res.redirect('/cart?error=out_of_stock');
-    }
+    // if (unavailableItems.length > 0) {
+    //   return res.redirect('/cart?error=out_of_stock');
+    // }
 
 
 
