@@ -48,7 +48,7 @@ const getyouraccount = async (req, res, next) => {
     }
   
     await stockHoldSchema.updateOne(
-      { userId: user },
+      { userId: userId },
       { $set: { items: [] } }
     );
 
@@ -379,7 +379,7 @@ const getyourorders = async (req, res, next) => {
     }
   
     await stockHoldSchema.updateOne(
-      { userId: user },
+      { userId: userId },
       { $set: { items: [] } }
     );
 
