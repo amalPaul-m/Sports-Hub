@@ -57,11 +57,21 @@ const getCheckout = async (req, res, next) => {
       const stock = product.quantity;
 
       await productsSchema.findOneAndUpdate(
-        {_id:productId, 'variant.color': color, 'variant.size': size},
-        {$inc : {stockQuantity : -stock}}
-      )
-
+      {
+        _id: productId,
+        variants: {
+          $elemMatch: {
+            color: color,
+            size: size,
+          },
+        },
+      },
+      {
+        $inc: { "variants.$.stockQuantity": -stock },
       }
+    );
+
+  }
 
 
     if (unavailableItems.length > 0) {
