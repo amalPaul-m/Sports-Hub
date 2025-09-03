@@ -58,7 +58,6 @@ const getCheckout = async (req, res, next) => {
 
     let stockHoldData = await stockHoldSchema.findOne({ userId: user });
 
-    if(!stockHoldData?.items?.length) {
 
     for (const product of cartItem.items) {
       const productId = product.productId;
@@ -111,7 +110,7 @@ const getCheckout = async (req, res, next) => {
         );
       }
     }
-   }
+
 
 
     const addressData = await addressSchema.find({ userId: user });
