@@ -58,60 +58,38 @@ const getCheckout = async (req, res, next) => {
 
     let stockHoldData = await stockHoldSchema.findOne({ userId: user });
 
-    if(!stockHoldData?.items?.length) {
+for (const product of cartItem.items) {
+  const productId = product.productId;
+  const color = product.color;
+  const size = product.size;
+  const quantity = product.quantity;
 
-    for (const product of cartItem.items) {
-      const productId = product.productId;
-      const color = product.color;
-      const size = product.size;
-      const quantity = product.quantity;
+  if (!stockHoldData) {
+    stockHoldData = new stockHoldSchema({
+      userId: user,
+      items: [{ productId, quantity, color, size }]
+    });
+    await stockHoldData.save();
+  } else {
+    // Check if this variant already exists in hold
+    const existingItem = stockHoldData.items.find(
+      (i) =>
+        String(i.productId) === String(productId) &&
+        i.color === color &&
+        i.size === size
+    );
 
-      await productsSchema.findOneAndUpdate(
-        {
-          _id: productId,
-          variants: {
-            $elemMatch: {
-              color: color,
-              size: size,
-            },
-          },
-        },
-        {
-          $inc: { "variants.$.stockQuantity": -quantity },
-        },
-        { new: true }
-      );
-
-      if (!stockHoldData) {
-        stockHoldData = new stockHoldSchema({
-          userId: user,
-          items: [{
-            productId,
-            quantity,
-            color,
-            size
-          }]
-        });
-        await stockHoldData.save();
-
-      } else {
-
-        await stockHoldSchema.updateOne(
-          { userId: user },
-          {
-            $push: {
-              items: {
-                productId,
-                quantity,
-                color,
-                size
-              }
-            }
-          }
-        );
-      }
+    if (existingItem) {
+      // Just update the quantity
+      existingItem.quantity += quantity;
+    } else {
+      stockHoldData.items.push({ productId, quantity, color, size });
     }
-   }
+
+    await stockHoldData.save();
+  }
+}
+
 
 
     const addressData = await addressSchema.find({ userId: user });
