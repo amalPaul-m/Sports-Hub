@@ -9,6 +9,7 @@ const generateOrderId = require('../helpers/generateOrderId');
 const razorpayInstance = require('../configuration/razorpay');
 const transactionSchema = require('../models/transactionSchema');
 const couponSchema = require('../models/couponSchema');
+const stockHoldSchema = require('../models/stockHoldSchema');
 const { apiLogger, errorLogger } = require('../middleware/logger');
 
 const getCheckout = async (req, res, next) => {
@@ -49,29 +50,61 @@ const getCheckout = async (req, res, next) => {
       }
     }
     
+    // Hold the stock quantity when complete the payment
 
-      for (const product of cartItem.items) {
+    const stockHoldData = await stockHoldSchema.findOne({ userId: user });
+
+    for (const product of cartItem.items) {
       const productId = product.productId;
       const color = product.color;
-      const size  = product.size;
-      const stock = product.quantity;
+      const size = product.size;
+      const quantity = product.quantity;
 
       await productsSchema.findOneAndUpdate(
-      {
-        _id: productId,
-        variants: {
-          $elemMatch: {
-            color: color,
-            size: size,
+        {
+          _id: productId,
+          variants: {
+            $elemMatch: {
+              color: color,
+              size: size,
+            },
           },
         },
-      },
-      {
-        $inc: { "variants.$.stockQuantity": -stock },
-      }
-    );
+        {
+          $inc: { "variants.$.stockQuantity": -quantity },
+        },
+        { new: true }
+      );
 
-  }
+      if (!stockHoldData) {
+        stockHoldData = new stockHoldSchema({
+          userId: user,
+          items: [{
+            productId,
+            quantity,
+            color,
+            size
+          }]
+        });
+        await stockHoldData.save();
+      } else {
+        
+        await stockHoldSchema.updateOne(
+          { userId: user },
+          {
+            $push: {
+              items: {
+                productId,
+                quantity,
+                color,
+                size
+              }
+            }
+          }
+        );
+      }
+    }
+
 
 
     if (unavailableItems.length > 0) {
@@ -272,7 +305,7 @@ const getPayment = async (req, res, next) => {
 
   const user = usersData._id;
 
-      const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
+    const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
     if (!cart || !cart?.items?.length) {
       return res.redirect('/cart?error=empty_cart');
     }
