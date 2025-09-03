@@ -87,6 +87,7 @@ const getCheckout = async (req, res, next) => {
           }]
         });
         await stockHoldData.save();
+
       } else {
 
         await stockHoldSchema.updateOne(
@@ -104,6 +105,8 @@ const getCheckout = async (req, res, next) => {
         );
       }
     }
+
+
 
 
 
@@ -164,7 +167,8 @@ const getConfirm = async (req, res, next) => {
 
 
     const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
-    if (!cart || !cart?.items?.length) {
+    const stockHoldData = await stockHoldSchema.findOne({userId: user});
+    if (!stockHoldData || !cart || !cart?.items?.length) {
       return res.redirect('/cart?error=empty_cart');
     }
 
