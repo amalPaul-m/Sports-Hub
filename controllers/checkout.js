@@ -591,6 +591,39 @@ const postWallet = async (req, res, next) => {
     delete req.session.couponCode;
     delete req.session.shippingCharge;
 
+
+    let stockHoldData = await stockHoldSchema.findOne({ userId: user });
+    
+    for (const product of stockHoldData.items) {
+      const productId = product.productId;
+      const color = product.color;
+      const size = product.size;
+      const quantity = product.quantity;
+
+      await productsSchema.findOneAndUpdate(
+        {
+          _id: productId,
+          variants: {
+            $elemMatch: {
+              color: color,
+              size: size,
+            },
+          },
+        },
+        {
+          $inc: { "variants.$.stockQuantity": quantity },
+        },
+        { new: true }
+      );
+
+    }
+
+    await stockHoldSchema.updateOne(
+      { userId: user },
+      { $set: { items: [] } }
+    );
+
+
     //update quantity
 
     for (const item of newOrder.productInfo) {
