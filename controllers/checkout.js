@@ -54,6 +54,8 @@ const getCheckout = async (req, res, next) => {
 
     let stockHoldData = await stockHoldSchema.findOne({ userId: user });
 
+    if(!stockHoldData?.items?.length) {
+
     for (const product of cartItem.items) {
       const productId = product.productId;
       const color = product.color;
@@ -105,7 +107,7 @@ const getCheckout = async (req, res, next) => {
         );
       }
     }
-
+   }
 
 
 
@@ -168,7 +170,7 @@ const getConfirm = async (req, res, next) => {
 
     const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
     const stockHoldData = await stockHoldSchema.findOne({userId: user});
-    if (!stockHoldData?.items?.length && !cart && !cart?.items?.length) {
+    if (!stockHoldData?.items?.length && !cart || !cart?.items?.length) {
       return res.redirect('/cart?error=empty_cart');
     }
 
