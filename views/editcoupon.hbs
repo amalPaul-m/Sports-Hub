@@ -81,15 +81,15 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Coupon Name</label>
-                            <input type="text" class="form-control shadow-none" name="name" 
+                            <input type="text" class="form-control shadow-none" pattern="^[\w\W\s]{3,15}$" name="name" 
                             placeholder="Enter coupon name" required value="{{couponData.name}}">
-                            <div class="invalid-feedback">Please enter coupon name.</div>
+                            <div class="invalid-feedback">Please enter coupon name min length 3 and max length is 15</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Coupon Code</label>
-                            <input type="text" class="form-control shadow-none" id="couponCodeInput" 
+                            <input type="text" class="form-control shadow-none" pattern="^[\w\W\s]{3,8}$" id="couponCodeInput" 
                             name="code" placeholder="Enter coupon code" required value="{{couponData.code}}" readonly>
-                            <div class="invalid-feedback">Please enter coupon code.</div>
+                            <div class="invalid-feedback">Please enter coupon code min length 3 and max length is 8.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Discount Price</label>
