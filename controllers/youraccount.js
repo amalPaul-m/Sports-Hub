@@ -16,6 +16,43 @@ const getyouraccount = async (req, res, next) => {
     const email = req.session.users?.email;
     const usersData = await usersSchema.findOne({ email });
 
+
+    const userId = usersData._id;
+    let stockHoldData = await stockHoldSchema.findOne({ userId: userId });
+    
+    if (stockHoldData?.items?.length) {
+    for (const product of stockHoldData.items) {
+      const productId = product.productId;
+      const color = product.color;
+      const size = product.size;
+      const quantity = product.quantity;
+  
+      await productsSchema.findOneAndUpdate(
+        {
+          _id: productId,
+          variants: {
+            $elemMatch: {
+              color: color,
+              size: size,
+            },
+          },
+        },
+        {
+          $inc: { "variants.$.stockQuantity": quantity },
+        },
+        { new: true }
+      );
+  
+    }
+    }
+  
+    await stockHoldSchema.updateOne(
+      { userId: user },
+      { $set: { items: [] } }
+    );
+
+
+
     res.render('youraccount', {
       usersData,
       domainLink: process.env.DOMAIN_LINK
@@ -311,6 +348,42 @@ const getyourorders = async (req, res, next) => {
     const user = await usersSchema.findOne({ email });
 
     const userId = user._id;
+
+    let stockHoldData = await stockHoldSchema.findOne({ userId: userId });
+    
+    if (stockHoldData?.items?.length) {
+    for (const product of stockHoldData.items) {
+      const productId = product.productId;
+      const color = product.color;
+      const size = product.size;
+      const quantity = product.quantity;
+  
+      await productsSchema.findOneAndUpdate(
+        {
+          _id: productId,
+          variants: {
+            $elemMatch: {
+              color: color,
+              size: size,
+            },
+          },
+        },
+        {
+          $inc: { "variants.$.stockQuantity": quantity },
+        },
+        { new: true }
+      );
+  
+    }
+    }
+  
+    await stockHoldSchema.updateOne(
+      { userId: user },
+      { $set: { items: [] } }
+    );
+
+
+
 
     const reviewData = await reviewSchema.find({ userId: userId });
     const reviewMap = reviewData.map(r => r.productId.toString());
