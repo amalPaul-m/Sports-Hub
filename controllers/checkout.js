@@ -64,6 +64,23 @@ for (const product of cartItem.items) {
   const size = product.size;
   const quantity = product.quantity;
 
+  // Reserve stock immediately
+  const updatedProduct = await productsSchema.findOneAndUpdate(
+    {
+      _id: productId,
+      "variants.color": color,
+      "variants.size": size,
+      "variants.stockQuantity": { $gte: quantity } // ensure enough stock
+    },
+    { $inc: { "variants.$.stockQuantity": -quantity } },
+    { new: true }
+  );
+
+  if (!updatedProduct) {
+    return res.redirect('/cart?error=out_of_stock'); // in case stock went out meanwhile
+  }
+
+  // Save hold
   if (!stockHoldData) {
     stockHoldData = new stockHoldSchema({
       userId: user,
@@ -71,7 +88,6 @@ for (const product of cartItem.items) {
     });
     await stockHoldData.save();
   } else {
-    // Check if this variant already exists in hold
     const existingItem = stockHoldData.items.find(
       (i) =>
         String(i.productId) === String(productId) &&
@@ -80,7 +96,6 @@ for (const product of cartItem.items) {
     );
 
     if (existingItem) {
-      // Just update the quantity
       existingItem.quantity += quantity;
     } else {
       stockHoldData.items.push({ productId, quantity, color, size });
@@ -89,6 +104,7 @@ for (const product of cartItem.items) {
     await stockHoldData.save();
   }
 }
+
 
 
 
