@@ -38,7 +38,7 @@ const getCheckout = async (req, res, next) => {
         Number(variant.stockQuantity) >= Number(item.quantity)
       );
 
-      console.log(matchingVariant);
+      console.log(matchingVariant[0]);
 
       if (!matchingVariant) {
         unavailableItems.push({
