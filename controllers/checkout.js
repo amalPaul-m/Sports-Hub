@@ -58,54 +58,60 @@ const getCheckout = async (req, res, next) => {
 
     let stockHoldData = await stockHoldSchema.findOne({ userId: user });
 
-for (const product of cartItem.items) {
-  const productId = product.productId;
-  const color = product.color;
-  const size = product.size;
-  const quantity = product.quantity;
+    if(!stockHoldData?.items?.length) {
 
-  // Reserve stock immediately
-  const updatedProduct = await productsSchema.findOneAndUpdate(
-    {
-      _id: productId,
-      "variants.color": color,
-      "variants.size": size,
-      "variants.stockQuantity": { $gte: quantity } // ensure enough stock
-    },
-    { $inc: { "variants.$.stockQuantity": -quantity } },
-    { new: true }
-  );
+    for (const product of cartItem.items) {
+      const productId = product.productId;
+      const color = product.color;
+      const size = product.size;
+      const quantity = product.quantity;
 
-  if (!updatedProduct) {
-    return res.redirect('/cart?error=out_of_stock'); // in case stock went out meanwhile
-  }
+      await productsSchema.findOneAndUpdate(
+        {
+          _id: productId,
+          variants: {
+            $elemMatch: {
+              color: color,
+              size: size,
+            },
+          },
+        },
+        {
+          $inc: { "variants.$.stockQuantity": -quantity },
+        },
+        { new: true }
+      );
 
-  // Save hold
-  if (!stockHoldData) {
-    stockHoldData = new stockHoldSchema({
-      userId: user,
-      items: [{ productId, quantity, color, size }]
-    });
-    await stockHoldData.save();
-  } else {
-    const existingItem = stockHoldData.items.find(
-      (i) =>
-        String(i.productId) === String(productId) &&
-        i.color === color &&
-        i.size === size
-    );
+      if (!stockHoldData) {
+        stockHoldData = new stockHoldSchema({
+          userId: user,
+          items: [{
+            productId,
+            quantity,
+            color,
+            size
+          }]
+        });
+        await stockHoldData.save();
 
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      stockHoldData.items.push({ productId, quantity, color, size });
+      } else {
+
+        await stockHoldSchema.updateOne(
+          { userId: user },
+          {
+            $push: {
+              items: {
+                productId,
+                quantity,
+                color,
+                size
+              }
+            }
+          }
+        );
+      }
     }
-
-    await stockHoldData.save();
-  }
-}
-
-
+   }
 
 
     const addressData = await addressSchema.find({ userId: user });
@@ -160,7 +166,7 @@ const getConfirm = async (req, res, next) => {
 
     const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
     const stockHoldData = await stockHoldSchema.findOne({ userId: user });
-    if ((!stockHoldData || !stockHoldData.items?.length) && (!cart || !cart.items?.length))  {
+    if ((!stockHoldData || !stockHoldData.items?.length))  {
       return res.redirect('/cart?error=empty_cart');
     }
 
@@ -303,7 +309,7 @@ const getPayment = async (req, res, next) => {
 
     const cart = await cartSchema.findOne({ userId: user }).populate('items.productId');
     const stockHoldData = await stockHoldSchema.findOne({ userId: user });
-    if ((!stockHoldData || !stockHoldData.items?.length) && (!cart || !cart.items?.length))  {
+    if ((!stockHoldData || !stockHoldData.items?.length))  {
       return res.redirect('/cart?error=empty_cart');
     }
 
