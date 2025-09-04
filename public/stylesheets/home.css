@@ -757,17 +757,18 @@ h3 {
         margin-right: 0px;
         }
 
+        .bg-setting {
+        backdrop-filter: blur(10px) !important;
+        }
+
+        .display {
+            display: none;
+        }
 
     }
 
 
-    .bg-setting {
-      backdrop-filter: blur(10px) !important;
-    }
 
-    .display {
-        display: none;
-    }
 
     /* Small Devices (landscape phones, ≥576px) */
     @media (min-width: 576px) and (max-width: 767.98px) {
