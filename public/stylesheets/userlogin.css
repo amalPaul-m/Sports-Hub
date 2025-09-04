@@ -97,12 +97,13 @@ h1 {
       }
 
       .btn1-size {
-          padding-left: 0px;
-          padding-right: 0px;
+          padding-left: 30px;
+          padding-right: 30px;
       }
       .btn2-size {
-          padding-left: 0px;
-          padding-right: 0px;
+          padding-left: 40px;
+          padding-right: 40px;
+          margin-top: 50px;
       }
 
     }
