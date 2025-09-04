@@ -48,14 +48,20 @@ h1 {
 
     /* Extra Small Devices (phones, <576px) */
     @media (max-width: 575.98px) {
-
+    
+    .margin-set {
+        margin-top: 0px !important;
+    }
 
     }
 
 
     /* Small Devices (landscape phones, ≥576px) */
     @media (min-width: 576px) and (max-width: 767.98px) {
-
+    
+    .margin-set {
+        margin-top: 0px !important;
+    }
 
     }
 
