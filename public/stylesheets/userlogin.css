@@ -95,9 +95,23 @@ h1 {
       }
 
       .align {
-        margin-left: 10%;
-        margin-right: 10%;
+        margin-left: 0%;
+        margin-right: 0%;
         
+      }
+
+      .btn1-size {
+          padding-left: 30px;
+          padding-right: 30px;
+          margin-top: 50px;
+          margin-left: -45px;
+      }
+      .btn2-size {
+          padding-left: 40px;
+          padding-right: 40px;
+          margin-top: 50px;
+          margin-right: -180px;
+          margin-left: 10px;
       }
 
     }
@@ -111,9 +125,23 @@ h1 {
     }
 
     .align {
-      margin-left: 10%;
-      margin-right: 10%;
+      margin-left: 0%;
+      margin-right: 0%;
       
+    }
+
+    .btn1-size {
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-top: 50px;
+    margin-left: -45px;
+    }
+    .btn2-size {
+        padding-left: 40px;
+        padding-right: 40px;
+        margin-top: 50px;
+        margin-right: -180px;
+        margin-left: 10px;
     }
     }
 
