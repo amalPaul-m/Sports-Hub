@@ -975,21 +975,33 @@ h3 {
     /* Medium Devices (tablets, ≥768px) */
     @media (min-width: 768px) and (max-width: 991.98px) {
     /* Styles for tablets */
+    .height-content {
+        display: block;
+        }
     }
 
     /* Large Devices (desktops, ≥992px) */
     @media (min-width: 992px) and (max-width: 1199.98px) {
     /* Styles for standard desktops */
+    .height-content {
+        display: block;
+        }
     }
 
     /* Extra Large Devices (large desktops, ≥1200px) */
     @media (min-width: 1200px) and (max-width: 1399.98px) {
     /* Styles for large screens */
+    .height-content {
+        display: block;
+        }
     }
 
     /* XXL Devices (very large desktops, ≥1400px) */
     @media (min-width: 1400px) {
     /* Styles for very large displays */
+    .height-content {
+        display: block;
+        }
     }
 
 
