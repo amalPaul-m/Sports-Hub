@@ -94,12 +94,27 @@ h1 {
         width: 100px;
       }
 
+      .align {
+        margin-left: 10%;
+        margin-right: 10%;
+        
+      }
+
     }
 
 
     /* Small Devices (landscape phones, ≥576px) */
     @media (min-width: 576px) and (max-width: 767.98px) {
 
+    input {
+      width: 100px;
+    }
+
+    .align {
+      margin-left: 10%;
+      margin-right: 10%;
+      
+    }
     }
 
     /* Medium Devices (tablets, ≥768px) */
