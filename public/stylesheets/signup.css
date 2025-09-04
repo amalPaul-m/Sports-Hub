@@ -57,6 +57,15 @@ h1 {
         padding-top: -20px !important;
     }
 
+    .btn1-size {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+    .btn2-size {
+        padding-left: 65px;
+        padding-right: 65px;
+    }
+
     }
 
 
@@ -69,6 +78,15 @@ h1 {
 
     .padding-set {
         padding-top: -20px !important;
+    }
+
+        .btn1-size {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+    .btn2-size {
+        padding-left: 65px;
+        padding-right: 65px;
     }
 
     }
