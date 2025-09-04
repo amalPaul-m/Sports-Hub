@@ -765,6 +765,10 @@ h3 {
       backdrop-filter: blur(10px) !important;
     }
 
+    .height-content {
+        display: none;
+    }
+
     /* Small Devices (landscape phones, ≥576px) */
     @media (min-width: 576px) and (max-width: 767.98px) {
     /* products */
@@ -961,6 +965,9 @@ h3 {
         margin-right: 0px;
         }
 
+        .height-content {
+        display: none;
+        }
 
     
     }
