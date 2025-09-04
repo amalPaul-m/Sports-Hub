@@ -765,7 +765,7 @@ h3 {
       backdrop-filter: blur(10px) !important;
     }
 
-    .height-content {
+    .display {
         display: none;
     }
 
@@ -965,6 +965,9 @@ h3 {
         margin-right: 0px;
         }
 
+        .display {
+        display: none;
+    }
 
     
     }
